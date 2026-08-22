@@ -1,0 +1,9 @@
+# Cursor rules
+
+See CLAUDE.md for the full architectural ground truth. This file is the condensed version for inline Cursor completions.
+
+## Design law
+- **Taste**: Vercel × Anthropic aesthetic, minimalist, monochrome/muted-pastel, high-contrast typography. No default browser colors, no raw unstyled grids.
+- **Emil Kowalski**: Every frontend state transition and micro-interaction gets a smooth, organic cubic-bezier easing curve (target 60fps).
+- **Impeccable**: Pixel-perfect layouts. Explicit UI handling of loading states, errors, empty/null states, and validations.
+- **Anti-slop**: Highly intentional code. No AI boilerplate, no redundant comments, no over-engineering.
