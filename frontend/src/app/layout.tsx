@@ -6,10 +6,11 @@ import { Footer } from "@/components/layout/Footer";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
 import { FavoritesProvider } from "@/lib/favorites";
+import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-cormorant",
@@ -17,7 +18,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-inter",
   display: "swap",
 });
@@ -42,7 +43,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr">
-      <body className={`${cormorant.variable} ${inter.variable} font-sans antialiased`}>
+      <body className={`${cormorant.variable} ${inter.variable} font-sans subpixel-antialiased`}>
         <MotionConfig reducedMotion="user">
           <AuthProvider>
             <CartProvider>
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Header />
                 <main>{children}</main>
                 <Footer />
+                <FloatingWhatsApp />
               </FavoritesProvider>
             </CartProvider>
           </AuthProvider>

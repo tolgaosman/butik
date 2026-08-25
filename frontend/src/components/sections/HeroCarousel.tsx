@@ -2,78 +2,61 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
-import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { Product } from "@/lib/products";
 
-const ease = [0.22, 1, 0.36, 1] as const;
+function Card({ product }: { product: Product }) {
+  return (
+    <div className="relative z-0 shrink-0 px-[clamp(0.4rem,1vw,0.75rem)] py-[clamp(0.5rem,min(4vw,2vh),1.5rem)] transition-[z-index] hover:z-20">
+      <Link
+        href={`/urun/${product.id}`}
+        draggable={false}
+        className="group relative block aspect-[2/3] w-[clamp(8rem,min(18vw,27vh),16rem)] overflow-hidden rounded-t-full bg-sand shadow-sm transition-all duration-500 ease-[var(--ease-organic)] hover:scale-105 hover:-translate-y-2 hover:shadow-2xl hover:shadow-ink/20"
+      >
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          draggable={false}
+          sizes="(min-width: 1280px) 16rem, (min-width: 640px) 18vw, 35vw"
+          className="object-cover"
+        />
+        {product.discountPercent && (
+          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-cream/95 px-3 py-1.5 text-center text-[0.65rem] font-medium leading-tight text-ink shadow-sm backdrop-blur-sm transition-transform duration-500 group-hover:scale-105">
+            %{product.discountPercent} indirim
+          </span>
+        )}
+      </Link>
+    </div>
+  );
+}
 
 export function HeroCarousel({ products }: { products: Product[] }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  function scrollByCard(direction: 1 | -1) {
-    const track = trackRef.current;
-    if (!track) return;
-    const card = track.querySelector<HTMLElement>("[data-hero-card]");
-    const step = card ? card.offsetWidth + 16 : 240;
-    track.scrollBy({ left: direction * step, behavior: "smooth" });
-  }
-
   if (products.length === 0) return null;
 
-  return (
-    <div className="relative">
-      <div
-        ref={trackRef}
-        className="flex min-w-full snap-x gap-5 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:justify-center sm:gap-6 sm:px-10 lg:px-16 [&::-webkit-scrollbar]:hidden"
-      >
-        {products.slice(0, 6).map((product, i) => (
-          <motion.div
-            key={product.id}
-            data-hero-card
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease, delay: 0.3 + i * 0.08 }}
-            className="relative shrink-0 snap-start"
-          >
-            <Link
-              href={`/urun/${product.id}`}
-              className="group relative block h-72 w-52 overflow-hidden rounded-t-full bg-sand sm:h-96 sm:w-64"
-            >
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                sizes="(min-width: 640px) 16rem, 13rem"
-                className="object-cover transition-transform duration-[1400ms] ease-[var(--ease-organic)] group-hover:scale-110"
-              />
-              {product.discountPercent && (
-                <span className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-cream/95 px-3 py-1.5 text-center text-[0.65rem] font-medium leading-tight text-ink shadow-sm backdrop-blur-sm">
-                  %{product.discountPercent} indirim
-                </span>
-              )}
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+  const sets = [products, products, products, products];
 
-      <button
-        type="button"
-        onClick={() => scrollByCard(-1)}
-        aria-label="Önceki ürünler"
-        className="absolute left-1 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-ink/70 text-cream shadow-lg backdrop-blur-sm transition-all duration-300 ease-[var(--ease-organic)] hover:bg-ink hover:scale-110 sm:flex"
+  return (
+    <div className="relative w-full">
+      {/* Outer wrapper: clip-x only, allow vertical overflow for hover scale */}
+      <div
+        className="group relative w-full overflow-x-clip overflow-y-visible"
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent, black 4%, black 96%, transparent)",
+          maskImage:
+            "linear-gradient(to right, transparent, black 4%, black 96%, transparent)",
+        }}
       >
-        <ArrowLeft size={17} />
-      </button>
-      <button
-        type="button"
-        onClick={() => scrollByCard(1)}
-        aria-label="Sonraki ürünler"
-        className="absolute right-1 top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-ink/70 text-cream shadow-lg backdrop-blur-sm transition-all duration-300 ease-[var(--ease-organic)] hover:bg-ink hover:scale-110 sm:flex"
-      >
-        <ArrowRight size={17} />
-      </button>
+        <div className="flex w-fit will-change-transform">
+          <div className="flex w-fit animate-[var(--animate-hero-marquee)] group-hover:[animation-play-state:paused] active:[animation-play-state:paused]">
+            {sets.map((set, si) =>
+              set.map((product) => (
+                <Card key={`${si}-${product.id}`} product={product} />
+              )),
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

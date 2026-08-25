@@ -4,7 +4,7 @@ export const business = {
   address: "İskele Anayolu, Düzova, Lefkoşa",
   mapsQuery: "Sevgi Butik, İskele Anayolu, Düzova, Lefkoşa",
   coords: { lat: 35.227786, lng: 33.5310516 },
-  phone: "+90 392 000 00 00",
+  phone: "0542 873 91 96",
   email: "info@sevgibutik.com",
   instagram: "https://instagram.com/sevgibutik",
   facebook: "https://facebook.com/sevgibutik",

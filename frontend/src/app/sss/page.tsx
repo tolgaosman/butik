@@ -25,7 +25,7 @@ const faqs = [
   {
     question: "Ürünleri nasıl iade edebilirim?",
     answer:
-      "Ürünlerinizi teslim aldıktan sonra 30 gün içinde, kullanılmamış ve etiketi çıkarılmamış olması koşuluyla iade edebilirsiniz. Detaylar için İade ve Değişim sayfamızı inceleyebilirsiniz.",
+      "Ürünlerinizi teslim aldıktan sonra 30 gün içinde, kullanılmamış ve etiketi çıkarılmamış olması koşuluyla iade edebilirsiniz.",
   },
   {
     question: "Beden konusunda tereddüt yaşıyorum, ne yapmalıyım?",

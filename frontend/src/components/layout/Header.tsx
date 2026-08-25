@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
-import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
+import { Search, User, Phone, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
 import { primaryNav } from "@/lib/nav";
 import { useCart } from "@/lib/cart";
 
@@ -41,7 +41,7 @@ export function Header() {
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="container-site flex items-center justify-between py-4">
+      <div className="container-site flex items-center justify-between py-[clamp(0.5rem,1.6vh,1rem)]">
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -52,8 +52,8 @@ export function Header() {
         </button>
 
         <Link href="/" className="text-center leading-tight lg:text-left" onClick={() => setMenuOpen(false)}>
-          <span className="block font-display text-3xl font-semibold tracking-[0.15em] text-cream">SEVGİ</span>
-          <span className="block text-[0.65rem] tracking-[0.35em] text-cream/70">BUTİK</span>
+          <span className="block font-display text-[clamp(1.35rem,3vh,1.875rem)] font-semibold tracking-[0.15em] text-cream">SEVGİ</span>
+          <span className="block text-[clamp(0.55rem,1vh,0.65rem)] tracking-[0.35em] text-cream/70">BUTİK</span>
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex">
@@ -88,6 +88,14 @@ export function Header() {
             className="hidden p-2.5 transition-transform duration-200 hover:scale-110 sm:block"
           >
             <User size={19} />
+          </Link>
+          <Link
+            href="/iletisim"
+            aria-label="İletişim"
+            onClick={() => setMenuOpen(false)}
+            className="p-2.5 transition-transform duration-200 hover:scale-110"
+          >
+            <Phone size={19} />
           </Link>
           <Link
             href="/favoriler"
@@ -239,6 +247,13 @@ export function Header() {
                 className="block py-2.5 text-sm text-cream/80 transition-colors duration-200 hover:text-cream"
               >
                 Hesabım
+              </Link>
+              <Link
+                href="/iletisim"
+                onClick={closeDrawer}
+                className="block py-2.5 text-sm text-cream/80 transition-colors duration-200 hover:text-cream"
+              >
+                İletişim
               </Link>
               <Link
                 href="/favoriler"

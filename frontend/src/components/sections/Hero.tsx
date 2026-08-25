@@ -6,7 +6,7 @@ export async function Hero() {
   const products = await getNewArrivals();
 
   return (
-    <section className="relative overflow-hidden bg-cream pb-10 sm:pb-14">
+    <section className="relative overflow-x-clip bg-cream pb-[clamp(0.5rem,2.4vh,1.5rem)]">
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -17,6 +17,8 @@ export async function Hero() {
       />
       <div className="relative mx-auto max-w-[1600px]">
         <HeroContent />
+      </div>
+      <div className="relative" id="yeni-gelenler">
         <HeroCarousel products={products} />
       </div>
     </section>

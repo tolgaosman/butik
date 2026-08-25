@@ -19,14 +19,14 @@ const item: Variants = {
 export function HeroContent() {
   return (
     <motion.div
-      className="mx-auto flex max-w-3xl flex-col items-center gap-6 px-5 pb-8 pt-16 text-center sm:px-10 sm:pt-24"
+      className="mx-auto flex max-w-3xl flex-col items-center gap-[clamp(0.75rem,3vh,1.5rem)] px-5 pb-[clamp(0.75rem,4vh,2rem)] pt-[clamp(1.25rem,7.3vh,6rem)] text-center sm:px-10"
       initial="hidden"
       animate="show"
       variants={container}
     >
       <motion.h1
         variants={item}
-        className="font-display text-4xl font-semibold leading-[1.1] text-ink sm:text-6xl lg:text-[4.5rem]"
+        className="font-display text-[clamp(1.75rem,min(9vw,7vh),4.5rem)] font-semibold leading-[1.1] text-ink"
       >
         Az dolaş, <span className="italic text-olive">çok şık görün</span>
       </motion.h1>
@@ -38,8 +38,8 @@ export function HeroContent() {
 
       <motion.div variants={item}>
         <Link
-          href="/yeni-gelenler"
-          className="group inline-flex items-center gap-2.5 rounded-full bg-olive py-3 pl-6 pr-3 text-sm font-medium text-cream transition-all duration-300 ease-[var(--ease-organic)] hover:bg-olive-dark hover:-translate-y-0.5 hover:shadow-lg hover:shadow-olive/20 active:translate-y-0"
+          href="#yeni-gelenler"
+          className="group inline-flex items-center gap-2.5 rounded-full bg-olive py-[clamp(0.5rem,1.5vh,0.75rem)] pl-6 pr-3 text-sm font-medium text-cream transition-all duration-300 ease-[var(--ease-organic)] hover:bg-olive-dark hover:-translate-y-0.5 hover:shadow-lg hover:shadow-olive/20 active:translate-y-0"
         >
           Yeni gelenlere bak
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-cream/20 transition-transform duration-300 ease-[var(--ease-organic)] group-hover:translate-x-0.5">

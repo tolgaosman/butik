@@ -11,18 +11,9 @@ export type NavItem = {
 
 export const primaryNav: NavItem[] = [
   {
-    label: "Yeni Gelenler",
-    href: "/yeni-gelenler",
-    columns: [
-      {
-        title: "Yeni Gelenler",
-        items: [
-          { label: "Bu Hafta Gelenler", href: "/yeni-gelenler/bu-hafta" },
-          { label: "Çok Satanlar", href: "/yeni-gelenler/cok-satanlar" },
-          { label: "Editörün Seçimi", href: "/yeni-gelenler/editorun-secimi" },
-        ],
-      },
-    ],
+    label: "Ana Sayfa",
+    href: "/",
+    columns: [],
   },
   {
     label: "Giyim",
@@ -153,7 +144,7 @@ export const primaryNav: NavItem[] = [
 
 export const footerLinks = {
   magaza: [
-    { label: "Yeni Gelenler", href: "/yeni-gelenler" },
+    { label: "Ana Sayfa", href: "/" },
     { label: "Giyim", href: "/giyim" },
     { label: "Elbise", href: "/elbise" },
     { label: "Üst Giyim", href: "/ust-giyim" },
@@ -164,7 +155,6 @@ export const footerLinks = {
   musteriHizmetleri: [
     { label: "Siparişimi Takip Et", href: "/siparis-takip" },
     { label: "Kargo ve Teslimat", href: "/kargo-teslimat" },
-    { label: "İade ve Değişim", href: "/iade-degisim" },
     { label: "Beden Rehberi", href: "/beden-rehberi" },
     { label: "Sıkça Sorulan Sorular", href: "/sss" },
     { label: "İletişim", href: "/iletisim" },
