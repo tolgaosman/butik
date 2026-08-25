@@ -534,3 +534,11 @@ Failed to proxy http://127.0.0.1:8000/api/user [Error: socket hang up] { code: '
  GET /favicon.ico 200 in 281ms
  ✓ Compiled in 748ms (879 modules)
  GET / 200 in 234ms
+ ✓ Compiled in 498ms (879 modules)
+ GET / 200 in 184ms
+ ✓ Compiled in 451ms (879 modules)
+ ✓ Compiled in 400ms (879 modules)
+ ✓ Compiled in 333ms (879 modules)
+ ✓ Compiled in 262ms (879 modules)
+ ✓ Compiled in 239ms (879 modules)
+ ✓ Compiled in 263ms (879 modules)
