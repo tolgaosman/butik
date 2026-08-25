@@ -9,9 +9,9 @@ export async function NewArrivals() {
   const products = (await getNewArrivals()).slice(0, 4);
 
   return (
-    <section className="bg-cream py-12 sm:py-20">
+    <section id="yeni-sezon" className="bg-cream py-12 sm:py-20">
       <div className="container-site">
-        <SectionHeader eyelash="YENİ SEZON" title="Yeni Geldi!" href="/yeni-gelenler" linkLabel="Tümünü Gör" />
+        <SectionHeader eyelash="YENİ SEZON" title="Yeni Geldi!" />
 
         {products.length === 0 ? (
           <EmptyState

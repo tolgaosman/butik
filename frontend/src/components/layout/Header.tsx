@@ -51,9 +51,8 @@ export function Header() {
           <Menu size={22} />
         </button>
 
-        <Link href="/" className="text-center leading-tight lg:text-left" onClick={() => setMenuOpen(false)}>
-          <span className="block font-display text-[clamp(1.35rem,3vh,1.875rem)] font-semibold tracking-[0.15em] text-cream">SEVGİ</span>
-          <span className="block text-[clamp(0.55rem,1vh,0.65rem)] tracking-[0.35em] text-cream/70">BUTİK</span>
+        <Link href="/" className="flex items-center" onClick={() => setMenuOpen(false)}>
+          <img src="/sevgiLogo.png" alt="Sevgi Butik Logo" className="h-8 w-auto lg:h-10 object-contain" />
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex">
@@ -170,7 +169,7 @@ export function Header() {
           }`}
         >
           <div className="flex items-center justify-between px-6 py-5">
-            <span className="font-display text-xl font-semibold tracking-widest text-cream">SEVGİ</span>
+            <img src="/sevgiLogo.png" alt="Sevgi Butik Logo" className="h-7 w-auto object-contain" />
             <button
               type="button"
               onClick={closeDrawer}

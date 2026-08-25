@@ -9,8 +9,8 @@
   --color-ink-soft: #7a6b68;
   --color-gold: #c9a96e;
 
-  --font-display: var(--font-cormorant), serif;
-  --font-sans: var(--font-inter), sans-serif;
+  --font-display: var(--font-montserrat), sans-serif;
+  --font-sans: var(--font-montserrat), sans-serif;
 
   --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
 

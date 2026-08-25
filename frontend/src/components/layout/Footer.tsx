@@ -5,10 +5,8 @@ export function Footer() {
   return (
     <footer className="bg-olive text-cream/70">
       <div className="container-site">
-        <div className="flex flex-col items-center justify-between gap-4 py-8 sm:flex-row">
-          <span className="font-display text-sm font-semibold tracking-[0.2em] text-cream">
-            SEVGİ BUTİK
-          </span>
+        <div className="flex flex-col items-center justify-between gap-4 py-4 sm:flex-row">
+          <img src="/sevgiLogo.png" alt="Sevgi Butik Logo" className="h-12 w-auto object-contain" />
 
           <div className="text-center text-[0.65rem] text-cream/50 sm:text-left">
             © {new Date().getFullYear()} Sevgi Butik. Tüm hakları saklıdır.

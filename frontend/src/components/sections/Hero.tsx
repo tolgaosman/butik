@@ -18,7 +18,7 @@ export async function Hero() {
       <div className="relative mx-auto max-w-[1600px]">
         <HeroContent />
       </div>
-      <div className="relative" id="yeni-gelenler">
+      <div className="relative">
         <HeroCarousel products={products} />
       </div>
     </section>

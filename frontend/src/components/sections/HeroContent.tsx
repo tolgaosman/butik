@@ -38,7 +38,7 @@ export function HeroContent() {
 
       <motion.div variants={item}>
         <Link
-          href="#yeni-gelenler"
+          href="#yeni-sezon"
           className="group inline-flex items-center gap-2.5 rounded-full bg-olive py-[clamp(0.5rem,1.5vh,0.75rem)] pl-6 pr-3 text-sm font-medium text-cream transition-all duration-300 ease-[var(--ease-organic)] hover:bg-olive-dark hover:-translate-y-0.5 hover:shadow-lg hover:shadow-olive/20 active:translate-y-0"
         >
           Yeni gelenlere bak
