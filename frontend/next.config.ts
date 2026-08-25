@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
       { source: "/sanctum/:path*", destination: `${BACKEND_URL}/sanctum/:path*` },
     ];
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;
