@@ -18,9 +18,9 @@ COPY . .
 # Next.js telemetry can be disabled during the build
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Mock backend URL during build to prevent build failures if server components try to fetch
-ENV INTERNAL_API_URL=http://localhost:8000/api
-ENV BACKEND_URL=http://localhost:8000
+# Set backend URL during build so the standalone proxy bakes in the correct container hostname
+ENV INTERNAL_API_URL=http://backend:8000/api
+ENV BACKEND_URL=http://backend:8000
 
 RUN npm run build
 
