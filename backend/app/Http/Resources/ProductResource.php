@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
             'image' => $this->image,
             'rating' => $this->displayRating(),
             'reviewCount' => $this->displayReviewCount(),
-            'tags' => $this->whenLoaded('tags', fn () => $this->tags->pluck('slug')->all(), []),
+
             $this->mergeWhen((bool) $this->is_new, ['isNew' => true]),
             $this->mergeWhen($this->compare_at_price_minor !== null, fn () => [
                 'discountPercent' => (int) round((1 - $this->price_minor / $this->compare_at_price_minor) * 100),

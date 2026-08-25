@@ -30,6 +30,10 @@ const categoryTemplates: Record<string, string> = {
 
 export function getProductDescription(product: Product): string {
   if (handWritten[product.id]) return handWritten[product.id];
-  const topTag = product.tags.find((t) => categoryTemplates[t]);
-  return topTag ? categoryTemplates[topTag] : categoryTemplates.aksesuar;
+  
+  if (product.id.includes('elbise')) return categoryTemplates.elbise;
+  if (product.id.includes('pantolon') || product.id.includes('etek')) return categoryTemplates["alt-giyim"];
+  if (product.id.includes('bluz') || product.id.includes('gomlek') || product.id.includes('ceket') || product.id.includes('kazak')) return categoryTemplates["ust-giyim"];
+  
+  return categoryTemplates.aksesuar;
 }

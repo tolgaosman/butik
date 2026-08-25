@@ -7,7 +7,6 @@ use App\Models\ContactMessage;
 use App\Models\NewsletterSubscriber;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -50,15 +49,6 @@ class AdminPanelTest extends TestCase
 
         $this->actingAs($admin)->get('/admin/categories')->assertOk();
         $this->actingAs($admin)->get("/admin/categories/{$category->id}/edit")->assertOk();
-    }
-
-    public function test_tag_resource_pages_load(): void
-    {
-        $admin = $this->admin();
-        $tag = Tag::factory()->create();
-
-        $this->actingAs($admin)->get('/admin/tags')->assertOk();
-        $this->actingAs($admin)->get("/admin/tags/{$tag->id}/edit")->assertOk();
     }
 
     public function test_order_resource_pages_load(): void

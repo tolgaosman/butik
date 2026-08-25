@@ -14,8 +14,8 @@ export type User = {
 type AuthContextValue = {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<User>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -44,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const data = await apiMutate<User>("/login", { method: "POST", body: JSON.stringify({ email, password }) });
     setUser(data);
+    return data;
   }, []);
 
   const register = useCallback(
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ name, email, password, password_confirmation: passwordConfirmation }),
       });
       setUser(data);
+      return data;
     },
     [],
   );

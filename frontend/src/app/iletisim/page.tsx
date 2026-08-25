@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MapPin, Phone, Clock, Instagram, Facebook } from "lucide-react";
+import { MapPin, Phone, Clock, Instagram, Facebook, Mail } from "lucide-react";
 import { business } from "@/lib/business";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ContactForm } from "@/components/sections/ContactForm";
@@ -18,20 +18,7 @@ export default function ContactPage() {
   const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(business.mapsQuery)}`;
   const todayIndex = dayIndexMap[new Date().getDay()];
 
-  const quickContacts = [
-    {
-      icon: Phone,
-      label: "Telefon",
-      value: business.phone,
-      href: `tel:${business.phone.replace(/\s/g, "")}`,
-    },
-    {
-      icon: MapPin,
-      label: "Adres",
-      value: business.address,
-      href: directionsHref,
-    },
-  ];
+
 
   return (
     <div className="container-site py-8 sm:py-12">
@@ -49,55 +36,82 @@ export default function ContactPage() {
 
         {/* Hızlı temas kartları */}
         <MotionItem className="mt-8 grid grid-cols-1 gap-3 sm:mt-10 sm:grid-cols-3">
-          {quickContacts.map(({ icon: Icon, label, value, href }) => (
-            <a
-              key={label}
-              href={href}
-              target={href.startsWith("http") ? "_blank" : undefined}
-              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
-                <Icon size={17} />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-xs font-medium text-ink-soft">{label}</span>
-                <span className="block truncate text-sm font-medium text-ink" title={value}>{value}</span>
-              </span>
-            </a>
-          ))}
-          <div className="flex gap-3">
-            <a
-              href={business.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="group flex flex-1 flex-col items-center justify-center gap-2 border border-border bg-cream/40 p-3 text-center transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
-                <Instagram size={18} />
-              </span>
-              <span className="text-xs font-medium text-ink-soft transition-colors duration-200 group-hover:text-ink">
-                Instagram&apos;dan <br className="hidden sm:block lg:hidden" />
-                Takip Et
-              </span>
-            </a>
-            <a
-              href={business.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="group flex flex-1 flex-col items-center justify-center gap-2 border border-border bg-cream/40 p-3 text-center transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
-                <Facebook size={18} />
-              </span>
-              <span className="text-xs font-medium text-ink-soft transition-colors duration-200 group-hover:text-ink">
-                Facebook&apos;tan <br className="hidden sm:block lg:hidden" />
-                Takip Et
-              </span>
-            </a>
-          </div>
+          {/* Telefon */}
+          <a
+            href={`tel:${business.phone.replace(/\s/g, "")}`}
+            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
+              <Phone size={17} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">Telefon</span>
+              <span className="block truncate text-sm font-medium text-ink" title={business.phone}>{business.phone}</span>
+            </span>
+          </a>
+
+          {/* E-posta */}
+          <a
+            href="mailto:karabasaksevgi4@gmail.com"
+            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
+              <Mail size={17} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">E-posta</span>
+              <span className="block truncate text-sm font-medium text-ink" title="karabasaksevgi4@gmail.com">karabasaksevgi4@gmail.com</span>
+            </span>
+          </a>
+
+          {/* 2. Sütun: Adres */}
+          <a
+            href={directionsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
+              <MapPin size={17} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">Adres</span>
+              <span className="block text-sm font-medium text-ink leading-tight" title={business.address}>{business.address}</span>
+            </span>
+          </a>
+          {/* Instagram */}
+          <a
+            href={business.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
+              <Instagram size={18} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">Instagram</span>
+              <span className="block truncate text-sm font-medium text-ink transition-colors duration-200 group-hover:text-ink">Takip Et</span>
+            </span>
+          </a>
+
+          {/* Facebook */}
+          <a
+            href={business.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook"
+            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
+              <Facebook size={18} />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-ink-soft">Facebook</span>
+              <span className="block truncate text-sm font-medium text-ink transition-colors duration-200 group-hover:text-ink">Takip Et</span>
+            </span>
+          </a>
         </MotionItem>
       </MotionStagger>
 

@@ -11,13 +11,11 @@ export function ContactForm() {
 
     const name = data.get("name") || "";
     const email = data.get("email") || "";
-    const phone = data.get("phone") || "";
     const subject = data.get("subject") || "";
     const message = data.get("message") || "";
 
     let text = `Merhaba, ben ${name}.`;
     if (email) text += `\nE-posta: ${email}`;
-    if (phone) text += `\nTelefon: ${phone}`;
     if (subject) text += `\nKonu: ${subject}`;
     text += `\n\nMesajım:\n${message}`;
 
@@ -37,13 +35,11 @@ export function ContactForm() {
         <Input
           id="contact-email"
           name="email"
-          label="E-posta"
+          label="E-posta (opsiyonel)"
           type="email"
           autoComplete="email"
-          required
         />
-        <Input id="contact-phone" name="phone" label="Telefon (opsiyonel)" type="tel" autoComplete="tel" />
-        <Input id="contact-subject" name="subject" label="Konu (opsiyonel)" />
+        <Input id="contact-subject" name="subject" label="Konu" className="sm:col-span-2" required />
       </div>
       <Textarea
         id="contact-message"

@@ -6,6 +6,7 @@ export type Category = {
   itemCount: number;
   href: string;
   image: string;
+  subcategories?: Category[];
 };
 
 export type Product = {
@@ -15,7 +16,6 @@ export type Product = {
   image: string;
   rating: number;
   reviewCount: number;
-  tags: string[];
   isNew?: boolean;
   discountPercent?: number;
   originalPrice?: number;

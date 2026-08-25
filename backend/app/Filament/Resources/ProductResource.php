@@ -7,7 +7,6 @@ use App\Filament\Resources\ProductResource\RelationManagers\ImagesRelationManage
 use App\Filament\Resources\ProductResource\RelationManagers\ReviewsRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\VariantsRelationManager;
 use App\Models\Product;
-use App\Models\Tag;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -82,22 +81,6 @@ class ProductResource extends Resource
                         ->maxLength(512),
                 ]),
 
-            Forms\Components\Section::make('Etiketler')
-                ->schema([
-                    Forms\Components\CheckboxList::make('tags')
-                        ->label('')
-                        ->relationship('tags', 'name')
-                        ->options(fn () => Tag::orderBy('type')->orderBy('position')->pluck('name', 'id'))
-                        ->descriptions(fn () => Tag::orderBy('type')->orderBy('position')->get()->mapWithKeys(
-                            fn (Tag $tag) => [$tag->id => match ($tag->type) {
-                                'category' => 'Kategori',
-                                'subcategory' => 'Alt Kategori',
-                                'collection' => 'Koleksiyon',
-                            }],
-                        ))
-                        ->columns(3)
-                        ->helperText('İlk seçilen etiket "benzer ürünler" eşleştirmesinde kullanılır — etiket sırası önemlidir.'),
-                ]),
 
             Forms\Components\Section::make('Durum')
                 ->schema([
@@ -134,10 +117,6 @@ class ProductResource extends Resource
                     ->label('Fiyat')
                     ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.').' ₺')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tags.name')
-                    ->label('Etiketler')
-                    ->badge()
-                    ->limitList(3),
                 Tables\Columns\TextColumn::make('variants_sum_stock')
                     ->label('Stok')
                     ->sum('variants', 'stock'),
@@ -151,9 +130,6 @@ class ProductResource extends Resource
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_new')->label('Yeni Ürün'),
                 Tables\Filters\TernaryFilter::make('is_active')->label('Aktif'),
-                Tables\Filters\SelectFilter::make('tags')
-                    ->label('Etiket')
-                    ->relationship('tags', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

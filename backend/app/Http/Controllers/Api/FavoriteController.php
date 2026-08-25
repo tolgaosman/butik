@@ -15,7 +15,7 @@ class FavoriteController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $products = Product::whereHas('favorites', fn ($q) => $q->where('user_id', $request->user()->id))
-            ->with('tags')
+            ->with('categories')
             ->get();
 
         return ProductResource::collection($products);

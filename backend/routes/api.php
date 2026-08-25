@@ -53,3 +53,22 @@ Route::post('/contact', [ContactController::class, 'store']);
 
 Route::post('/newsletter', [NewsletterController::class, 'store']);
 Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe']);
+
+// Admin Routes — session auth (auth:sanctum falls back to the web guard)
+// plus an is_admin check; the Next.js panel at /admin_login is the only client.
+Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index']);
+    Route::put('/orders/{orderNumber}/status', [\App\Http\Controllers\Api\Admin\OrderController::class, 'updateStatus']);
+    
+    Route::get('/customers', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'index']);
+    Route::put('/customers/{id}', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'update']);
+    
+    Route::get('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'index']);
+    Route::put('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'update']);
+    Route::delete('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'destroy']);
+    
+    Route::get('/products', [\App\Http\Controllers\Api\Admin\ProductController::class, 'index']);
+    Route::post('/products', [\App\Http\Controllers\Api\Admin\ProductController::class, 'store']);
+    Route::put('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'update']);
+    Route::delete('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'destroy']);
+});

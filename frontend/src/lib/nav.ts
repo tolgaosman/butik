@@ -156,15 +156,9 @@ export const footerLinks = {
     { label: "Siparişimi Takip Et", href: "/siparis-takip" },
     { label: "Kargo ve Teslimat", href: "/kargo-teslimat" },
     { label: "Beden Rehberi", href: "/beden-rehberi" },
-    { label: "Sıkça Sorulan Sorular", href: "/sss" },
     { label: "İletişim", href: "/iletisim" },
   ],
   hakkimizda: [
-    { label: "Hikayemiz", href: "/hikayemiz" },
-    { label: "Sürdürülebilirlik", href: "/surdurulebilirlik" },
-    { label: "Lookbook", href: "/lookbook" },
-    { label: "Kariyer", href: "/kariyer" },
-    { label: "Blog", href: "/blog" },
     { label: "Bize Ulaşın", href: "/iletisim" },
   ],
 } as const;

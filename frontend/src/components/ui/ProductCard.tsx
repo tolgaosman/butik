@@ -44,7 +44,7 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
 
         <Link
           href={`/urun/${product.id}`}
-          className="absolute inset-x-0 bottom-0 translate-y-full bg-olive/95 py-3 text-center text-xs font-medium uppercase tracking-[0.15em] text-white backdrop-blur-sm transition-transform duration-300 ease-[var(--ease-organic)] group-hover:translate-y-0"
+          className="absolute inset-x-0 bottom-0 translate-y-[101%] bg-olive/95 py-3 text-center text-xs font-medium uppercase tracking-[0.15em] text-white backdrop-blur-sm opacity-0 transition-all duration-300 ease-[var(--ease-organic)] group-hover:translate-y-0 group-hover:opacity-100"
         >
           İncele
         </Link>

@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
-use App\Models\Tag;
 use App\Support\Money;
 use Illuminate\Database\Seeder;
 
@@ -135,7 +134,6 @@ class ProductSeeder extends Seeder
                 ['url' => $data['image'], 'alt' => $data['name']],
             );
 
-            $this->attachTags($product, $data['tags']);
             $this->createVariants($product);
         }
     }
@@ -158,20 +156,6 @@ class ProductSeeder extends Seeder
     private function isAccessory(array $tags): bool
     {
         return count(array_intersect($tags, self::ACCESSORY_TAGS)) > 0;
-    }
-
-    /**
-     * Attach tags in seed-file order — pivot `position` is what
-     * getRelatedProducts()'s tags[0] semantics depend on.
-     */
-    private function attachTags(Product $product, array $tagSlugs): void
-    {
-        $sync = [];
-        foreach ($tagSlugs as $position => $slug) {
-            $tag = Tag::where('slug', $slug)->firstOrFail();
-            $sync[$tag->id] = ['position' => $position];
-        }
-        $product->tags()->sync($sync);
     }
 
     private function createVariants(Product $product): void

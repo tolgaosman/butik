@@ -29,16 +29,16 @@ class ProductController extends Controller
             'limit' => 'sometimes|integer|min:1|max:100',
         ]);
 
-        $query = Product::query()->where('is_active', true)->with('tags');
+        $query = Product::query()->where('is_active', true)->with('categories');
 
         if (! empty($validated['category'])) {
             $slug = $validated['category'];
-            $query->whereHas('tags', fn ($q) => $q->where('slug', $slug));
+            $query->whereHas('categories', fn ($q) => $q->where('slug', $slug));
         }
 
         if (! empty($validated['subcategory'])) {
             $slug = $validated['subcategory'];
-            $query->whereHas('tags', fn ($q) => $q->where('slug', $slug));
+            $query->whereHas('categories', fn ($q) => $q->where('slug', $slug));
         }
 
         if (array_key_exists('is_new', $validated)) {
@@ -70,7 +70,7 @@ class ProductController extends Controller
     {
         $product = Product::where('slug', $slug)
             ->where('is_active', true)
-            ->with(['tags', 'images', 'variants' => fn ($q) => $q->where('is_active', true)])
+            ->with(['categories', 'images', 'variants' => fn ($q) => $q->where('is_active', true)])
             ->first();
 
         if (! $product) {
@@ -89,22 +89,22 @@ class ProductController extends Controller
     {
         $limit = (int) $request->query('limit', 4);
 
-        $product = Product::where('slug', $slug)->with('tags')->first();
+        $product = Product::where('slug', $slug)->with('categories')->first();
 
         if (! $product) {
             return response()->json(['message' => 'Ürün bulunamadı.'], 404);
         }
 
-        $primaryTag = $product->tags->first();
+        $primaryCategory = $product->categories->first();
 
-        if (! $primaryTag) {
+        if (! $primaryCategory) {
             return ProductResource::collection(collect());
         }
 
         $related = Product::where('is_active', true)
             ->where('id', '!=', $product->id)
-            ->whereHas('tags', fn ($q) => $q->where('tags.id', $primaryTag->id))
-            ->with('tags')
+            ->whereHas('categories', fn ($q) => $q->where('categories.id', $primaryCategory->id))
+            ->with('categories')
             ->orderBy('position')
             ->limit($limit)
             ->get();

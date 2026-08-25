@@ -28,6 +28,9 @@ services:
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
+      - APP_KEY=${APP_KEY:?APP_KEY zorunlu - php artisan key:generate --show ile uretip .env dosyasina koyun}
+      - APP_URL=http://178.105.207.98:8000
+      - APP_LOCALE=tr
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
@@ -36,8 +39,13 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - FRONTEND_URL=http://178.105.207.98:4000
       - SANCTUM_STATEFUL_DOMAINS=178.105.207.98:4000
-      - SESSION_DOMAIN=178.105.207.98
-      - APP_URL=http://178.105.207.98:4000
+      # SESSION_DOMAIN bilerek bos: cookie Domain niteligi bir IP olamaz (RFC 6265),
+      # tarayici boyle bir Set-Cookie'yi yok sayar ve oturum hic kalici olmaz.
+      - SESSION_DRIVER=database
+      - SESSION_SECURE_COOKIE=false
+      - CACHE_STORE=database
+      - QUEUE_CONNECTION=database
+      - MAIL_MAILER=log
     networks:
       - butik-network
 

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { Search, User, Phone, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
 import { primaryNav } from "@/lib/nav";
 import { useCart } from "@/lib/cart";
@@ -20,6 +21,7 @@ export function Header() {
   const favCount = slugs.size;
   const reduceMotion = useReducedMotion();
   const lastY = useRef(0);
+  const pathname = usePathname();
 
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -53,6 +55,8 @@ export function Header() {
     };
   }, [open]);
 
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <motion.header
       className="sticky top-0 z-40 border-b border-border bg-surface text-ink"
@@ -71,7 +75,7 @@ export function Header() {
             <Menu size={22} />
           </button>
 
-        <Link href="/" className="flex items-center" onClick={() => setMenuOpen(false)}>
+        <div className="flex items-center">
           <Image
             src="/sevgiLogo-ink.png"
             alt="Sevgi Butik"
@@ -80,7 +84,7 @@ export function Header() {
             priority
             className="h-8 w-auto object-contain lg:h-10"
           />
-        </Link>
+        </div>
         </div>
 
         <nav className="hidden flex-auto justify-center items-center gap-7 lg:flex">

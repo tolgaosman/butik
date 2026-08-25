@@ -45,6 +45,34 @@ export async function apiGet<T>(path: string, options?: FetchOptions): Promise<T
   return res.json() as Promise<T>;
 }
 
+/**
+ * Server-side GET that DOES forward the visitor's session cookie. The rule
+ * apiGet follows — SSR never borrows the session — protects the public
+ * catalog from caching one visitor's data for everyone; the admin panel is
+ * the deliberate exception: /api/admin/* is behind auth:sanctum + is_admin,
+ * so the request has to carry the session. Always uncached.
+ */
+export async function apiGetAuthed<T>(path: string): Promise<T | undefined> {
+  const { cookies } = await import("next/headers");
+  const cookieHeader = (await cookies()).toString();
+
+  const res = await fetch(`${apiBase()}${path}`, {
+    cache: "no-store",
+    headers: {
+      Accept: "application/json",
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+    },
+  });
+
+  if (res.status === 404) return undefined;
+
+  if (!res.ok) {
+    throw new ApiError(res.status, `Request failed: ${path}`);
+  }
+
+  return res.json() as Promise<T>;
+}
+
 let csrfReady: Promise<void> | null = null;
 
 function getCookie(name: string): string | null {
@@ -69,15 +97,19 @@ export async function apiMutate<T>(
 
   const attempt = async () => {
     const token = getCookie("XSRF-TOKEN");
+    const isFormData = init.body instanceof FormData;
+    
+    const headers: HeadersInit = {
+      Accept: "application/json",
+      ...(!isFormData ? { "Content-Type": "application/json" } : {}),
+      ...(token ? { "X-XSRF-TOKEN": token } : {}),
+      ...init.headers,
+    };
+
     return fetch(`${apiBase()}${path}`, {
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        ...(token ? { "X-XSRF-TOKEN": token } : {}),
-        ...init.headers,
-      },
       ...init,
+      credentials: "include",
+      headers,
     });
   };
 

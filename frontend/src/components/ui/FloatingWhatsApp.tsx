@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 export function FloatingWhatsApp() {
   const pathname = usePathname();
 
-  // Don't render on the contact page where the form already exists
-  if (pathname === "/iletisim") return null;
+  // Don't render on the contact page where the form already exists or in admin routes
+  if (pathname === "/iletisim" || pathname?.startsWith("/admin")) return null;
 
   return (
     <a

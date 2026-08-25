@@ -1,4 +1,7 @@
-import type { ComponentPropsWithoutRef } from "react";
+"use client";
+
+import { useState, type ComponentPropsWithoutRef } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const fieldClasses = (error?: string, className?: string) =>
@@ -10,13 +13,35 @@ const fieldClasses = (error?: string, className?: string) =>
 
 type InputProps = ComponentPropsWithoutRef<"input"> & { label: string; error?: string };
 
-export function Input({ label, error, id, className, ...props }: InputProps) {
+export function Input({ label, error, id, className, type, ...props }: InputProps) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === "password";
+  const currentType = isPassword ? (showPassword ? "text" : "password") : type;
+
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-ink-soft">
         {label}
       </label>
-      <input id={id} className={fieldClasses(error, className)} aria-invalid={!!error} {...props} />
+      <div className="relative">
+        <input 
+          id={id} 
+          type={currentType}
+          className={fieldClasses(error, cn(className, isPassword && "pr-10"))} 
+          aria-invalid={!!error} 
+          {...props} 
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((p) => !p)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft hover:text-ink focus:outline-none"
+            aria-label={showPassword ? "Şifreyi gizle" : "Şifreyi göster"}
+          >
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        )}
+      </div>
       {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
     </div>
   );

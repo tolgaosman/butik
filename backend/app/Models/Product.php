@@ -34,11 +34,9 @@ class Product extends Model
         ];
     }
 
-    public function tags(): BelongsToMany
+    public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class)
-            ->withPivot('position')
-            ->orderByPivot('position');
+        return $this->belongsToMany(Category::class);
     }
 
     public function images(): HasMany
@@ -59,14 +57,6 @@ class Product extends Model
     public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class);
-    }
-
-    /**
-     * The tag that drives getRelatedProducts() ordering — pivot position 0.
-     */
-    public function primaryTag(): ?Tag
-    {
-        return $this->tags->first();
     }
 
     /**

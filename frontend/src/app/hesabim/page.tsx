@@ -9,6 +9,22 @@ import { useAuth, ApiError } from "@/lib/auth";
 
 type FieldErrors = Record<string, string[]>;
 
+/**
+ * 422 doğrulama hatalarını alanlara dağıt; geri kalan her şey için tek bir
+ * Türkçe mesaj göster — kullanıcıya ham "Server Error" gösterilmez.
+ */
+function describeError(err: unknown): { fields: FieldErrors; message: string | null } {
+  if (err instanceof ApiError) {
+    if (err.errors) return { fields: err.errors, message: null };
+    if (err.status === 419)
+      return { fields: {}, message: "Oturumunuz zaman aşımına uğradı. Sayfayı yenileyip tekrar deneyin." };
+    if (err.status >= 500)
+      return { fields: {}, message: "Şu anda işleminizi tamamlayamıyoruz. Lütfen birazdan tekrar deneyin." };
+    return { fields: {}, message: err.message };
+  }
+  return { fields: {}, message: "Bir şeyler ters gitti. Lütfen tekrar deneyin." };
+}
+
 function LoginForm() {
   const { login } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -25,12 +41,9 @@ function LoginForm() {
     try {
       await login(String(form.get("email")), String(form.get("password")));
     } catch (err) {
-      if (err instanceof ApiError) {
-        setErrors(err.errors ?? {});
-        setFormError(err.errors ? null : err.message);
-      } else {
-        setFormError("Bir şeyler ters gitti. Lütfen tekrar deneyin.");
-      }
+      const { fields, message } = describeError(err);
+      setErrors(fields);
+      setFormError(message);
     } finally {
       setLoading(false);
     }
@@ -87,12 +100,9 @@ function RegisterForm() {
     try {
       await register(String(form.get("name")), String(form.get("email")), password, passwordConfirmation);
     } catch (err) {
-      if (err instanceof ApiError) {
-        setErrors(err.errors ?? {});
-        setFormError(err.errors ? null : err.message);
-      } else {
-        setFormError("Bir şeyler ters gitti. Lütfen tekrar deneyin.");
-      }
+      const { fields, message } = describeError(err);
+      setErrors(fields);
+      setFormError(message);
     } finally {
       setLoading(false);
     }

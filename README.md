@@ -43,3 +43,32 @@ cp .env.example .env.local
 npm install
 npm run dev
 ```
+
+## Deployment (Hetzner, http://178.105.207.98:4000)
+
+`docker-compose.yml` runs the whole stack: MySQL, Laravel (`backend:8000`, internal only) and Next.js
+(published on `4000`). The browser only ever talks to port 4000; `/api/*` and `/sanctum/*` are proxied to
+Laravel from there, which is what keeps the session cookie first-party.
+
+`APP_KEY` is **required** — without it Laravel cannot decrypt cookies and every request that starts a
+session (login, register, cart) fails with a 500.
+
+```bash
+cp .env.example .env                       # on the server, next to docker-compose.yml
+docker compose run --rm backend php artisan key:generate --show   # paste into .env as APP_KEY
+docker compose up -d --build
+```
+
+Two settings that must not be "fixed" back:
+
+- `SESSION_DOMAIN` stays unset. A cookie `Domain` attribute cannot be an IP address (RFC 6265) — browsers
+  drop such cookies and no session ever survives a request.
+- `APP_URL` points at the backend itself (`:8000`), not at the storefront; `FRONTEND_URL` is the storefront
+  and drives CORS.
+
+Smoke test after deploying:
+
+```bash
+curl -i -H "Referer: http://178.105.207.98:4000/hesabim" http://178.105.207.98:4000/api/products  # 200 + Set-Cookie
+curl -i http://178.105.207.98:4000/sanctum/csrf-cookie                                            # 204
+```
