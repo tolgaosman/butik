@@ -55,7 +55,7 @@ export function Header() {
 
   return (
     <motion.header
-      className="sticky top-0 z-40 border-b border-border border-t-[3px] border-t-olive bg-surface text-ink"
+      className="sticky top-0 z-40 border-b border-border bg-surface text-ink"
       onMouseLeave={() => setMenuOpen(false)}
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
