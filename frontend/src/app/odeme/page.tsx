@@ -10,6 +10,7 @@ import type { Order } from "@/lib/orders";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 type FieldErrors = Record<string, string[]>;
 
@@ -65,7 +66,36 @@ export default function CheckoutPage() {
   if (isLoading) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <div className="h-96 animate-pulse rounded-sm bg-sand/40" />
+        <Skeleton className="h-3 w-32" />
+        <Skeleton className="mt-3 h-10 w-40" />
+        <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px] lg:gap-10">
+          <div className="space-y-8">
+            <div>
+              <Skeleton className="h-6 w-40" />
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {Array.from({ length: 6 }, (_, i) => (
+                  <Skeleton key={i} className="h-11 w-full" />
+                ))}
+              </div>
+            </div>
+            <div>
+              <Skeleton className="h-6 w-32" />
+              <div className="mt-4 space-y-3">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
+          </div>
+          <div className="h-fit border border-border p-6">
+            <Skeleton className="h-5 w-32" />
+            <div className="mt-4 space-y-3">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+            <Skeleton className="mt-4 h-6 w-full" />
+            <Skeleton className="mt-6 h-12 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -74,7 +104,7 @@ export default function CheckoutPage() {
     return (
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <Breadcrumbs items={[{ label: "Ödeme" }]} />
-        <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">Sepetiniz boş</h1>
+        <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Sepetiniz boş</h1>
         <p className="mt-3 text-sm text-ink-soft">Ödeme yapmadan önce sepetinize ürün ekleyin.</p>
         <Button href="/" variant="solid" className="mt-6">
           Alışverişe Başla
@@ -86,12 +116,12 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Sepetim", href: "/sepet" }, { label: "Ödeme" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Ödeme</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Ödeme</h1>
 
       <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px] lg:gap-10">
         <div className="space-y-8">
           <section>
-            <h2 className="font-display text-xl font-medium text-ink">Teslimat Bilgileri</h2>
+            <h2 className="font-serif text-xl font-medium text-ink">Teslimat Bilgileri</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               {!user && (
                 <div className="sm:col-span-2">
@@ -166,13 +196,13 @@ export default function CheckoutPage() {
                 id="customer_note"
                 name="customer_note"
                 rows={3}
-                className="w-full border border-sand px-4 py-2.5 text-sm transition-colors duration-200 focus:border-olive focus-visible:outline-none"
+                className="w-full border border-border px-4 py-2.5 text-sm transition-colors duration-200 focus:border-olive focus-visible:outline-none"
               />
             </div>
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-medium text-ink">Ödeme Yöntemi</h2>
+            <h2 className="font-serif text-xl font-medium text-ink">Ödeme Yöntemi</h2>
             <div className="mt-4 space-y-3">
               {(
                 [
@@ -183,7 +213,7 @@ export default function CheckoutPage() {
                 <label
                   key={option.value}
                   className={`flex cursor-pointer items-center gap-3 border px-4 py-3.5 text-sm transition-colors duration-200 ${
-                    paymentMethod === option.value ? "border-olive bg-olive/5" : "border-sand"
+                    paymentMethod === option.value ? "border-olive bg-olive/5" : "border-border"
                   }`}
                 >
                   <input
@@ -200,8 +230,8 @@ export default function CheckoutPage() {
           </section>
         </div>
 
-        <div className="h-fit rounded-sm border border-sand p-6">
-          <p className="font-display text-lg font-medium text-ink">Sipariş Özeti</p>
+        <div className="h-fit border border-border p-6">
+          <p className="font-serif text-lg font-medium text-ink">Sipariş Özeti</p>
           <div className="mt-4 max-h-64 space-y-3 overflow-y-auto">
             {cart.items.map((item) => (
               <div key={item.id} className="flex justify-between gap-2 text-sm">
@@ -212,7 +242,7 @@ export default function CheckoutPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 space-y-2 border-t border-sand pt-4 text-sm text-ink-soft">
+          <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm text-ink-soft">
             <div className="flex justify-between">
               <span>Ara Toplam</span>
               <span className="text-ink">{formatPrice(cart.subtotal)}</span>
@@ -222,7 +252,7 @@ export default function CheckoutPage() {
               <span className="text-ink">{cart.shipping === 0 ? "Ücretsiz" : formatPrice(cart.shipping)}</span>
             </div>
           </div>
-          <div className="mt-4 flex justify-between border-t border-sand pt-4 font-display text-lg font-medium text-ink">
+          <div className="mt-4 flex justify-between border-t border-border pt-4 font-serif text-lg font-medium text-ink">
             <span>Toplam</span>
             <span>{formatPrice(cart.total)}</span>
           </div>

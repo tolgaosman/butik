@@ -10,7 +10,7 @@ export default function StoryPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Hikayemiz" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Hikayemiz</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Hikayemiz</h1>
 
       <div className="mt-8 space-y-6 text-sm leading-relaxed text-ink-soft">
         <p>

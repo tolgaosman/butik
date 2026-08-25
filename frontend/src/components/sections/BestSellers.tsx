@@ -12,7 +12,7 @@ export async function BestSellers() {
     <section className="bg-white py-12 sm:py-20">
       <div className="container-site">
         <SectionHeader
-          eyelash="ÇOK SATANLAR"
+          eyebrow="ÇOK SATANLAR"
           title="En Çok Satan Parçalar"
           href="/yeni-gelenler/cok-satanlar"
           linkLabel="Tümünü Gör"

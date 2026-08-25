@@ -11,7 +11,7 @@ export async function NewArrivals() {
   return (
     <section id="yeni-sezon" className="bg-cream py-12 sm:py-20">
       <div className="container-site">
-        <SectionHeader eyelash="YENİ SEZON" title="Yeni Geldi!" />
+        <SectionHeader eyebrow="YENİ SEZON" title="Yeni Geldi!" />
 
         {products.length === 0 ? (
           <EmptyState

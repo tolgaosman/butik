@@ -11,14 +11,14 @@ export function LocationMap() {
   return (
     <section className="bg-white py-12 sm:py-20">
       <div className="container-site">
-        <SectionHeader eyelash="BİZİ ZİYARET EDİN" title="Kaliteli Giyimin Adresi" align="center" />
+        <SectionHeader eyebrow="BİZİ ZİYARET EDİN" title="Kaliteli Giyimin Adresi" align="center" />
         <p className="mx-auto -mt-4 mb-8 flex max-w-md items-center justify-center gap-2 text-sm text-ink-soft sm:mb-10">
           <MapPin size={16} className="shrink-0" />
           {business.address}
         </p>
 
         <MotionReveal>
-          <div className="relative overflow-hidden rounded-sm border border-sand shadow-sm">
+          <div className="relative overflow-hidden border border-border">
             <iframe
               src={embedSrc}
               title="Sevgi Butik konum haritası"

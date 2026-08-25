@@ -1,42 +1,40 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 type Props = {
-  eyelash: string;
+  eyebrow: string;
   title: string;
   href?: string;
   linkLabel?: string;
   align?: "left" | "center";
 };
 
-export function SectionHeader({ eyelash, title, href, linkLabel, align = "left" }: Props) {
+export function SectionHeader({ eyebrow, title, href, linkLabel, align = "left" }: Props) {
   if (align === "center") {
     return (
-      <div className="mb-8 text-center sm:mb-10">
-        <p className="flex items-center justify-center gap-3 text-xs font-medium tracking-[0.25em] text-olive">
-          <span className="h-px w-6 bg-olive/50" aria-hidden />
-          {eyelash}
-          <span className="h-px w-6 bg-olive/50" aria-hidden />
-        </p>
-        <h2 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">{title}</h2>
+      <div className="mb-10 text-center sm:mb-14">
+        <p className="text-xs font-medium tracking-[0.3em] text-olive">{eyebrow}</p>
+        <h2 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">{title}</h2>
       </div>
     );
   }
 
   return (
-    <div className="mb-6 flex items-end justify-between sm:mb-8">
+    <div className="mb-8 flex items-end justify-between sm:mb-10">
       <div>
-        <p className="flex items-center gap-3 text-xs font-medium tracking-[0.25em] text-olive">
-          <span className="h-px w-6 bg-olive/50" aria-hidden />
-          {eyelash}
-        </p>
-        <h2 className="mt-2 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">{title}</h2>
+        <p className="text-xs font-medium tracking-[0.3em] text-olive">{eyebrow}</p>
+        <h2 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">{title}</h2>
       </div>
       {href && linkLabel && (
         <Link
           href={href}
-          className="hidden text-sm font-medium text-ink-soft transition-colors duration-200 hover:text-olive sm:block"
+          className="group hidden shrink-0 items-center gap-1.5 text-sm font-medium text-ink-soft transition-colors duration-200 hover:text-olive sm:flex"
         >
-          {linkLabel} →
+          {linkLabel}
+          <ArrowRight
+            size={15}
+            className="transition-transform duration-300 ease-[var(--ease-organic)] group-hover:translate-x-1"
+          />
         </Link>
       )}
     </div>

@@ -1,20 +1,28 @@
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import type { ComponentPropsWithoutRef } from "react";
+import { cn } from "@/lib/cn";
 
-type Variant = "solid" | "outline";
+type Variant = "solid" | "outline" | "ghost" | "link";
+type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm font-medium tracking-wide uppercase transition-all duration-300 ease-[var(--ease-organic)] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 disabled:pointer-events-none sm:px-8";
+  "inline-flex items-center justify-center gap-2 font-medium tracking-wide uppercase transition-colors duration-300 ease-[var(--ease-organic)] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 disabled:pointer-events-none";
 
 const variants: Record<Variant, string> = {
-  solid:
-    "bg-olive text-cream hover:bg-olive-dark hover:-translate-y-0.5 hover:shadow-lg hover:shadow-olive/20 active:translate-y-0",
-  outline:
-    "border border-olive text-olive hover:bg-olive hover:text-cream hover:-translate-y-0.5 active:translate-y-0",
+  solid: "bg-olive text-white hover:bg-olive-dark",
+  outline: "border border-ink text-ink hover:border-olive hover:text-olive",
+  ghost: "text-ink hover:text-olive",
+  link: "text-ink underline underline-offset-4 decoration-ink/30 hover:decoration-olive hover:text-olive normal-case tracking-normal",
 };
 
-type Common = { variant?: Variant; className?: string; loading?: boolean };
+const sizes: Record<Size, string> = {
+  sm: "px-4 py-2 text-xs",
+  md: "px-6 py-3.5 text-sm sm:px-8",
+  lg: "px-8 py-4 text-sm sm:px-10",
+};
+
+type Common = { variant?: Variant; size?: Size; className?: string; loading?: boolean };
 
 type Props =
   | (Common & Omit<ComponentPropsWithoutRef<typeof Link>, "href"> & { href: string })
@@ -23,8 +31,8 @@ type Props =
       type?: "button" | "submit" | "reset";
     });
 
-export function Button({ variant = "solid", className = "", loading = false, ...props }: Props) {
-  const classes = `${base} ${variants[variant]} ${className}`;
+export function Button({ variant = "solid", size = "md", className, loading = false, ...props }: Props) {
+  const classes = cn(base, variants[variant], variant !== "link" && sizes[size], className);
 
   if (props.href !== undefined) {
     const { href, ...rest } = props;

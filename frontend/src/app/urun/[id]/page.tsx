@@ -5,9 +5,9 @@ import { getAllProductIds, getProductDetail, getRelatedProducts } from "@/lib/pr
 import { getProductDescription } from "@/lib/descriptions";
 import { formatPrice } from "@/lib/format";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { StarRating } from "@/components/ui/StarRating";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { Reveal } from "@/components/ui/Reveal";
+import { Badge } from "@/components/ui/Badge";
+import { MotionStagger, MotionItem } from "@/components/ui/MotionReveal";
 import { ProductOptions } from "@/components/product/ProductOptions";
 
 export async function generateStaticParams() {
@@ -41,7 +41,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <Breadcrumbs items={[{ label: product.name }]} />
 
       <div className="mt-5 grid grid-cols-1 gap-6 sm:mt-6 sm:gap-10 lg:grid-cols-2 lg:gap-16">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-sand">
+        <div className="relative aspect-[3/4] overflow-hidden bg-sand">
           <Image
             src={product.image}
             alt={product.name}
@@ -53,20 +53,21 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         </div>
 
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink sm:text-4xl lg:text-5xl">{product.name}</h1>
-          <div className="mt-3">
-            <StarRating rating={product.rating} reviewCount={product.reviewCount} />
-          </div>
-          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 font-display text-2xl font-medium text-olive sm:text-3xl">
-            {formatPrice(product.price)}
+          {(product.isNew || product.discountPercent) && (
+            <div className="mb-3 flex gap-1.5">
+              {product.isNew && <Badge variant="new">Yeni</Badge>}
+              {product.discountPercent && <Badge variant="sale">%{product.discountPercent} indirim</Badge>}
+            </div>
+          )}
+          <h1 className="font-serif text-3xl font-medium text-ink sm:text-4xl lg:text-5xl">{product.name}</h1>
+
+          <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-2xl">
+            <span className={product.originalPrice ? "font-medium text-olive" : "text-ink"}>
+              {formatPrice(product.price)}
+            </span>
             {product.originalPrice && (
               <span className="text-lg font-normal text-ink-soft line-through">
                 {formatPrice(product.originalPrice)}
-              </span>
-            )}
-            {product.discountPercent && (
-              <span className="rounded-full bg-olive/10 px-2.5 py-0.5 text-xs font-medium text-olive">
-                %{product.discountPercent} indirim
               </span>
             )}
           </p>
@@ -82,14 +83,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
       {related.length > 0 && (
         <section className="mt-12 sm:mt-20">
-          <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl lg:text-3xl">Benzer Ürünler</h2>
-          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
-            {related.map((p, i) => (
-              <Reveal key={p.id} delay={i * 60}>
+          <h2 className="font-serif text-2xl font-medium text-ink sm:text-3xl">Benzer Ürünler</h2>
+          <MotionStagger className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4">
+            {related.map((p) => (
+              <MotionItem key={p.id}>
                 <ProductCard product={p} sizes="(min-width: 640px) 25vw, 50vw" />
-              </Reveal>
+              </MotionItem>
             ))}
-          </div>
+          </MotionStagger>
         </section>
       )}
     </div>

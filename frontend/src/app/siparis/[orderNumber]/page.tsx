@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { ORDER_STATUS_LABELS, type Order } from "@/lib/orders";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { CheckCircle2 } from "lucide-react";
 
 const STORAGE_KEY = "sevgi-butik:last-order";
@@ -32,7 +33,27 @@ export default function OrderConfirmationPage() {
   if (order === undefined) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <div className="h-96 animate-pulse rounded-sm bg-sand/40" />
+        <Skeleton className="h-3 w-32" />
+        <div className="mt-6 flex flex-col items-center text-center">
+          <Skeleton className="h-16 w-16 rounded-full" />
+          <Skeleton className="mt-4 h-10 w-64" />
+          <Skeleton className="mt-2 h-4 w-40" />
+        </div>
+        <div className="mt-10 divide-y divide-border border border-border">
+          {Array.from({ length: 2 }, (_, i) => (
+            <div key={i} className="flex gap-4 p-4">
+              <Skeleton className="h-20 w-16 shrink-0" />
+              <div className="flex flex-1 flex-col justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-3 w-1/4" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+        <Skeleton className="mt-4 h-14 w-full" />
       </div>
     );
   }
@@ -41,7 +62,7 @@ export default function OrderConfirmationPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-8 text-center sm:px-6 sm:py-12 lg:px-8">
         <Breadcrumbs items={[{ label: "Sipariş Onayı" }]} />
-        <h1 className="mt-6 font-display text-2xl font-semibold text-ink sm:text-3xl">
+        <h1 className="mt-6 font-serif text-3xl font-medium text-ink sm:text-4xl">
           Sipariş numaranız: {orderNumber}
         </h1>
         <p className="mt-3 text-sm text-ink-soft">
@@ -64,17 +85,17 @@ export default function OrderConfirmationPage() {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-olive/10 text-olive">
           <CheckCircle2 size={32} strokeWidth={1.5} />
         </div>
-        <h1 className="mt-4 font-display text-3xl font-semibold text-ink sm:text-4xl">Siparişiniz Alındı</h1>
+        <h1 className="mt-4 font-serif text-4xl font-medium text-ink sm:text-5xl">Siparişiniz Alındı</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Sipariş numaranız: <span className="font-medium text-ink">{order.orderNumber}</span>
         </p>
         <p className="mt-1 text-xs text-ink-soft">Durum: {ORDER_STATUS_LABELS[order.status]}</p>
       </div>
 
-      <div className="mt-10 divide-y divide-sand rounded-sm border border-sand">
+      <div className="mt-10 divide-y divide-border border border-border">
         {order.items.map((item, i) => (
           <div key={i} className="flex gap-4 p-4">
-            <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-sm bg-sand">
+            <div className="relative h-20 w-16 shrink-0 overflow-hidden bg-sand">
               <Image src={item.image} alt={item.name} fill sizes="64px" className="object-cover" />
             </div>
             <div className="flex flex-1 flex-col justify-between">
@@ -89,7 +110,7 @@ export default function OrderConfirmationPage() {
         ))}
       </div>
 
-      <div className="mt-4 flex justify-between rounded-sm border border-sand p-4 font-display text-lg font-medium text-ink">
+      <div className="mt-4 flex justify-between border border-border p-4 font-serif text-lg font-medium text-ink">
         <span>Toplam</span>
         <span>{formatPrice(order.total)}</span>
       </div>

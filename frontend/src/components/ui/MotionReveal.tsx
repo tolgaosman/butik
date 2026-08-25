@@ -19,7 +19,7 @@ export function MotionReveal({
       className={className}
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
+      viewport={{ once: true, amount: 0.15, margin: "0px 0px 200px 0px" }}
       transition={{ duration: 0.7, ease, delay: delay / 1000 }}
     >
       {children}
@@ -43,7 +43,7 @@ export function MotionStagger({ children, className }: { children: ReactNode; cl
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.1 }}
+      viewport={{ once: true, amount: 0.1, margin: "0px 0px 200px 0px" }}
       variants={staggerContainer}
     >
       {children}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
-import { Reveal } from "@/components/ui/Reveal";
+import { MotionStagger, MotionItem } from "@/components/ui/MotionReveal";
 
 export const metadata: Metadata = {
   title: "Lookbook | Sevgi Butik",
@@ -21,16 +21,16 @@ export default function LookbookPage() {
   return (
     <div className="container-site py-8 sm:py-12">
       <Breadcrumbs items={[{ label: "Lookbook" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Lookbook</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl lg:text-6xl">Lookbook</h1>
       <p className="mt-3 max-w-lg text-sm text-ink-soft">
         Sezonun kombin ilhamlarını keşfedin, favori parçalarınızı ilgili koleksiyondan seçin.
       </p>
 
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
-        {looks.map((look, i) => (
-          <Reveal key={look.image} delay={(i % 6) * 60}>
+      <MotionStagger className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:grid-cols-3 sm:gap-4">
+        {looks.map((look) => (
+          <MotionItem key={look.image}>
             <a href={look.href} className="group block">
-              <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-sand">
+              <div className="relative aspect-[3/4] overflow-hidden bg-sand">
                 <Image
                   src={look.image}
                   alt="Sevgi Butik kombin ilhamı"
@@ -40,9 +40,9 @@ export default function LookbookPage() {
                 />
               </div>
             </a>
-          </Reveal>
+          </MotionItem>
         ))}
-      </div>
+      </MotionStagger>
     </div>
   );
 }

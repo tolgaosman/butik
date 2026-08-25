@@ -10,7 +10,7 @@ export async function CategoryGrid() {
 
   return (
     <section className="container-site py-12 sm:py-20">
-      <SectionHeader eyelash="KATEGORİYE GÖRE ALIŞVERİŞ" title="Aradığınızı Bulun" />
+      <SectionHeader eyebrow="KATEGORİYE GÖRE ALIŞVERİŞ" title="Aradığınızı Bulun" />
 
       {categories.length === 0 ? (
         <EmptyState
@@ -20,11 +20,10 @@ export async function CategoryGrid() {
         />
       ) : (
         <MotionStagger className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-          {categories.map((category, i) => (
+          {categories.map((category) => (
             <MotionItem key={category.id} className="aspect-[3/4]">
               <CategoryCard
                 category={category}
-                featured={false}
                 sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
               />
             </MotionItem>

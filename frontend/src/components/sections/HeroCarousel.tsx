@@ -21,8 +21,10 @@ function Card({ product }: { product: Product }) {
           className="object-cover"
         />
         {product.discountPercent && (
-          <span className="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-cream/95 px-3 py-1.5 text-center text-[0.65rem] font-medium leading-tight text-ink shadow-sm backdrop-blur-sm transition-transform duration-500 group-hover:scale-105">
-            %{product.discountPercent} indirim
+          <span className="absolute inset-x-0 bottom-4 flex justify-center">
+            <span className="whitespace-nowrap rounded-full bg-cream/95 px-3 py-1.5 text-center text-[0.65rem] font-medium leading-tight text-ink shadow-sm backdrop-blur-sm">
+              %{product.discountPercent} indirim
+            </span>
           </span>
         )}
       </Link>
@@ -47,8 +49,8 @@ export function HeroCarousel({ products }: { products: Product[] }) {
             "linear-gradient(to right, transparent, black 4%, black 96%, transparent)",
         }}
       >
-        <div className="flex w-fit will-change-transform">
-          <div className="flex w-fit animate-[var(--animate-hero-marquee)] group-hover:[animation-play-state:paused] active:[animation-play-state:paused]">
+        <div className="flex w-fit">
+          <div className="flex w-fit animate-hero-marquee group-hover:[animation-play-state:paused] active:[animation-play-state:paused]">
             {sets.map((set, si) =>
               set.map((product) => (
                 <Card key={`${si}-${product.id}`} product={product} />

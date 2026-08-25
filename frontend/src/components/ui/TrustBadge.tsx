@@ -12,8 +12,8 @@ export function TrustBadge({
   return (
     <div className="group flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3.5">
       <Icon
-        className="shrink-0 text-olive transition-transform duration-300 ease-[var(--ease-organic)] group-hover:scale-110"
-        size={26}
+        className="shrink-0 text-olive transition-colors duration-300 ease-[var(--ease-organic)] group-hover:text-olive-dark"
+        size={24}
         strokeWidth={1.25}
       />
       <div>

@@ -39,7 +39,7 @@ export default function ContactPage() {
 
       <MotionStagger className="mt-3">
         <MotionItem>
-          <h1 className="font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">İletişim</h1>
+          <h1 className="font-serif text-4xl font-medium text-ink sm:text-5xl">İletişim</h1>
         </MotionItem>
         <MotionItem>
           <p className="mt-3 max-w-lg text-sm text-ink-soft">
@@ -55,7 +55,7 @@ export default function ContactPage() {
               href={href}
               target={href.startsWith("http") ? "_blank" : undefined}
               rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-              className="group flex items-center gap-3.5 border border-sand bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+              className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
                 <Icon size={17} />
@@ -72,7 +72,7 @@ export default function ContactPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="group flex flex-1 flex-col items-center justify-center gap-2 border border-sand bg-cream/40 p-3 text-center transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+              className="group flex flex-1 flex-col items-center justify-center gap-2 border border-border bg-cream/40 p-3 text-center transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
                 <Instagram size={18} />
@@ -87,7 +87,7 @@ export default function ContactPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
-              className="group flex flex-1 flex-col items-center justify-center gap-2 border border-sand bg-cream/40 p-3 text-center transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+              className="group flex flex-1 flex-col items-center justify-center gap-2 border border-border bg-cream/40 p-3 text-center transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
                 <Facebook size={18} />
@@ -104,19 +104,19 @@ export default function ContactPage() {
       <div className="mt-12 grid grid-cols-1 gap-12 sm:mt-16 lg:grid-cols-[380px_1fr] lg:gap-16">
         {/* Sol Sütun: Çalışma Saatleri */}
         <MotionReveal>
-          <div className="relative flex h-full flex-col overflow-hidden border border-sand bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-ink/5 sm:p-8">
-            <div className="flex shrink-0 items-center gap-4 border-b border-sand pb-4">
+          <div className="relative flex h-full flex-col overflow-hidden border border-border bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-ink/5 sm:p-8">
+            <div className="flex shrink-0 items-center gap-4 border-b border-border pb-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive">
                 <Clock size={22} strokeWidth={1.5} />
               </span>
               <div>
-                <h2 className="font-display text-xl font-semibold text-ink sm:text-2xl">Çalışma Saatleri</h2>
+                <h2 className="font-serif text-2xl font-medium text-ink sm:text-2xl">Çalışma Saatleri</h2>
                 <p className="text-xs text-ink-soft">Haftanın 6 günü hizmetinizdeyiz</p>
               </div>
             </div>
 
             <div className="mt-4 flex flex-1 flex-col">
-              <dl className="flex flex-1 flex-col justify-between divide-y divide-sand/40">
+              <dl className="flex flex-1 flex-col justify-between divide-y divide-border/40">
                 {business.hours.map((h, i) => {
                   const isToday = i === todayIndex;
                   return (
@@ -146,8 +146,8 @@ export default function ContactPage() {
 
         {/* Sağ Sütun: Form */}
         <MotionReveal delay={100}>
-          <div className="border border-sand bg-cream/30 p-6 sm:p-8">
-            <h2 className="font-display text-2xl font-semibold text-ink sm:text-3xl">Bize Yazın</h2>
+          <div className="border border-border bg-cream/30 p-6 sm:p-8">
+            <h2 className="font-serif text-2xl font-medium text-ink sm:text-3xl">Bize Yazın</h2>
             <p className="mt-2 text-sm text-ink-soft">
               Aşağıdaki formu doldurarak sorularınızı iletebilirsiniz.
             </p>

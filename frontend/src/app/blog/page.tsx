@@ -38,7 +38,7 @@ export default function BlogPage() {
   return (
     <div className="container-site py-8 sm:py-12">
       <Breadcrumbs items={[{ label: "Blog" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Blog</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Blog</h1>
       <p className="mt-3 max-w-lg text-sm text-ink-soft">
         Stil önerileri, moda notları ve Sevgi Butik&apos;ten haberler.
       </p>
@@ -46,7 +46,7 @@ export default function BlogPage() {
       <div className="mt-8 grid grid-cols-1 gap-8 sm:mt-10 sm:grid-cols-2">
         {posts.map((post) => (
           <article key={post.title} className="group">
-            <div className="relative aspect-[16/10] overflow-hidden rounded-sm bg-sand">
+            <div className="relative aspect-[16/10] overflow-hidden bg-sand">
               <Image
                 src={post.image}
                 alt={post.title}
@@ -56,7 +56,7 @@ export default function BlogPage() {
               />
             </div>
             <p className="mt-4 text-xs tracking-wide text-ink-soft">{post.date}</p>
-            <h2 className="mt-1 font-display text-2xl font-medium text-ink">{post.title}</h2>
+            <h2 className="mt-1 font-serif text-2xl font-medium text-ink">{post.title}</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-soft">{post.excerpt}</p>
           </article>
         ))}

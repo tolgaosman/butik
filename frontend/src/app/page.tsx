@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { Hero } from "@/components/sections/Hero";
-import { TrustBar } from "@/components/sections/TrustBar";
 import { CategoryGrid } from "@/components/sections/CategoryGrid";
 import { NewArrivals } from "@/components/sections/NewArrivals";
 import { PromoBanner } from "@/components/sections/PromoBanner";
@@ -13,7 +12,6 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <TrustBar />
       <Suspense fallback={<GridSkeleton background="bg-white" />}>
         <CategoryGrid />
       </Suspense>

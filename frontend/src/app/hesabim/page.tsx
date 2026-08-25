@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useAuth, ApiError } from "@/lib/auth";
 
 type FieldErrors = Record<string, string[]>;
@@ -36,8 +37,8 @@ function LoginForm() {
   }
 
   return (
-    <div className="rounded-sm border border-sand p-6 sm:p-8">
-      <h2 className="font-display text-2xl font-medium text-ink">Giriş Yap</h2>
+    <div className="border border-border p-6 sm:p-8">
+      <h2 className="font-serif text-2xl font-medium text-ink">Giriş Yap</h2>
       <p className="mt-1 text-sm text-ink-soft">Zaten hesabınız var mı? Giriş yapın.</p>
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
         <Input
@@ -98,8 +99,8 @@ function RegisterForm() {
   }
 
   return (
-    <div className="rounded-sm border border-sand p-6 sm:p-8">
-      <h2 className="font-display text-2xl font-medium text-ink">Hesap Oluştur</h2>
+    <div className="border border-border p-6 sm:p-8">
+      <h2 className="font-serif text-2xl font-medium text-ink">Hesap Oluştur</h2>
       <p className="mt-1 text-sm text-ink-soft">
         Yeni koleksiyonlardan ve size özel fırsatlardan ilk siz haberdar olun.
       </p>
@@ -149,8 +150,8 @@ function AccountDashboard() {
   if (!user) return null;
 
   return (
-    <div className="rounded-sm border border-sand p-6 sm:p-8">
-      <h2 className="font-display text-2xl font-medium text-ink">Merhaba, {user.name}</h2>
+    <div className="border border-border p-6 sm:p-8">
+      <h2 className="font-serif text-2xl font-medium text-ink">Merhaba, {user.name}</h2>
       <p className="mt-1 text-sm text-ink-soft">{user.email}</p>
       <Button
         variant="outline"
@@ -173,10 +174,22 @@ export default function AccountPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Hesabım" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Hesabım</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Hesabım</h1>
 
       {isLoading ? (
-        <div className="mt-10 h-40 animate-pulse rounded-sm bg-sand/40" />
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:mt-10 md:grid-cols-2 md:gap-10">
+          {Array.from({ length: 2 }, (_, i) => (
+            <div key={i} className="border border-border p-6 sm:p-8">
+              <Skeleton className="h-7 w-40" />
+              <Skeleton className="mt-2 h-4 w-56" />
+              <div className="mt-6 space-y-4">
+                <Skeleton className="h-11 w-full" />
+                <Skeleton className="h-11 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : user ? (
         <div className="mt-8 sm:mt-10">
           <AccountDashboard />

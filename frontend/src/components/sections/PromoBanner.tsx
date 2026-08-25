@@ -48,7 +48,7 @@ export function PromoBanner() {
         </motion.p>
         <motion.h2
           variants={item}
-          className="max-w-2xl font-display text-4xl font-semibold leading-tight text-white sm:text-6xl"
+          className="max-w-2xl font-serif text-4xl font-medium leading-tight text-white sm:text-6xl"
         >
           Kendine Güven, En Güzel Kombinin
         </motion.h2>
@@ -56,7 +56,7 @@ export function PromoBanner() {
           Sizi harika hissettiren zamansız parçalar, her gün giyilmek için tasarlandı.
         </motion.p>
         <motion.div variants={item}>
-          <Button href="/lookbook" variant="solid">
+          <Button href="/lookbook" variant="solid" className="bg-white text-ink hover:bg-cream">
             Alışverişe Başla
           </Button>
         </motion.div>

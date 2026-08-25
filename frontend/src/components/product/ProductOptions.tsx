@@ -57,12 +57,12 @@ export function ProductOptions({ productSlug, variants }: Props) {
                   onClick={() => isAvailable && setSize(s)}
                   disabled={!isAvailable}
                   aria-pressed={size === s}
-                  className={`h-11 w-11 rounded-full border text-sm font-medium transition-all duration-200 ease-[var(--ease-organic)] ${
+                  className={`flex h-11 w-11 items-center justify-center border text-sm font-medium transition-colors duration-200 ease-[var(--ease-organic)] ${
                     !isAvailable
-                      ? "cursor-not-allowed border-sand text-ink-soft/40 line-through"
+                      ? "cursor-not-allowed border-border text-ink-soft/40 line-through"
                       : size === s
-                        ? "border-olive bg-olive text-cream"
-                        : "border-sand text-ink-soft hover:border-olive hover:text-olive"
+                        ? "border-olive bg-olive text-white"
+                        : "border-border text-ink-soft hover:border-ink hover:text-ink"
                   }`}
                 >
                   {s}
@@ -75,7 +75,7 @@ export function ProductOptions({ productSlug, variants }: Props) {
 
       <div>
         <p className="mb-2 text-sm font-medium text-ink">Adet</p>
-        <div className="inline-flex items-center gap-1 rounded-full border border-sand px-1">
+        <div className="inline-flex items-center gap-1 rounded-full border border-border px-1">
           <button
             type="button"
             onClick={() => setQty((v) => Math.max(1, v - 1))}

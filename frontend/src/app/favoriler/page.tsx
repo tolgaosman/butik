@@ -5,6 +5,7 @@ import { Heart } from "lucide-react";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ProductCard } from "@/components/ui/ProductCard";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useFavorites } from "@/lib/favorites";
 import { useAuth } from "@/lib/auth";
 
@@ -15,7 +16,7 @@ export default function FavoritesPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Favorilerim" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Favorilerim</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Favorilerim</h1>
       {!user && products.length > 0 && (
         <p className="mt-3 max-w-lg text-sm text-ink-soft">
           Favori ürünleriniz bu cihazda saklanıyor. Hesabınıza{" "}
@@ -27,7 +28,15 @@ export default function FavoritesPage() {
       )}
 
       {isLoading ? (
-        <div className="mt-10 h-64 animate-pulse rounded-sm bg-sand/40" />
+        <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i}>
+              <Skeleton className="aspect-[3/4]" />
+              <Skeleton className="mt-3.5 h-5 w-3/4" />
+              <Skeleton className="mt-2 h-4 w-1/3" />
+            </div>
+          ))}
+        </div>
       ) : products.length === 0 ? (
         <EmptyState
           icon={Heart}

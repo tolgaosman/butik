@@ -29,14 +29,14 @@ export default function ShippingPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Kargo ve Teslimat" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Kargo ve Teslimat</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Kargo ve Teslimat</h1>
 
       <div className="mt-10 space-y-8">
         {items.map((item) => (
           <div key={item.title} className="flex gap-4">
             <item.icon size={24} className="mt-1 shrink-0 text-olive" strokeWidth={1.25} />
             <div>
-              <h2 className="font-display text-xl font-medium text-ink">{item.title}</h2>
+              <h2 className="font-serif text-xl font-medium text-ink">{item.title}</h2>
               <p className="mt-1 text-sm leading-relaxed text-ink-soft">{item.body}</p>
             </div>
           </div>

@@ -52,11 +52,11 @@ export default function FaqPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Sıkça Sorulan Sorular" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">
         Sıkça Sorulan Sorular
       </h1>
 
-      <div className="mt-8 divide-y divide-sand border-y border-sand">
+      <div className="mt-8 divide-y divide-border border-y border-border">
         {faqs.map((faq) => (
           <details key={faq.question} className="group py-5">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-ink">

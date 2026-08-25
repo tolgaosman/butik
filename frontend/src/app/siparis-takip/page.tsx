@@ -40,7 +40,7 @@ export default function OrderTrackingPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Siparişimi Takip Et" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">
         Siparişimi Takip Et
       </h1>
       <p className="mt-4 text-sm leading-relaxed text-ink-soft">
@@ -58,9 +58,9 @@ export default function OrderTrackingPage() {
       </form>
 
       {order && (
-        <div className="mt-10 rounded-sm border border-sand p-6">
+        <div className="mt-10 border border-border p-6">
           <div className="flex items-center justify-between">
-            <p className="font-display text-lg font-medium text-ink">{order.orderNumber}</p>
+            <p className="font-serif text-lg font-medium text-ink">{order.orderNumber}</p>
             <span className="rounded-full bg-olive/10 px-3 py-1 text-xs font-medium text-olive">
               {ORDER_STATUS_LABELS[order.status]}
             </span>
@@ -68,10 +68,10 @@ export default function OrderTrackingPage() {
           {order.trackingNumber && (
             <p className="mt-2 text-xs text-ink-soft">Kargo Takip No: {order.trackingNumber}</p>
           )}
-          <div className="mt-4 divide-y divide-sand">
+          <div className="mt-4 divide-y divide-border">
             {order.items.map((item, i) => (
               <div key={i} className="flex gap-4 py-3">
-                <div className="relative h-16 w-14 shrink-0 overflow-hidden rounded-sm bg-sand">
+                <div className="relative h-16 w-14 shrink-0 overflow-hidden bg-sand">
                   <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" />
                 </div>
                 <div className="flex flex-1 flex-col justify-center">
@@ -83,7 +83,7 @@ export default function OrderTrackingPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-between border-t border-sand pt-4 font-display text-base font-medium text-ink">
+          <div className="mt-4 flex justify-between border-t border-border pt-4 font-serif text-base font-medium text-ink">
             <span>Toplam</span>
             <span>{formatPrice(order.total)}</span>
           </div>

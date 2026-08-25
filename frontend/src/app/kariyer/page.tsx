@@ -27,7 +27,7 @@ export default function CareersPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Kariyer" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Kariyer</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Kariyer</h1>
       <p className="mt-4 text-sm leading-relaxed text-ink-soft">
         Sevgi Butik ailesine katılmak ister misiniz? Açık pozisyonlarımızı aşağıda bulabilirsiniz. Uygun
         bir pozisyon göremeseniz bile özgeçmişinizi bize göndererek başvurularınızı bekletebiliriz.
@@ -35,8 +35,8 @@ export default function CareersPage() {
 
       <div className="mt-10 space-y-6">
         {roles.map((role) => (
-          <div key={role.title} className="rounded-sm border border-sand p-6">
-            <h2 className="font-display text-xl font-medium text-ink">{role.title}</h2>
+          <div key={role.title} className="border border-border p-6">
+            <h2 className="font-serif text-xl font-medium text-ink">{role.title}</h2>
             <p className="mt-1 text-xs tracking-wide text-olive">
               {role.location} · {role.type}
             </p>

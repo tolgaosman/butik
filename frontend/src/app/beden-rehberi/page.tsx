@@ -19,24 +19,24 @@ export default function SizeGuidePage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
       <Breadcrumbs items={[{ label: "Beden Rehberi" }]} />
-      <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Beden Rehberi</h1>
+      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Beden Rehberi</h1>
       <p className="mt-4 text-sm leading-relaxed text-ink-soft">
         Size en uygun bedeni seçebilmeniz için ölçülerinizi santimetre cinsinden alıp aşağıdaki tablo ile
         karşılaştırmanızı öneririz. Göğüs ölçünüzü en geniş noktadan, bel ölçünüzü doğal bel çizginizden ve
         kalça ölçünüzü en geniş noktadan alınız.
       </p>
 
-      <div className="mt-8 overflow-x-auto rounded-sm border border-sand">
+      <div className="mt-8 overflow-x-auto border border-border">
         <table className="w-full min-w-[420px] text-left text-sm">
           <thead>
-            <tr className="border-b border-sand bg-cream/60 text-xs font-medium tracking-wide text-ink-soft">
+            <tr className="border-b border-border bg-cream/60 text-xs font-medium tracking-wide text-ink-soft">
               <th className="px-4 py-3">Beden</th>
               <th className="px-4 py-3">Göğüs (cm)</th>
               <th className="px-4 py-3">Bel (cm)</th>
               <th className="px-4 py-3">Kalça (cm)</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-sand">
+          <tbody className="divide-y divide-border">
             {sizeChart.map((row) => (
               <tr key={row.size}>
                 <td className="px-4 py-3 font-medium text-ink">{row.size}</td>

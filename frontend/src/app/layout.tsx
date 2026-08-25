@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { MotionConfig } from "framer-motion";
-import { Montserrat } from "next/font/google";
+import { Raleway } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AuthProvider } from "@/lib/auth";
@@ -10,9 +10,9 @@ import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 import "./globals.css";
 
 
-const montserrat = Montserrat({
+const raleway = Raleway({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-montserrat",
+  variable: "--font-raleway",
   display: "swap",
 });
 
@@ -40,8 +40,8 @@ export const dynamic = "force-dynamic";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr">
-      <body className={`${montserrat.variable} font-sans subpixel-antialiased`}>
+    <html lang="tr" className={raleway.variable}>
+      <body className="font-sans antialiased">
         <MotionConfig reducedMotion="user">
           <AuthProvider>
             <CartProvider>

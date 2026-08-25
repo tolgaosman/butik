@@ -3,16 +3,24 @@
 @theme {
   --color-olive: #f53380;
   --color-olive-dark: #c7175a;
-  --color-cream: #faf6f3;
-  --color-sand: #f1dfe0;
+  --color-cream: #fdf4f7;
+  --color-sand: #f7dfe8;
   --color-ink: #2b2422;
   --color-ink-soft: #7a6b68;
   --color-gold: #c9a96e;
 
-  --font-display: var(--font-montserrat), sans-serif;
-  --font-sans: var(--font-montserrat), sans-serif;
+  /* Semantic aliases — surfaces carry a faint blush wash; saturated pink stays reserved for actions and brand trim. */
+  --color-surface: #ffffff;
+  --color-surface-alt: var(--color-cream);
+  --color-border: #ecdfe4;
+  --color-muted: var(--color-ink-soft);
+
+  --font-display: var(--font-raleway), sans-serif;
+  --font-serif: var(--font-raleway), sans-serif;
+  --font-sans: var(--font-raleway), sans-serif;
 
   --ease-organic: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   --animate-reveal: reveal 0.7s var(--ease-organic) forwards;
   --animate-hero-marquee: hero-marquee 50s linear infinite;
@@ -40,7 +48,7 @@
 
 @layer base {
   * {
-    border-color: var(--color-sand);
+    border-color: var(--color-border);
   }
 
   html {
@@ -49,7 +57,7 @@
   }
 
   body {
-    background: #ffffff;
+    background: var(--color-surface);
     color: var(--color-ink);
     overflow-x: hidden;
   }
@@ -65,18 +73,25 @@
   }
 }
 
-/* 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
-} 
-*/
+
+  /* Ambient decorative loop, not a vestibular-trigger scroll effect — keep it spinning. */
+  .animate-hero-marquee {
+    animation-duration: 50s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
 
 @layer utilities {
   /*

@@ -36,6 +36,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - FRONTEND_URL=http://178.105.207.98:4000
       - SANCTUM_STATEFUL_DOMAINS=178.105.207.98:4000
+      - SESSION_DOMAIN=178.105.207.98
+      - APP_URL=http://178.105.207.98:4000
     networks:
       - butik-network
 
