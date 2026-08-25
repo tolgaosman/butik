@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, Phone, Clock, Navigation, MessageCircle, Instagram, Facebook } from "lucide-react";
+import { MapPin, Phone, Clock, Instagram, Facebook } from "lucide-react";
 import { business } from "@/lib/business";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ContactForm } from "@/components/sections/ContactForm";
@@ -15,8 +15,6 @@ export const metadata: Metadata = {
 const dayIndexMap = [6, 0, 1, 2, 3, 4, 5]; // JS getDay() (0=Sun) -> business.hours index (0=Mon)
 
 export default function ContactPage() {
-  const { lat, lng } = business.coords;
-  const embedSrc = `https://www.google.com/maps?q=${lat},${lng}&hl=tr&z=16&output=embed`;
   const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(business.mapsQuery)}`;
   const todayIndex = dayIndexMap[new Date().getDay()];
 
@@ -80,7 +78,7 @@ export default function ContactPage() {
                 <Instagram size={18} />
               </span>
               <span className="text-xs font-medium text-ink-soft transition-colors duration-200 group-hover:text-ink">
-                Instagram'dan <br className="hidden sm:block lg:hidden" />
+                Instagram&apos;dan <br className="hidden sm:block lg:hidden" />
                 Takip Et
               </span>
             </a>
@@ -95,7 +93,7 @@ export default function ContactPage() {
                 <Facebook size={18} />
               </span>
               <span className="text-xs font-medium text-ink-soft transition-colors duration-200 group-hover:text-ink">
-                Facebook'tan <br className="hidden sm:block lg:hidden" />
+                Facebook&apos;tan <br className="hidden sm:block lg:hidden" />
                 Takip Et
               </span>
             </a>
