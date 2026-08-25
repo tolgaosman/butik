@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: butik-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-butik}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-butikuser}
+    ports:
+      - "33061:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - butik-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: butik-backend
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-butik}
+      - DB_USERNAME=${DB_USERNAME:-butikuser}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - FRONTEND_URL=http://178.105.207.98:4000
+      - SANCTUM_STATEFUL_DOMAINS=178.105.207.98:4000
+    networks:
+      - butik-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: butik-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=/api
+      - BACKEND_URL=http://backend:8000
+      - INTERNAL_API_URL=http://backend:8000/api
+    ports:
+      - "4000:3000"
+    networks:
+      - butik-network
+
+networks:
+  butik-network:
+    driver: bridge
+
+volumes:
+  db-data:
