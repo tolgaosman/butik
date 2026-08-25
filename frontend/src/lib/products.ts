@@ -26,7 +26,7 @@ export async function getCategories(): Promise<Category[]> {
     const data = await apiGet<Category[]>("/categories", {
       next: { revalidate: 3600, tags: ["categories"] },
     });
-    return data ?? [];
+    return (data ?? []).filter((c) => !c.href.includes("/indirim"));
   } catch {
     return [];
   }
@@ -35,6 +35,17 @@ export async function getCategories(): Promise<Category[]> {
 export async function getNewArrivals(): Promise<Product[]> {
   try {
     const data = await apiGet<Product[]>("/products?is_new=1&limit=10", {
+      next: { revalidate: 600, tags: ["products"] },
+    });
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getBestSellers(): Promise<Product[]> {
+  try {
+    const data = await apiGet<Product[]>("/products?category=cok-satanlar&limit=4", {
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];

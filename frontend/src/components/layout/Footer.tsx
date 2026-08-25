@@ -12,7 +12,7 @@ const links = [
 export function Footer() {
   return (
     <footer className="bg-olive text-cream/70">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="container-site">
         <div className="flex flex-col items-center gap-4 py-8 sm:flex-row sm:justify-between">
           <span className="font-display text-sm font-semibold tracking-[0.2em] text-cream">
             SEVGİ BUTİK

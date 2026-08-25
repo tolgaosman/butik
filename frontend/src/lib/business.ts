@@ -1,7 +1,7 @@
 export const business = {
   name: "Sevgi Butik",
   category: "Düzova'da bir giyim mağazası",
-  address: "İskele Anayolu, Düzova, Lefkoşa, KKTC",
+  address: "İskele Anayolu, Düzova, Lefkoşa",
   mapsQuery: "Sevgi Butik, İskele Anayolu, Düzova, Lefkoşa",
   coords: { lat: 35.227786, lng: 33.5310516 },
   phone: "+90 392 000 00 00",

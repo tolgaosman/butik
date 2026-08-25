@@ -10,10 +10,10 @@ const badges = [
 
 export function TrustBar() {
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-      <div className="grid grid-cols-2 gap-x-4 gap-y-6 rounded-sm bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] sm:grid-cols-4 sm:gap-8 sm:p-8">
-        {badges.map((badge, i) => (
-          <div key={badge.title} className={i > 0 ? "sm:border-l sm:border-sand sm:pl-4 sm:-ml-4" : ""}>
+    <section className="container-site py-8 sm:py-10">
+      <div className="grid grid-cols-2 divide-y divide-sand rounded-sm bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] sm:grid-cols-4 sm:divide-x sm:divide-y-0 sm:p-8">
+        {badges.map((badge) => (
+          <div key={badge.title} className="py-4 first:pt-0 last:pb-0 sm:px-4 sm:py-0 sm:first:pl-0 sm:last:pr-0">
             <TrustBadge {...badge} />
           </div>
         ))}

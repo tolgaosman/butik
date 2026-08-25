@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const related = await getRelatedProducts(product);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <div className="container-site py-8 sm:py-12">
       <Breadcrumbs items={[{ label: product.name }]} />
 
       <div className="mt-5 grid grid-cols-1 gap-6 sm:mt-6 sm:gap-10 lg:grid-cols-2 lg:gap-16">

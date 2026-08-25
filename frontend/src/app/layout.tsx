@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { MotionConfig } from "framer-motion";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -22,7 +23,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Sevgi Butik | Düzova, Lefkoşa, KKTC",
+  title: "Sevgi Butik | Düzova, Lefkoşa",
   description:
     "Sevgi Butik — Düzova'dan tüm Kıbrıs'a özenle seçilmiş elbise, giyim ve aksesuar koleksiyonları.",
   openGraph: {
@@ -42,15 +43,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr">
       <body className={`${cormorant.variable} ${inter.variable} font-sans antialiased`}>
-        <AuthProvider>
-          <CartProvider>
-            <FavoritesProvider>
-              <Header />
-              <main>{children}</main>
-              <Footer />
-            </FavoritesProvider>
-          </CartProvider>
-        </AuthProvider>
+        <MotionConfig reducedMotion="user">
+          <AuthProvider>
+            <CartProvider>
+              <FavoritesProvider>
+                <Header />
+                <main>{children}</main>
+                <Footer />
+              </FavoritesProvider>
+            </CartProvider>
+          </AuthProvider>
+        </MotionConfig>
       </body>
     </html>
   );

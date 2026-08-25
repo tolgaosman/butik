@@ -1,34 +1,66 @@
+"use client";
+
 import Image from "next/image";
+import { motion, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/Button";
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
+};
 
 export function PromoBanner() {
   return (
-    <section className="bg-cream">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center lg:grid-cols-2">
-        <div className="flex flex-col gap-4 px-5 py-10 sm:gap-5 sm:px-10 sm:py-16 lg:px-16">
-          <p className="text-xs font-medium tracking-[0.25em] text-olive">SEN OL, GÜZEL OL</p>
-          <h2 className="font-display text-3xl font-semibold leading-tight text-ink sm:text-5xl lg:text-6xl">
-            Kendine Güven,
-            <br />
-            <span className="italic text-olive">En Güzel Kombinin</span>
-          </h2>
-          <p className="max-w-md text-ink-soft">
-            Sizi harika hissettiren zamansız parçalar, her gün giyilmek için tasarlandı.
-          </p>
-          <Button href="/koleksiyonlar" variant="solid" className="w-full sm:w-fit">
+    <section className="relative h-[26rem] overflow-hidden sm:h-[32rem]">
+      <motion.div
+        className="absolute inset-0"
+        initial={{ scale: 1.08 }}
+        whileInView={{ scale: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 1.4, ease }}
+      >
+        <Image
+          src="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1600&auto=format&fit=crop"
+          alt="Askıda dizilmiş özenle seçilmiş kıyafetler"
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+      </motion.div>
+      <div className="absolute inset-0 bg-ink/40" />
+
+      <motion.div
+        className="relative flex h-full flex-col items-center justify-center gap-5 px-5 text-center"
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.4 }}
+        variants={container}
+      >
+        <motion.p variants={item} className="text-xs font-medium tracking-[0.25em] text-cream">
+          SEN OL, GÜZEL OL
+        </motion.p>
+        <motion.h2
+          variants={item}
+          className="max-w-2xl font-display text-4xl font-semibold leading-tight text-white sm:text-6xl"
+        >
+          Kendine Güven, En Güzel Kombinin
+        </motion.h2>
+        <motion.p variants={item} className="max-w-md text-white/85">
+          Sizi harika hissettiren zamansız parçalar, her gün giyilmek için tasarlandı.
+        </motion.p>
+        <motion.div variants={item}>
+          <Button href="/lookbook" variant="solid">
             Alışverişe Başla
           </Button>
-        </div>
-        <div className="relative aspect-[4/3] lg:aspect-[4/5]">
-          <Image
-            src="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1200&auto=format&fit=crop"
-            alt="Askıda dizilmiş özenle seçilmiş kıyafetler"
-            fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

@@ -27,7 +27,7 @@ const posts = [
     image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800&auto=format&fit=crop",
   },
   {
-    title: "KKTC'de Moda: Yerel Stil Notları",
+    title: "Kıbrıs'ta Moda: Yerel Stil Notları",
     excerpt: "Kıbrıs'ın iklimine ve yaşam tarzına uygun, hem şık hem rahat kombinler için ilham verici öneriler.",
     date: "30 Ocak 2026",
     image: "https://images.unsplash.com/photo-1612336307429-8a898d10e223?q=80&w=800&auto=format&fit=crop",
@@ -36,7 +36,7 @@ const posts = [
 
 export default function BlogPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <div className="container-site py-8 sm:py-12">
       <Breadcrumbs items={[{ label: "Blog" }]} />
       <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Blog</h1>
       <p className="mt-3 max-w-lg text-sm text-ink-soft">

@@ -65,3 +65,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+@layer utilities {
+  /*
+   * Fluid container: auto margins + viewport-aware padding.
+   * max-w scales from 1280px → 1920px based on usage.
+   * Padding shrinks/grows with clamp() so there's no dead space on any screen.
+   */
+  .container-site {
+    width: 100%;
+    max-width: 1600px;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 5vw, 6rem);
+  }
+}

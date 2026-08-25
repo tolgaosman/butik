@@ -19,7 +19,7 @@ const looks = [
 
 export default function LookbookPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <div className="container-site py-8 sm:py-12">
       <Breadcrumbs items={[{ label: "Lookbook" }]} />
       <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">Lookbook</h1>
       <p className="mt-3 max-w-lg text-sm text-ink-soft">

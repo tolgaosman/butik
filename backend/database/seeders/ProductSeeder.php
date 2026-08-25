@@ -32,12 +32,14 @@ class ProductSeeder extends Seeder
         'ust-giyim' => 'Kaliteli kumaşı ve rahat kalıbıyla dolabınızın vazgeçilmezi olacak bu parça, farklı kombinlerle kolayca eşleştirilebiliyor.',
         'alt-giyim' => 'Vücudu güzel saran kesimi ve dayanıklı kumaşıyla gün boyu konfor sunan bu parça, günlük ve özel kombinler için eşit derecede uygun.',
         'aksesuar' => "İnce işçiliği ve zamansız tasarımıyla kombinlerinize karakter katan bu aksesuar, Sevgi Butik'in özenle seçilmiş koleksiyonundan.",
+        'makyaj-malzemesi' => "Yüksek pigmentli formülü ve uzun süre kalıcılığıyla makyaj çantanızın vazgeçilmezi olacak bu ürün, Sevgi Butik'in özenle seçilmiş koleksiyonundan.",
+        'ic-camasiri' => 'Yumuşak dokusu ve rahat kalıbıyla gün boyu konfor sunan bu parça, dikişsiz kesimi sayesinde kıyafetlerinizin altında iz bırakmıyor.',
     ];
 
     /**
      * Accessory tags — products carrying any of these get a single sizeless variant.
      */
-    private const ACCESSORY_TAGS = ['canta', 'taki', 'kemer', 'sal-fular', 'gunes-gozlugu'];
+    private const ACCESSORY_TAGS = ['canta', 'taki', 'kemer', 'sal-fular', 'gunes-gozlugu', 'makyaj-malzemesi'];
 
     public function run(): void
     {
@@ -87,6 +89,22 @@ class ProductSeeder extends Seeder
             ['id' => 'orgu-sal', 'name' => 'Örgü Şal', 'price' => 749, 'image' => 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?q=80&w=800&auto=format&fit=crop', 'rating' => 4.6, 'reviewCount' => 24, 'tags' => ['aksesuar', 'sal-fular']],
             ['id' => 'oval-gunes-gozlugu', 'name' => 'Oval Çerçeveli Güneş Gözlüğü', 'price' => 899, 'image' => 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop', 'rating' => 4.7, 'reviewCount' => 67, 'tags' => ['aksesuar', 'gunes-gozlugu', 'bu-hafta'], 'isNew' => true],
             ['id' => 'kedi-goz-gunes-gozlugu', 'name' => 'Kedi Gözü Güneş Gözlüğü', 'price' => 849, 'image' => 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop', 'rating' => 4.4, 'reviewCount' => 29, 'tags' => ['aksesuar', 'gunes-gozlugu', 'indirim', '50'], 'discountPercent' => 50, 'originalPrice' => 1699],
+
+            // --- Makyaj Malzemesi (6) ---
+            ['id' => 'mat-fondoten', 'name' => 'Uzun Süre Kalıcı Mat Fondöten', 'price' => 649, 'image' => 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800&auto=format&fit=crop', 'rating' => 4.6, 'reviewCount' => 58, 'tags' => ['makyaj-malzemesi', 'yuz', 'yeni-gelenler'], 'isNew' => true],
+            ['id' => 'aydinlatici-far-paleti', 'name' => 'Aydınlatıcı Allık & Far Paleti', 'price' => 749, 'image' => 'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=800&auto=format&fit=crop', 'rating' => 4.5, 'reviewCount' => 43, 'tags' => ['makyaj-malzemesi', 'yuz']],
+            ['id' => 'suya-dayanikli-maskara', 'name' => 'Suya Dayanıklı Hacim Maskara', 'price' => 399, 'image' => 'https://images.unsplash.com/photo-1631730359585-38a4935cbec4?q=80&w=800&auto=format&fit=crop', 'rating' => 4.7, 'reviewCount' => 91, 'tags' => ['makyaj-malzemesi', 'goz', 'cok-satanlar']],
+            ['id' => 'dumanli-goz-farı-paleti', 'name' => 'Dumanlı Göz Farı Paleti', 'price' => 899, 'image' => 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=800&auto=format&fit=crop', 'rating' => 4.6, 'reviewCount' => 37, 'tags' => ['makyaj-malzemesi', 'goz', 'editorun-secimi']],
+            ['id' => 'mat-ruj-seti', 'name' => 'Mat Likit Ruj Seti', 'price' => 549, 'image' => 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=800&auto=format&fit=crop', 'rating' => 4.5, 'reviewCount' => 64, 'tags' => ['makyaj-malzemesi', 'dudak', 'cok-satanlar']],
+            ['id' => 'nemlendirici-dudak-parlatici', 'name' => 'Nemlendirici Dudak Parlatıcı', 'price' => 299, 'image' => 'https://images.unsplash.com/photo-1625093742435-6fa192b6fb10?q=80&w=800&auto=format&fit=crop', 'rating' => 4.3, 'reviewCount' => 22, 'tags' => ['makyaj-malzemesi', 'dudak', 'indirim', 'sezon-sonu'], 'discountPercent' => 20, 'originalPrice' => 374],
+
+            // --- İç Çamaşırı (6) ---
+            ['id' => 'dantelli-balenli-sutyen', 'name' => 'Dantelli Balenli Sütyen', 'price' => 549, 'image' => 'https://images.unsplash.com/photo-1571513722275-4b41940f54b8?q=80&w=800&auto=format&fit=crop', 'rating' => 4.6, 'reviewCount' => 72, 'tags' => ['ic-camasiri', 'sutyen', 'yeni-gelenler'], 'isNew' => true],
+            ['id' => 'dikissiz-sutyen', 'name' => 'Dikişsiz Pamuklu Sütyen', 'price' => 449, 'image' => 'https://images.unsplash.com/photo-1566958769312-82cef41d19ef?q=80&w=800&auto=format&fit=crop', 'rating' => 4.5, 'reviewCount' => 58, 'tags' => ['ic-camasiri', 'sutyen', 'cok-satanlar']],
+            ['id' => 'dantelli-brazilian-kulot', 'name' => 'Dantelli Brazilian Külot', 'price' => 249, 'image' => 'https://images.unsplash.com/photo-1631730486572-226d1f595b68?q=80&w=800&auto=format&fit=crop', 'rating' => 4.4, 'reviewCount' => 46, 'tags' => ['ic-camasiri', 'kulot']],
+            ['id' => 'pamuklu-bikini-kulot-3lu', 'name' => 'Pamuklu Bikini Külot (3\'lü)', 'price' => 399, 'image' => 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?q=80&w=800&auto=format&fit=crop', 'rating' => 4.6, 'reviewCount' => 89, 'tags' => ['ic-camasiri', 'kulot', 'cok-satanlar']],
+            ['id' => 'saten-gecelik', 'name' => 'Saten Askılı Gecelik', 'price' => 899, 'image' => 'https://images.unsplash.com/photo-1618886614638-80e3c103d31a?q=80&w=800&auto=format&fit=crop', 'rating' => 4.7, 'reviewCount' => 34, 'tags' => ['ic-camasiri', 'gecelik', 'editorun-secimi']],
+            ['id' => 'pamuklu-gecelik-takim', 'name' => 'Pamuklu Gecelik Takımı', 'price' => 749, 'image' => 'https://images.unsplash.com/photo-1571908599407-cdb918ed83bf?q=80&w=800&auto=format&fit=crop', 'rating' => 4.4, 'reviewCount' => 28, 'tags' => ['ic-camasiri', 'gecelik', 'indirim', 'sezon-sonu'], 'discountPercent' => 25, 'originalPrice' => 999],
 
             // --- İndirim-only extras (2) ---
             ['id' => 'gunluk-elbise-indirimli', 'name' => 'Günlük Keten Elbise', 'price' => 1099, 'image' => 'https://images.unsplash.com/photo-1495385794356-15371f348c31?q=80&w=800&auto=format&fit=crop', 'rating' => 4.3, 'reviewCount' => 36, 'tags' => ['elbise', 'giyim', 'gunluk', 'gunluk-elbise', 'indirim', '50'], 'discountPercent' => 50, 'originalPrice' => 2199],

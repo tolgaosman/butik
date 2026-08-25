@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
+import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
 import { primaryNav } from "@/lib/nav";
 import { useCart } from "@/lib/cart";
@@ -10,8 +11,23 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const [hidden, setHidden] = useState(false);
   const { cart } = useCart();
   const cartCount = cart.itemCount;
+  const reduceMotion = useReducedMotion();
+  const lastY = useRef(0);
+
+  const { scrollY } = useScroll();
+  useMotionValueEvent(scrollY, "change", (y) => {
+    if (open || menuOpen || reduceMotion) {
+      setHidden(false);
+      lastY.current = y;
+      return;
+    }
+    const goingDown = y > lastY.current;
+    setHidden(y > 120 && goingDown);
+    lastY.current = y;
+  });
 
   function closeDrawer() {
     setOpen(false);
@@ -19,11 +35,13 @@ export function Header() {
   }
 
   return (
-    <header
+    <motion.header
       className="sticky top-0 z-40 bg-olive text-cream"
       onMouseLeave={() => setMenuOpen(false)}
+      animate={{ y: hidden ? "-100%" : "0%" }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <div className="container-site flex items-center justify-between py-4">
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -101,7 +119,7 @@ export function Header() {
         }`}
       >
         <div className="min-h-0">
-          <div className="mx-auto grid max-w-7xl grid-cols-7 gap-8 px-4 py-10 sm:px-6 lg:px-8">
+          <div className="container-site grid grid-cols-8 gap-8 py-10">
             {primaryNav.map((item) => (
               <div key={item.href}>
                 <Link
@@ -233,6 +251,6 @@ export function Header() {
           </nav>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }

@@ -122,15 +122,29 @@ export const primaryNav: NavItem[] = [
     ],
   },
   {
-    label: "İndirim",
-    href: "/indirim",
+    label: "Makyaj Malzemesi",
+    href: "/makyaj-malzemesi",
     columns: [
       {
-        title: "İndirim",
+        title: "Makyaj",
         items: [
-          { label: "%50'ye Varan İndirim", href: "/indirim/50" },
-          { label: "Son Ürünler", href: "/indirim/son-urunler" },
-          { label: "Sezon Sonu", href: "/indirim/sezon-sonu" },
+          { label: "Yüz", href: "/makyaj-malzemesi/yuz" },
+          { label: "Göz", href: "/makyaj-malzemesi/goz" },
+          { label: "Dudak", href: "/makyaj-malzemesi/dudak" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "İç Çamaşırı",
+    href: "/ic-camasiri",
+    columns: [
+      {
+        title: "İç Çamaşırı",
+        items: [
+          { label: "Sütyen", href: "/ic-camasiri/sutyen" },
+          { label: "Külot", href: "/ic-camasiri/kulot" },
+          { label: "Gecelik", href: "/ic-camasiri/gecelik" },
         ],
       },
     ],
@@ -144,7 +158,8 @@ export const footerLinks = {
     { label: "Elbise", href: "/elbise" },
     { label: "Üst Giyim", href: "/ust-giyim" },
     { label: "Alt Giyim", href: "/alt-giyim" },
-    { label: "İndirim", href: "/indirim" },
+    { label: "Makyaj Malzemesi", href: "/makyaj-malzemesi" },
+    { label: "İç Çamaşırı", href: "/ic-camasiri" },
   ],
   musteriHizmetleri: [
     { label: "Siparişimi Takip Et", href: "/siparis-takip" },

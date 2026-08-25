@@ -22,6 +22,8 @@ class TagSeeder extends Seeder
             ['slug' => 'ust-giyim', 'name' => 'Üst Giyim', 'type' => 'category'],
             ['slug' => 'alt-giyim', 'name' => 'Alt Giyim', 'type' => 'category'],
             ['slug' => 'aksesuar', 'name' => 'Aksesuar', 'type' => 'category'],
+            ['slug' => 'makyaj-malzemesi', 'name' => 'Makyaj Malzemesi', 'type' => 'category'],
+            ['slug' => 'ic-camasiri', 'name' => 'İç Çamaşırı', 'type' => 'category'],
             ['slug' => 'indirim', 'name' => 'İndirim', 'type' => 'category'],
 
             // subcategory (24)
@@ -49,6 +51,12 @@ class TagSeeder extends Seeder
             ['slug' => 'kemer', 'name' => 'Kemer', 'type' => 'subcategory'],
             ['slug' => 'sal-fular', 'name' => 'Şal & Fular', 'type' => 'subcategory'],
             ['slug' => 'gunes-gozlugu', 'name' => 'Güneş Gözlüğü', 'type' => 'subcategory'],
+            ['slug' => 'yuz', 'name' => 'Yüz', 'type' => 'subcategory'],
+            ['slug' => 'goz', 'name' => 'Göz', 'type' => 'subcategory'],
+            ['slug' => 'dudak', 'name' => 'Dudak', 'type' => 'subcategory'],
+            ['slug' => 'sutyen', 'name' => 'Sütyen', 'type' => 'subcategory'],
+            ['slug' => 'kulot', 'name' => 'Külot', 'type' => 'subcategory'],
+            ['slug' => 'gecelik', 'name' => 'Gecelik', 'type' => 'subcategory'],
 
             // collection (6)
             ['slug' => 'bu-hafta', 'name' => 'Bu Hafta Gelenler', 'type' => 'collection'],

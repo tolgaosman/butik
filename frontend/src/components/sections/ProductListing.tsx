@@ -13,11 +13,11 @@ type Props = {
 
 export function ProductListing({ breadcrumbItems, title, products }: Props) {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+    <section className="container-site py-8 sm:py-12">
       <Breadcrumbs items={breadcrumbItems} />
       <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">{title}</h1>
       <p className="mt-2 text-sm text-ink-soft">
-        {products.length} {products.length === 1 ? "ürün" : "ürün"} bulundu
+        {products.length} ürün bulundu
       </p>
 
       {products.length === 0 ? (

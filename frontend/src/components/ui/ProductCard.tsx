@@ -21,9 +21,14 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
             alt={product.name}
             fill
             sizes={sizes}
-            className="object-cover transition-transform duration-700 ease-[var(--ease-organic)] group-hover:scale-105"
+            className="object-cover transition-transform duration-[1400ms] ease-[var(--ease-organic)] group-hover:scale-110"
           />
         </Link>
+        {(product.discountPercent || product.isNew) && (
+          <span className="absolute left-2 top-2 rounded-full bg-olive px-2.5 py-0.5 text-[0.65rem] font-medium tracking-wide text-white sm:left-3 sm:top-3">
+            {product.discountPercent ? `%${product.discountPercent}` : "YENİ"}
+          </span>
+        )}
         <button
           type="button"
           onClick={() => toggle(product)}

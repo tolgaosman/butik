@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { apiMutate } from "./api";
 import { useAuth } from "./auth";
-import type { Product } from "./products";
+import { getProductDetail, type Product } from "./products";
 
 const STORAGE_KEY = "sevgi-butik:favorites";
 
@@ -29,7 +29,7 @@ type FavoritesContextValue = {
   products: Product[];
   isLoading: boolean;
   isFavorite: (slug: string) => boolean;
-  toggle: (product: Pick<Product, "id">) => Promise<void>;
+  toggle: (product: Product) => Promise<void>;
 };
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
@@ -55,9 +55,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     if (!user) {
       const local = readLocalFavorites();
       setSlugs(new Set(local));
-      setProducts([]);
-      setIsLoading(false);
       merged.current = false;
+      setIsLoading(true);
+
+      Promise.all(local.map((slug) => getProductDetail(slug)))
+        .then((results) => setProducts(results.filter((p) => p !== undefined)))
+        .finally(() => setIsLoading(false));
+
       return;
     }
 
@@ -80,7 +84,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const isFavorite = useCallback((slug: string) => slugs.has(slug), [slugs]);
 
   const toggle = useCallback(
-    async (product: Pick<Product, "id">) => {
+    async (product: Product) => {
       const slug = product.id;
       const wasFavorite = slugs.has(slug);
       const nextSlugs = new Set(slugs);
@@ -89,6 +93,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
       if (!user) {
         writeLocalFavorites([...nextSlugs]);
+        setProducts((prev) =>
+          wasFavorite ? prev.filter((p) => p.id !== slug) : [...prev, product],
+        );
         return;
       }
 
