@@ -5,14 +5,23 @@ import { getProductsByCategory } from "@/lib/products";
 import { ProductListing } from "@/components/sections/ProductListing";
 
 export async function generateStaticParams() {
-  return primaryNav.flatMap((item) =>
-    item.columns.flatMap((column) =>
-      column.items.map((sub) => ({
-        category: item.href.slice(1),
-        subcategory: sub.href.split("/")[2],
-      })),
-    ),
-  );
+  const params: { category: string; subcategory: string }[] = [];
+
+  primaryNav.forEach((item) => {
+    item.columns.forEach((column) => {
+      column.items.forEach((sub) => {
+        const parts = sub.href.split("/");
+        if (parts.length > 2 && parts[2]) {
+          params.push({
+            category: item.href.slice(1).split("?")[0],
+            subcategory: parts[2].split("?")[0],
+          });
+        }
+      });
+    });
+  });
+
+  return params;
 }
 
 function findSubcategory(category: string, subcategory: string) {
