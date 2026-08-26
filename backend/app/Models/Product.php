@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 #[Fillable([
     'slug', 'name', 'description', 'price_minor', 'compare_at_price_minor',
     'image', 'has_sizes', 'rating_seed', 'review_count_seed',
-    'rating_avg', 'rating_count', 'is_new', 'is_active', 'position',
+    'rating_avg', 'rating_count', 'is_new', 'is_active', 'position', 'gender',
 ])]
 class Product extends Model
 {

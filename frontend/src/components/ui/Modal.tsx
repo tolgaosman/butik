@@ -40,7 +40,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       
       <div 
         ref={modalRef}
-        className="relative w-full max-w-lg transform rounded border border-border bg-surface p-6 shadow-xl transition-all"
+        className="relative w-full max-w-lg transform rounded border border-border bg-surface p-4 shadow-xl transition-all sm:p-6"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

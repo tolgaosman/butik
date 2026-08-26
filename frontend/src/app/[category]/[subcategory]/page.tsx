@@ -53,12 +53,10 @@ export default async function SubcategoryPage({
 
   return (
     <ProductListing
-      breadcrumbItems={[
-        { label: match.navItem.label, href: match.navItem.href },
-        { label: match.sub.label },
-      ]}
       title={match.sub.label}
       products={products}
+      category={category}
+      subcategory={subcategory}
     />
   );
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/homepage', [\App\Http\Controllers\Api\SettingController::class, 'getHomepageData']);
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/slugs', [ProductController::class, 'slugs']);
@@ -21,12 +22,15 @@ Route::get('/products/{slug}', [ProductController::class, 'show']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
+Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::patch('/user', [AuthController::class, 'updateProfile']);
     Route::put('/user/password', [AuthController::class, 'updatePassword']);
+    Route::delete('/user', [AuthController::class, 'destroy']);
 
     Route::post('/products/{slug}/reviews', [ReviewController::class, 'store']);
 
@@ -38,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);
     Route::post('/orders/{orderNumber}/cancel', [OrderController::class, 'cancel']);
+    Route::post('/orders', [OrderController::class, 'store']);
 });
 
 Route::get('/cart', [CartController::class, 'show']);
@@ -46,7 +51,7 @@ Route::patch('/cart/items/{item}', [CartController::class, 'update']);
 Route::delete('/cart/items/{item}', [CartController::class, 'destroy']);
 Route::delete('/cart', [CartController::class, 'clear']);
 
-Route::post('/orders', [OrderController::class, 'store']);
+
 Route::post('/orders/track', [OrderController::class, 'track']);
 
 Route::post('/contact', [ContactController::class, 'store']);
@@ -71,4 +76,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('/products', [\App\Http\Controllers\Api\Admin\ProductController::class, 'store']);
     Route::put('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'update']);
     Route::delete('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'destroy']);
+    
+    Route::get('/settings/homepage', [\App\Http\Controllers\Api\SettingController::class, 'getHomepageSettings']);
+    Route::put('/settings/homepage', [\App\Http\Controllers\Api\SettingController::class, 'updateHomepageSettings']);
 });

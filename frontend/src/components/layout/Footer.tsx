@@ -11,11 +11,17 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border bg-surface-alt">
-      <div className="container-site py-14 sm:py-16">
-        <div className="flex flex-col items-center text-center">
-          <Image src="/sevgiLogo-ink.png" alt="Sevgi Butik" width={180} height={65} className="h-11 w-auto object-contain" />
-          <p className="mt-4 max-w-[26ch] text-sm text-ink-soft">{business.address}</p>
-          <div className="mt-5 flex items-center justify-center gap-4">
+      <div className="container-site py-6 sm:py-4">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:gap-0">
+          <div className="flex flex-1 justify-center sm:justify-start">
+            <Image src="/sevgiLogo-ink.png" alt="Sevgi Butik" width={180} height={65} className="h-8 w-auto object-contain" />
+          </div>
+          
+          <div className="flex flex-1 justify-center text-center">
+            <p className="text-sm text-ink-soft">{business.address}</p>
+          </div>
+          
+          <div className="flex flex-1 items-center justify-center gap-4 sm:justify-end">
             <a
               href={business.instagram}
               target="_blank"
@@ -35,10 +41,6 @@ export function Footer() {
               <Facebook size={18} />
             </a>
           </div>
-        </div>
-
-        <div className="mt-12 border-t border-border pt-6 text-center text-[0.7rem] text-ink-soft sm:mt-14">
-          © {new Date().getFullYear()} Sevgi Butik. Tüm hakları saklıdır.
         </div>
       </div>
     </footer>

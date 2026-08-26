@@ -19,6 +19,8 @@ export type Product = {
   isNew?: boolean;
   discountPercent?: number;
   originalPrice?: number;
+  gender?: 'kadin' | 'erkek' | 'unisex';
+  categories?: string[];
 };
 
 export async function getCategories(): Promise<Category[]> {
@@ -26,7 +28,7 @@ export async function getCategories(): Promise<Category[]> {
     const data = await apiGet<Category[]>("/categories", {
       next: { revalidate: 3600, tags: ["categories"] },
     });
-    return (data ?? []).filter((c) => !c.href.includes("/indirim"));
+    return data ?? [];
   } catch {
     return [];
   }
@@ -41,6 +43,24 @@ export async function getNewArrivals(): Promise<Product[]> {
   } catch {
     return [];
   }
+}
+
+export type HomepageData = {
+  hero_products: Product[];
+  new_arrivals: Product[];
+  promo_banner_url: string;
+};
+
+export async function getHomepageData(): Promise<HomepageData> {
+  try {
+    const data = await apiGet<HomepageData>("/homepage", {
+      next: { revalidate: 60, tags: ["homepage", "products"] },
+    });
+    
+    if (data) return data;
+  } catch {}
+  
+  return { hero_products: [], new_arrivals: [], promo_banner_url: "" };
 }
 
 export async function getBestSellers(): Promise<Product[]> {
@@ -97,9 +117,9 @@ export async function getProductsByCategory(
   }
 }
 
-export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
+export async function getRelatedProducts(productId: string, limit = 4): Promise<Product[]> {
   try {
-    const data = await apiGet<Product[]>(`/products/${product.id}/related?limit=${limit}`, {
+    const data = await apiGet<Product[]>(`/products/${productId}/related?limit=${limit}`, {
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];

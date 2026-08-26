@@ -76,7 +76,7 @@ export default function SettingsPage() {
           </button>
           
           {success && (
-            <span className="text-sm font-medium text-green-600 animate-in fade-in slide-in-from-left-2">
+            <span className="text-sm font-medium text-olive animate-in fade-in slide-in-from-left-2">
               Ayarlar başarıyla kaydedildi!
             </span>
           )}

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Models\EmailOtp;
 use App\Models\User;
 use App\Services\CartService;
+use App\Support\Phone;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,21 +20,29 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function __construct(private readonly CartService $carts) {}
+    public function __construct(
+        private readonly CartService $carts,
+    ) {}
 
     public function register(Request $request): UserResource
     {
+        if ($request->has('phone') && $request->filled('phone')) {
+            $request->merge(['phone' => Phone::normalize((string) $request->input('phone'))]);
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
+            'phone' => ['required', 'regex:/^5\d{9}$/', 'unique:users,phone'],
             'password' => ['required', 'confirmed', Password::defaults()],
-            'phone' => 'nullable|string|max:32',
+        ], [
+            'phone.regex' => 'Geçerli bir telefon numarası girin (Örn. 5XX XXX XX XX).',
         ]);
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
+            'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
         ]);
 
@@ -49,7 +59,8 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-
+        
+        $credentials = ['email' => $data['email'], 'password' => $data['password']];
         $key = Str::lower($data['email']).'|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
@@ -58,12 +69,9 @@ class AuthController extends Controller
             ]);
         }
 
-        if (! Auth::attempt($data)) {
+        if (! Auth::attempt($credentials)) {
             RateLimiter::hit($key, 60);
-
-            throw ValidationException::withMessages([
-                'email' => 'E-posta veya şifre hatalı.',
-            ]);
+            throw ValidationException::withMessages(['email' => 'E-posta veya şifre hatalı.']);
         }
 
         RateLimiter::clear($key);
@@ -92,10 +100,16 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        if ($request->has('phone') && $request->filled('phone')) {
+            $request->merge(['phone' => Phone::normalize((string) $request->input('phone'))]);
+        }
+
         $data = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'phone' => 'sometimes|nullable|string|max:32',
             'email' => 'sometimes|email|max:255|unique:users,email,'.$user->id,
+            'phone' => ['sometimes', 'nullable', 'regex:/^5\d{9}$/', 'unique:users,phone,'.$user->id],
+        ], [
+            'phone.regex' => 'Geçerli bir telefon numarası girin (Örn. 5XX XXX XX XX).',
         ]);
 
         $user->update($data);
@@ -113,6 +127,68 @@ class AuthController extends Controller
         $request->user()->update(['password' => Hash::make($data['password'])]);
 
         return response()->json(null, 204);
+    }
+
+    public function destroy(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        $user->delete();
+
+        return response()->json(null, 204);
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $key = 'otp-request:'.Str::lower($data['email']);
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            return response()->json(['message' => 'Çok fazla deneme yapıldı. Lütfen birazdan tekrar deneyin.'], 429);
+        }
+
+        RateLimiter::hit($key, 300);
+
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user) {
+            $code = EmailOtp::issue($data['email']);
+            try {
+                \Illuminate\Support\Facades\Mail::to($data['email'])->send(new \App\Mail\ResetPasswordOtp($code));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Reset password email failed: ' . $e->getMessage());
+            }
+        }
+
+        return response()->json(['message' => 'E-posta adresiniz kayıtlıysa doğrulama kodu gönderildi.']);
+    }
+
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string',
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+
+        if (! $user || ! EmailOtp::verify($data['email'], $data['code'])) {
+            throw ValidationException::withMessages([
+                'code' => 'Doğrulama kodu hatalı veya süresi dolmuş.',
+            ]);
+        }
+
+        $user->update(['password' => Hash::make($data['password'])]);
+
+        return response()->json(['message' => 'Şifreniz güncellendi.']);
     }
 
     /**

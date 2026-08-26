@@ -8,17 +8,21 @@ import { SocialProof } from "@/components/sections/SocialProof";
 import { LocationMap } from "@/components/sections/LocationMap";
 import { GridSkeleton } from "@/components/ui/GridSkeleton";
 
-export default function Home() {
+import { getHomepageData } from "@/lib/products";
+
+export default async function Home() {
+  const homepageData = await getHomepageData();
+  
   return (
     <>
-      <Hero />
+      <Hero products={homepageData.hero_products} />
+      <Suspense fallback={<GridSkeleton background="bg-cream" />}>
+        <NewArrivals products={homepageData.new_arrivals} />
+      </Suspense>
       <Suspense fallback={<GridSkeleton background="bg-white" />}>
         <CategoryGrid />
       </Suspense>
-      <Suspense fallback={<GridSkeleton background="bg-cream" />}>
-        <NewArrivals />
-      </Suspense>
-      <PromoBanner />
+      <PromoBanner imageUrl={homepageData.promo_banner_url} />
       <Suspense fallback={<GridSkeleton background="bg-white" />}>
         <BestSellers />
       </Suspense>

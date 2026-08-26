@@ -15,9 +15,11 @@ type AuthContextValue = {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<User>;
-  register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<User>;
+  register: (name: string, email: string, phone: string, password: string, passwordConfirmation: string) => Promise<User>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (email: string, code: string, password: string, passwordConfirmation: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -48,10 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(
-    async (name: string, email: string, password: string, passwordConfirmation: string) => {
+    async (name: string, email: string, phone: string, password: string, passwordConfirmation: string) => {
       const data = await apiMutate<User>("/register", {
         method: "POST",
-        body: JSON.stringify({ name, email, password, password_confirmation: passwordConfirmation }),
+        body: JSON.stringify({ name, email, phone, password, password_confirmation: passwordConfirmation }),
       });
       setUser(data);
       return data;
@@ -64,8 +66,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const forgotPassword = useCallback(async (email: string) => {
+    await apiMutate<void>("/password/forgot", { method: "POST", body: JSON.stringify({ email }) });
+  }, []);
+
+  const resetPassword = useCallback(
+    async (email: string, code: string, password: string, passwordConfirmation: string) => {
+      await apiMutate<void>("/password/reset", {
+        method: "POST",
+        body: JSON.stringify({ email, code, password, password_confirmation: passwordConfirmation }),
+      });
+    },
+    [],
+  );
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, refresh }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, register, logout, refresh, forgotPassword, resetPassword }}
+    >
       {children}
     </AuthContext.Provider>
   );

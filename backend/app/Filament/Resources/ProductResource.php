@@ -93,6 +93,15 @@ class ProductResource extends Resource
                     Forms\Components\Toggle::make('is_active')
                         ->label('Aktif')
                         ->default(true),
+                    Forms\Components\Select::make('gender')
+                        ->label('Cinsiyet')
+                        ->options([
+                            'kadin' => 'Kadın',
+                            'erkek' => 'Erkek',
+                            'unisex' => 'Unisex',
+                        ])
+                        ->default('unisex')
+                        ->required(),
                     Forms\Components\TextInput::make('position')
                         ->label('Sıralama')
                         ->numeric()

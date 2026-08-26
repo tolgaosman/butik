@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart";
@@ -17,11 +17,17 @@ type FieldErrors = Record<string, string[]>;
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, isLoading, refresh } = useCart();
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | "bank_transfer">("cash_on_delivery");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      router.push("/hesabim");
+    }
+  }, [isAuthLoading, user, router]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,9 +37,8 @@ export default function CheckoutPage() {
 
     const form = new FormData(e.currentTarget);
     const payload = {
-      email: user ? undefined : String(form.get("email")),
+      email: String(form.get("email")),
       phone: String(form.get("phone")),
-      shipping_name: String(form.get("shipping_name")),
       shipping_line1: String(form.get("shipping_line1")),
       shipping_line2: String(form.get("shipping_line2") || "") || undefined,
       shipping_district: String(form.get("shipping_district")),
@@ -63,7 +68,7 @@ export default function CheckoutPage() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || isAuthLoading) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <Skeleton className="h-3 w-32" />
@@ -123,36 +128,31 @@ export default function CheckoutPage() {
           <section>
             <h2 className="font-serif text-xl font-medium text-ink">Teslimat Bilgileri</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {!user && (
-                <div className="sm:col-span-2">
-                  <Input
-                    id="email"
-                    name="email"
-                    label="E-posta"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    error={errors.email?.[0]}
-                  />
-                </div>
-              )}
-              <Input
-                id="phone"
-                name="phone"
-                label="Telefon"
-                type="tel"
-                autoComplete="tel"
-                required
-                error={errors.phone?.[0]}
-              />
-              <Input
-                id="shipping_name"
-                name="shipping_name"
-                label="Ad Soyad"
-                autoComplete="name"
-                required
-                error={errors.shipping_name?.[0]}
-              />
+              <div className="sm:col-span-2">
+                <Input
+                  id="email"
+                  name="email"
+                  label="E-posta (sipariş bildirimleri için)"
+                  type="email"
+                  defaultValue={user?.email || ""}
+                  autoComplete="email"
+                  required
+                  error={errors.email?.[0]}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Input
+                  id="phone"
+                  name="phone"
+                  label="Telefon Numarası (kargo teslimatı için)"
+                  type="tel"
+                  defaultValue={user?.phone || ""}
+                  placeholder="5XX XXX XX XX"
+                  autoComplete="tel"
+                  required
+                  error={errors.phone?.[0]}
+                />
+              </div>
               <div className="sm:col-span-2">
                 <Input
                   id="shipping_line1"

@@ -4,16 +4,18 @@ import { useState } from "react";
 import { Minus, Plus, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCart, ApiError } from "@/lib/cart";
+import { toast } from "@/lib/toast";
 import type { ProductVariant } from "@/lib/products";
 
 const SIZES = ["XS", "S", "M", "L", "XL"];
 
 type Props = {
   productSlug: string;
+  productName: string;
   variants: ProductVariant[];
 };
 
-export function ProductOptions({ productSlug, variants }: Props) {
+export function ProductOptions({ productSlug, productName, variants }: Props) {
   const { addItem } = useCart();
   const hasSizes = variants.some((v) => v.size !== null);
   const availableSizes = hasSizes
@@ -24,19 +26,23 @@ export function ProductOptions({ productSlug, variants }: Props) {
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const outOfStock = hasSizes ? availableSizes.length === 0 : !variants.some((v) => v.stock > 0);
 
   async function handleAddToCart() {
     setLoading(true);
-    setError(null);
     try {
-      await addItem(productSlug, size, qty);
+      const ok = await addItem(productSlug, size, qty);
+      if (!ok) return;
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
+      toast.success("Sepete eklendi", {
+        description: `${productName}${size ? ` · Beden: ${size}` : ""} · Adet: ${qty}`,
+      });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Sepete eklenirken bir hata oluştu.");
+      toast.error("Sepete eklenemedi", {
+        description: err instanceof ApiError ? err.message : "Lütfen tekrar deneyin.",
+      });
     } finally {
       setLoading(false);
     }
@@ -57,7 +63,7 @@ export function ProductOptions({ productSlug, variants }: Props) {
                   onClick={() => isAvailable && setSize(s)}
                   disabled={!isAvailable}
                   aria-pressed={size === s}
-                  className={`flex h-11 w-11 items-center justify-center border text-sm font-medium transition-colors duration-200 ease-[var(--ease-organic)] ${
+                  className={`flex h-11 w-11 items-center justify-center rounded-full border text-sm font-medium transition-colors duration-200 ease-[var(--ease-organic)] ${
                     !isAvailable
                       ? "cursor-not-allowed border-border text-ink-soft/40 line-through"
                       : size === s
@@ -96,12 +102,10 @@ export function ProductOptions({ productSlug, variants }: Props) {
         </div>
       </div>
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
-
       <Button
         type="button"
         variant="solid"
-        className="w-full sm:w-auto"
+        className="w-full rounded-full sm:w-auto"
         loading={loading}
         disabled={outOfStock || (hasSizes && !size)}
         onClick={handleAddToCart}

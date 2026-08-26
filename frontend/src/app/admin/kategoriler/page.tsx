@@ -1,16 +1,18 @@
 import { Tags } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { apiGet } from "@/lib/api";
-import type { Category } from "@/lib/products";
+import { apiGetAuthed } from "@/lib/api";
+import type { AdminCategory } from "../urunler/page";
 import { CategoriesTable } from "./CategoriesTable";
 
 /**
- * Katalog verisi herkese açık, bu yüzden sunucudan doğrudan Laravel'e gidiyoruz
- * (apiGet). Yönetim listeleri her zaman taze olmalı — ISR yok, no-store.
+ * /api/admin/* auth:sanctum + is_admin arkasında, bu yüzden apiGetAuthed —
+ * ziyaretçinin oturum çerezini Laravel'e taşıyan tek sunucu tarafı yardımcı.
+ * Bu uç nokta düz (flat) liste döner; ağaç görünümü istemci tarafında
+ * parent_id'den kuruluyor (CategoriesTable).
  */
-async function loadCategories(): Promise<Category[] | null> {
+async function loadCategories(): Promise<AdminCategory[] | null> {
   try {
-    return (await apiGet<Category[]>("/categories", { cache: "no-store" })) ?? [];
+    return (await apiGetAuthed<AdminCategory[]>("/admin/categories")) ?? [];
   } catch {
     return null;
   }

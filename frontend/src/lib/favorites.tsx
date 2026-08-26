@@ -1,8 +1,10 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { apiMutate } from "./api";
 import { useAuth } from "./auth";
+import { toast } from "./toast";
 import { getProductDetail, type Product } from "./products";
 
 const STORAGE_KEY = "sevgi-butik:favorites";
@@ -29,13 +31,14 @@ type FavoritesContextValue = {
   products: Product[];
   isLoading: boolean;
   isFavorite: (slug: string) => boolean;
-  toggle: (product: Product) => Promise<void>;
+  toggle: (product: Product) => Promise<boolean>;
 };
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const [slugs, setSlugs] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,19 +87,23 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const isFavorite = useCallback((slug: string) => slugs.has(slug), [slugs]);
 
   const toggle = useCallback(
-    async (product: Product) => {
+    async (product: Product): Promise<boolean> => {
+      if (!user) {
+        toast.error("Giriş Yapmalısınız", { description: "Favorilere eklemek için lütfen giriş yapın." });
+        router.push("/hesabim");
+        return false;
+      }
+
       const slug = product.id;
       const wasFavorite = slugs.has(slug);
       const nextSlugs = new Set(slugs);
       wasFavorite ? nextSlugs.delete(slug) : nextSlugs.add(slug);
       setSlugs(nextSlugs);
 
-      if (!user) {
-        writeLocalFavorites([...nextSlugs]);
-        setProducts((prev) =>
-          wasFavorite ? prev.filter((p) => p.id !== slug) : [...prev, product],
-        );
-        return;
+      if (wasFavorite) {
+        toast.info("Favorilerden çıkarıldı", { description: product.name });
+      } else {
+        toast.success("Favorilere eklendi", { description: product.name });
       }
 
       try {
@@ -105,12 +112,14 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         } else {
           await apiMutate("/favorites", { method: "POST", body: JSON.stringify({ product_slug: slug }) });
         }
-        await loadServerFavorites();
-      } catch {
+        return true;
+      } catch (err) {
         setSlugs(slugs); // revert on failure
+        toast.error("İşlem gerçekleştirilemedi", { description: "Lütfen tekrar deneyin." });
+        return false;
       }
     },
-    [slugs, user, loadServerFavorites],
+    [slugs, user, router],
   );
 
   return (

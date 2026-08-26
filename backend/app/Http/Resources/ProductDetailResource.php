@@ -14,13 +14,13 @@ class ProductDetailResource extends ProductResource
             'images' => $this->whenLoaded('images', fn () => $this->images->map(fn ($img) => [
                 'url' => $img->url,
                 'alt' => $img->alt,
-            ])),
+            ])->all()),
             'variants' => $this->whenLoaded('variants', fn () => $this->variants->map(fn ($v) => [
                 'id' => $v->id,
                 'size' => $v->size,
                 'stock' => $v->stock,
                 'isActive' => $v->is_active,
-            ])),
+            ])->values()->all()),
         ];
     }
 }

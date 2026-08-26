@@ -6,18 +6,18 @@ import type { Product } from "@/lib/products";
 
 function Card({ product }: { product: Product }) {
   return (
-    <div className="relative z-0 shrink-0 px-[clamp(0.4rem,1vw,0.75rem)] py-[clamp(0.5rem,min(4vw,2vh),1.5rem)] transition-[z-index] hover:z-20">
+    <div className="relative z-0 shrink-0 px-[clamp(0.4rem,1vw,0.75rem)] py-[clamp(1.5rem,min(6vw,3vh),2.5rem)] transition-[z-index] hover:z-20">
       <Link
         href={`/urun/${product.id}`}
         draggable={false}
-        className="group relative block aspect-[2/3] w-[clamp(8rem,min(18vw,27vh),16rem)] overflow-hidden rounded-t-full bg-sand shadow-sm transition-all duration-500 ease-[var(--ease-organic)] hover:scale-105 hover:-translate-y-2 hover:shadow-2xl hover:shadow-ink/20"
+        className="group relative block aspect-[2/3] w-[clamp(10rem,min(22vw,33vh),20rem)] overflow-hidden rounded-t-full bg-sand shadow-sm transition-all duration-1000 ease-out hover:shadow-2xl hover:shadow-ink/20"
       >
         <Image
           src={product.image}
           alt={product.name}
           fill
           draggable={false}
-          sizes="(min-width: 1280px) 16rem, (min-width: 640px) 18vw, 35vw"
+          sizes="(min-width: 1280px) 20rem, (min-width: 640px) 22vw, 40vw"
           className="object-cover"
         />
         {product.discountPercent && (
@@ -50,7 +50,7 @@ export function HeroCarousel({ products }: { products: Product[] }) {
         }}
       >
         <div className="flex w-fit">
-          <div className="flex w-fit animate-hero-marquee group-hover:[animation-play-state:paused] active:[animation-play-state:paused]">
+          <div className="flex w-fit animate-hero-marquee group-hover:[animation-duration:170s] active:[animation-duration:170s]">
             {sets.map((set, si) =>
               set.map((product) => (
                 <Card key={`${si}-${product.id}`} product={product} />

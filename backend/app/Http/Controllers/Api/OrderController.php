@@ -24,9 +24,7 @@ class OrderController extends Controller
     public function store(Request $request): OrderResource
     {
         $data = $request->validate([
-            'email' => $request->user() ? 'sometimes|email|max:255' : 'required|email|max:255',
-            'phone' => 'required|string|max:32',
-            'shipping_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
             'shipping_line1' => 'required|string|max:255',
             'shipping_line2' => 'nullable|string|max:255',
             'shipping_district' => 'required|string|max:128',
@@ -34,14 +32,27 @@ class OrderController extends Controller
             'shipping_postal' => 'nullable|string|max:16',
             'customer_note' => 'nullable|string|max:1000',
             'payment_method' => 'required|in:cash_on_delivery,bank_transfer',
+            'phone' => 'required|string|regex:/^5\d{9}$/', // Ask for phone in checkout
+        ], [
+            'phone.regex' => 'Geçerli bir telefon numarası girin (Örn. 5XX XXX XX XX).',
+            'phone.required' => 'Kargo teslimatı için telefon numarası zorunludur.',
         ]);
 
         $user = $request->user();
-        $data['email'] = $data['email'] ?? $user?->email;
+        $data['shipping_name'] = $user->name;
 
+        // Note: we take the phone directly from the order form now, not from $user->phone
+        
         $cart = $this->carts->resolve($user, $request);
         $order = $this->orders->placeFromCart($cart, $user, $data);
         $order->load('items');
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($order->email)->send(new \App\Mail\OrderCreated($order));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Order email failed: ' . $e->getMessage());
+        }
 
         return new OrderResource($order);
     }

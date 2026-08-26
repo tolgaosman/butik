@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { Search, User, Phone, Heart, ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
+import { Search, User, Phone, Heart, ShoppingBag, Menu, X, ChevronDown, Package } from "lucide-react";
 import { primaryNav } from "@/lib/nav";
 import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
@@ -75,15 +75,17 @@ export function Header() {
             <Menu size={22} />
           </button>
 
-        <div className="flex items-center">
-          <Image
-            src="/sevgiLogo-ink.png"
-            alt="Sevgi Butik"
-            width={220}
-            height={79}
-            priority
-            className="h-8 w-auto object-contain lg:h-10"
-          />
+        <div className="flex items-center pl-2 lg:pl-6">
+          <Link href="/">
+            <Image
+              src="/sevgiLogo-ink.png"
+              alt="Sevgi Butik"
+              width={220}
+              height={79}
+              priority
+              className="h-8 w-auto object-contain lg:h-10"
+            />
+          </Link>
         </div>
         </div>
 
@@ -113,6 +115,14 @@ export function Header() {
             className="p-2.5 transition-transform duration-200 hover:scale-110"
           >
             <Phone size={19} />
+          </Link>
+          <Link
+            href="/siparis-takibi"
+            aria-label="Sipariş Takibi"
+            onClick={() => setMenuOpen(false)}
+            className="p-2.5 transition-transform duration-200 hover:scale-110"
+          >
+            <Package size={19} />
           </Link>
           <Link
             href="/favoriler"
@@ -158,8 +168,7 @@ export function Header() {
       >
         <div className="min-h-0">
           <div
-            className="container-site grid gap-8 py-10"
-            style={{ gridTemplateColumns: `repeat(${primaryNav.filter(i => i.columns.length > 0 && i.label !== "Giyim").length}, minmax(0, 1fr))` }}
+            className="container-site flex flex-wrap justify-between gap-6 pt-5 pb-8"
           >
             {primaryNav.filter(i => i.columns.length > 0 && i.label !== "Giyim").map((item) => (
               <div key={item.href}>
@@ -203,7 +212,9 @@ export function Header() {
           }`}
         >
           <div className="flex items-center justify-between border-b border-border px-6 py-5">
-            <Image src="/sevgiLogo-ink.png" alt="Sevgi Butik" width={140} height={50} className="h-7 w-auto object-contain" />
+            <Link href="/" onClick={closeDrawer}>
+              <Image src="/sevgiLogo-ink.png" alt="Sevgi Butik" width={140} height={50} className="h-7 w-auto object-contain" />
+            </Link>
             <button
               type="button"
               onClick={closeDrawer}
@@ -287,6 +298,13 @@ export function Header() {
                 className="block py-2.5 text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
               >
                 İletişim
+              </Link>
+              <Link
+                href="/siparis-takibi"
+                onClick={closeDrawer}
+                className="block py-2.5 text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
+              >
+                Sipariş Takibi
               </Link>
               <Link
                 href="/favoriler"

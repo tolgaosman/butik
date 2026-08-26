@@ -31,8 +31,9 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0', // original price in TL
             'discount' => 'nullable|numeric|min:0|max:100', // percentage
             'isNew' => 'required|boolean',
+            'gender' => 'required|in:kadin,erkek,unisex',
             'categories' => 'array',
-            'sizes' => 'array', // e.g. ['M', 'L'] or ['36', '38']
+            'sizes' => 'nullable', // array or JSON string of [{size, stock}, ...]
         ]);
 
         $originalPriceMinor = $validated['price'] * 100;
@@ -50,6 +51,7 @@ class ProductController extends Controller
             'price_minor' => $priceMinor,
             'compare_at_price_minor' => $compareAtPriceMinor,
             'is_new' => $validated['isNew'],
+            'gender' => $validated['gender'],
         ]);
 
         // Categories
@@ -57,17 +59,28 @@ class ProductController extends Controller
             $product->categories()->sync($validated['categories']);
         }
 
-        // Sizes (Variants)
+        // Sizes (Variants) — sent as JSON string of [{size, stock}, ...]
         if ($request->has('sizes')) {
-            // FormData sends arrays strangely if not formatted. Assuming sizes is sent as an array or JSON string.
             $sizesData = $request->input('sizes');
             if (is_string($sizesData)) {
                 $sizesData = json_decode($sizesData, true);
             }
             if (is_array($sizesData)) {
+                // Normalize to size => stock map, supporting both ['M', 'L'] and [{size, stock}]
+                $stockBySize = [];
+                foreach ($sizesData as $entry) {
+                    if (is_array($entry)) {
+                        $stockBySize[$entry['size']] = max(0, (int) ($entry['stock'] ?? 0));
+                    } else {
+                        $stockBySize[$entry] = 0;
+                    }
+                }
+
+                $incomingSizes = array_keys($stockBySize);
                 $existingSizes = $product->variants()->pluck('size')->toArray();
-                $toAdd = array_diff($sizesData, $existingSizes);
-                $toRemove = array_diff($existingSizes, $sizesData);
+                $toAdd = array_diff($incomingSizes, $existingSizes);
+                $toRemove = array_diff($existingSizes, $incomingSizes);
+                $toUpdate = array_intersect($incomingSizes, $existingSizes);
 
                 if (!empty($toRemove)) {
                     $product->variants()->whereIn('size', $toRemove)->delete();
@@ -77,10 +90,14 @@ class ProductController extends Controller
                     $product->variants()->create([
                         'size' => $size,
                         'sku' => $product->slug . '-' . $size,
-                        'stock' => 10,
+                        'stock' => $stockBySize[$size],
                         'price_minor' => null,
                         'is_active' => true,
                     ]);
+                }
+
+                foreach ($toUpdate as $size) {
+                    $product->variants()->where('size', $size)->update(['stock' => $stockBySize[$size]]);
                 }
             }
         }

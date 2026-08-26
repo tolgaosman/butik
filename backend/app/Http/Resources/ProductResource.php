@@ -20,6 +20,8 @@ class ProductResource extends JsonResource
             'image' => $this->image,
             'rating' => $this->displayRating(),
             'reviewCount' => $this->displayReviewCount(),
+            'gender' => $this->gender,
+            'categories' => $this->whenLoaded('categories', fn () => $this->categories->pluck('slug')->all()),
 
             $this->mergeWhen((bool) $this->is_new, ['isNew' => true]),
             $this->mergeWhen($this->compare_at_price_minor !== null, fn () => [

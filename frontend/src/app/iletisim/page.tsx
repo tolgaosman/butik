@@ -39,7 +39,7 @@ export default function ContactPage() {
           {/* Telefon */}
           <a
             href={`tel:${business.phone.replace(/\s/g, "")}`}
-            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+            className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
               <Phone size={17} />
@@ -53,7 +53,7 @@ export default function ContactPage() {
           {/* E-posta */}
           <a
             href="mailto:karabasaksevgi4@gmail.com"
-            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+            className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
               <Mail size={17} />
@@ -69,7 +69,7 @@ export default function ContactPage() {
             href={directionsHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+            className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
               <MapPin size={17} />
@@ -85,7 +85,7 @@ export default function ContactPage() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
-            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+            className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
               <Instagram size={18} />
@@ -102,7 +102,7 @@ export default function ContactPage() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"
-            className="group flex items-center gap-3.5 border border-border bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
+            className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
               <Facebook size={18} />
@@ -118,7 +118,7 @@ export default function ContactPage() {
       <div className="mt-12 grid grid-cols-1 gap-12 sm:mt-16 lg:grid-cols-[380px_1fr] lg:gap-16">
         {/* Sol Sütun: Çalışma Saatleri */}
         <MotionReveal>
-          <div className="relative flex h-full flex-col overflow-hidden border border-border bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-ink/5 sm:p-8">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/70 bg-surface p-6 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-ink/5 sm:p-8">
             <div className="flex shrink-0 items-center gap-4 border-b border-border pb-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-olive/10 text-olive">
                 <Clock size={22} strokeWidth={1.5} />
@@ -160,7 +160,7 @@ export default function ContactPage() {
 
         {/* Sağ Sütun: Form */}
         <MotionReveal delay={100}>
-          <div className="border border-border bg-cream/30 p-6 sm:p-8">
+          <div className="rounded-3xl border border-border/70 bg-cream/30 p-6 shadow-sm sm:p-8">
             <h2 className="font-serif text-2xl font-medium text-ink sm:text-3xl">Bize Yazın</h2>
             <p className="mt-2 text-sm text-ink-soft">
               Aşağıdaki formu doldurarak sorularınızı iletebilirsiniz.

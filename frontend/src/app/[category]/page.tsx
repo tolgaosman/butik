@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { primaryNav } from "@/lib/nav";
-import { getProductsByCategory } from "@/lib/products";
+import { getProductsByCategory, getCategories } from "@/lib/products";
 import { ProductListing } from "@/components/sections/ProductListing";
+import { Suspense } from "react";
 
 export async function generateStaticParams() {
   return primaryNav.map((item) => ({ category: item.href.slice(1) }));
@@ -31,13 +32,22 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
   const navItem = findCategory(category);
   if (!navItem) notFound();
 
-  const products = await getProductsByCategory(category);
+  const [products, categories] = await Promise.all([
+    getProductsByCategory(category),
+    getCategories(),
+  ]);
+
+  const currentCategory = categories.find((c) => c.href === `/${category}`);
+  const subcategories = currentCategory?.subcategories || [];
 
   return (
-    <ProductListing
-      breadcrumbItems={[{ label: navItem.label }]}
-      title={navItem.label}
-      products={products}
-    />
+    <Suspense fallback={<div>Yükleniyor...</div>}>
+      <ProductListing
+        title={navItem.label}
+        products={products}
+        subcategories={subcategories}
+        category={category}
+      />
+    </Suspense>
   );
 }

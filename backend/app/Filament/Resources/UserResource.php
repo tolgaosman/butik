@@ -26,8 +26,20 @@ class UserResource extends Resource
     {
         return $form->schema([
             Forms\Components\TextInput::make('name')->label('Ad Soyad')->required()->maxLength(255),
-            Forms\Components\TextInput::make('email')->label('E-posta')->email()->required()->unique(ignoreRecord: true),
-            Forms\Components\TextInput::make('phone')->label('Telefon')->maxLength(32),
+            Forms\Components\TextInput::make('email')
+                ->label('E-posta')
+                ->helperText('Sadece yöneticiler için — panele bu e-posta ile giriş yapılır.')
+                ->email()
+                ->unique(ignoreRecord: true)
+                ->maxLength(255),
+            Forms\Components\TextInput::make('phone')
+                ->label('Telefon')
+                ->tel()
+                ->required()
+                ->regex('/^5\d{9}$/')
+                ->helperText('Örn. 5XXXXXXXXX')
+                ->unique(ignoreRecord: true)
+                ->maxLength(32),
             Forms\Components\Toggle::make('is_admin')->label('Yönetici'),
         ])->columns(2);
     }
@@ -37,8 +49,8 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Ad Soyad')->searchable(),
-                Tables\Columns\TextColumn::make('email')->label('E-posta')->searchable(),
-                Tables\Columns\TextColumn::make('phone')->label('Telefon'),
+                Tables\Columns\TextColumn::make('email')->label('E-posta')->searchable()->placeholder('—'),
+                Tables\Columns\TextColumn::make('phone')->label('Telefon')->searchable(),
                 Tables\Columns\TextColumn::make('orders_count')->label('Sipariş Sayısı')->counts('orders'),
                 Tables\Columns\IconColumn::make('is_admin')->label('Yönetici')->boolean(),
                 Tables\Columns\TextColumn::make('created_at')->label('Kayıt Tarihi')->dateTime('d.m.Y'),

@@ -10,6 +10,9 @@ export type AdminCategory = {
   slug: string;
   parent_id: number | null;
   parent_name: string | null;
+  href: string;
+  image: string;
+  itemCount: number;
 };
 
 /**

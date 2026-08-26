@@ -21,7 +21,7 @@ class DatabaseSeederTest extends TestCase
     {
         $this->seed();
 
-        $admin = User::firstWhere('email', 'admin@sevgibutik.com');
+        $admin = User::firstWhere('email', 'karabasaksevgi4@gmail.com');
 
         $this->assertNotNull($admin);
         $this->assertTrue($admin->is_admin);

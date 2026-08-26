@@ -16,7 +16,7 @@ const item: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
 };
 
-export function PromoBanner() {
+export function PromoBanner({ imageUrl }: { imageUrl: string }) {
   return (
     <section className="relative h-[26rem] overflow-hidden sm:h-[32rem]">
       <motion.div
@@ -27,7 +27,7 @@ export function PromoBanner() {
         transition={{ duration: 1.4, ease }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1600&auto=format&fit=crop"
+          src={imageUrl}
           alt="Askıda dizilmiş özenle seçilmiş kıyafetler"
           fill
           sizes="100vw"
@@ -56,8 +56,8 @@ export function PromoBanner() {
           Sizi harika hissettiren zamansız parçalar, her gün giyilmek için tasarlandı.
         </motion.p>
         <motion.div variants={item}>
-          <Button href="/lookbook" variant="solid" className="bg-white text-ink hover:bg-cream">
-            Alışverişe Başla
+          <Button href="/giyim" variant="solid" className="bg-white text-ink hover:bg-cream">
+            ALIŞVERİŞE BAŞLA
           </Button>
         </motion.div>
       </motion.div>

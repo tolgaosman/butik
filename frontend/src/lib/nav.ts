@@ -22,28 +22,28 @@ export const primaryNav: NavItem[] = [
       {
         title: "Elbise",
         items: [
-          { label: "Midi Elbise", href: "/giyim/midi-elbise" },
-          { label: "Maxi Elbise", href: "/giyim/maxi-elbise" },
-          { label: "Günlük Elbise", href: "/giyim/gunluk-elbise" },
-          { label: "Abiye", href: "/giyim/abiye" },
+          { label: "Midi Elbise", href: "/giyim?sub=midi-elbise" },
+          { label: "Maxi Elbise", href: "/giyim?sub=maxi-elbise" },
+          { label: "Günlük Elbise", href: "/giyim?sub=gunluk-elbise" },
+          { label: "Abiye", href: "/giyim?sub=abiye" },
         ],
       },
       {
         title: "Üst Giyim",
         items: [
-          { label: "Bluz & Gömlek", href: "/giyim/bluz-gomlek" },
-          { label: "T-Shirt", href: "/giyim/tisort" },
-          { label: "Örgü & Triko", href: "/giyim/orgu-triko" },
-          { label: "Ceket & Blazer", href: "/giyim/ceket-blazer" },
+          { label: "Bluz & Gömlek", href: "/giyim?sub=bluz-gomlek" },
+          { label: "T-Shirt", href: "/giyim?sub=tisort" },
+          { label: "Örgü & Triko", href: "/giyim?sub=orgu-triko" },
+          { label: "Ceket & Blazer", href: "/giyim?sub=ceket-blazer" },
         ],
       },
       {
         title: "Alt Giyim",
         items: [
-          { label: "Pantolon", href: "/giyim/pantolon" },
-          { label: "Etek", href: "/giyim/etek" },
-          { label: "Şort", href: "/giyim/sort" },
-          { label: "Jean", href: "/giyim/jean" },
+          { label: "Pantolon", href: "/giyim?sub=pantolon" },
+          { label: "Etek", href: "/giyim?sub=etek" },
+          { label: "Şort", href: "/giyim?sub=sort" },
+          { label: "Jean", href: "/giyim?sub=jean" },
         ],
       },
     ],
@@ -55,11 +55,11 @@ export const primaryNav: NavItem[] = [
       {
         title: "Elbise",
         items: [
-          { label: "Midi Elbise", href: "/elbise/midi" },
-          { label: "Maxi Elbise", href: "/elbise/maxi" },
-          { label: "Mini Elbise", href: "/elbise/mini" },
-          { label: "Günlük Elbise", href: "/elbise/gunluk" },
-          { label: "Abiye & Davet", href: "/elbise/abiye" },
+          { label: "Midi Elbise", href: "/elbise?sub=midi" },
+          { label: "Maxi Elbise", href: "/elbise?sub=maxi" },
+          { label: "Mini Elbise", href: "/elbise?sub=mini" },
+          { label: "Günlük Elbise", href: "/elbise?sub=gunluk" },
+          { label: "Abiye & Davet", href: "/elbise?sub=abiye" },
         ],
       },
     ],
@@ -71,11 +71,11 @@ export const primaryNav: NavItem[] = [
       {
         title: "Üst Giyim",
         items: [
-          { label: "Bluz & Gömlek", href: "/ust-giyim/bluz-gomlek" },
-          { label: "T-Shirt & Body", href: "/ust-giyim/tisort-body" },
-          { label: "Örgü & Triko", href: "/ust-giyim/orgu-triko" },
-          { label: "Ceket & Blazer", href: "/ust-giyim/ceket-blazer" },
-          { label: "Hırka", href: "/ust-giyim/hirka" },
+          { label: "Bluz & Gömlek", href: "/ust-giyim?sub=bluz-gomlek" },
+          { label: "T-Shirt & Body", href: "/ust-giyim?sub=tisort-body" },
+          { label: "Örgü & Triko", href: "/ust-giyim?sub=orgu-triko" },
+          { label: "Ceket & Blazer", href: "/ust-giyim?sub=ceket-blazer" },
+          { label: "Hırka", href: "/ust-giyim?sub=hirka" },
         ],
       },
     ],
@@ -87,11 +87,11 @@ export const primaryNav: NavItem[] = [
       {
         title: "Alt Giyim",
         items: [
-          { label: "Pantolon", href: "/alt-giyim/pantolon" },
-          { label: "Jean", href: "/alt-giyim/jean" },
-          { label: "Etek", href: "/alt-giyim/etek" },
-          { label: "Şort", href: "/alt-giyim/sort" },
-          { label: "Tayt", href: "/alt-giyim/tayt" },
+          { label: "Pantolon", href: "/alt-giyim?sub=pantolon" },
+          { label: "Jean", href: "/alt-giyim?sub=jean" },
+          { label: "Etek", href: "/alt-giyim?sub=etek" },
+          { label: "Şort", href: "/alt-giyim?sub=sort" },
+          { label: "Tayt", href: "/alt-giyim?sub=tayt" },
         ],
       },
     ],
@@ -103,11 +103,11 @@ export const primaryNav: NavItem[] = [
       {
         title: "Aksesuar",
         items: [
-          { label: "Çanta", href: "/aksesuar/canta" },
-          { label: "Takı", href: "/aksesuar/taki" },
-          { label: "Kemer", href: "/aksesuar/kemer" },
-          { label: "Şal & Fular", href: "/aksesuar/sal-fular" },
-          { label: "Güneş Gözlüğü", href: "/aksesuar/gunes-gozlugu" },
+          { label: "Çanta", href: "/aksesuar?sub=canta" },
+          { label: "Takı", href: "/aksesuar?sub=taki" },
+          { label: "Kemer", href: "/aksesuar?sub=kemer" },
+          { label: "Şal & Fular", href: "/aksesuar?sub=sal-fular" },
+          { label: "Güneş Gözlüğü", href: "/aksesuar?sub=gunes-gozlugu" },
         ],
       },
     ],
@@ -119,9 +119,9 @@ export const primaryNav: NavItem[] = [
       {
         title: "Makyaj",
         items: [
-          { label: "Yüz", href: "/makyaj-malzemesi/yuz" },
-          { label: "Göz", href: "/makyaj-malzemesi/goz" },
-          { label: "Dudak", href: "/makyaj-malzemesi/dudak" },
+          { label: "Yüz", href: "/makyaj-malzemesi?sub=yuz" },
+          { label: "Göz", href: "/makyaj-malzemesi?sub=goz" },
+          { label: "Dudak", href: "/makyaj-malzemesi?sub=dudak" },
         ],
       },
     ],
@@ -133,14 +133,76 @@ export const primaryNav: NavItem[] = [
       {
         title: "İç Çamaşırı",
         items: [
-          { label: "Sütyen", href: "/ic-camasiri/sutyen" },
-          { label: "Külot", href: "/ic-camasiri/kulot" },
-          { label: "Gecelik", href: "/ic-camasiri/gecelik" },
+          { label: "Sütyen", href: "/ic-camasiri?sub=sutyen" },
+          { label: "Külot", href: "/ic-camasiri?sub=kulot" },
+          { label: "Gecelik", href: "/ic-camasiri?sub=gecelik" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Çocuk",
+    href: "/cocuk",
+    columns: [
+      {
+        title: "Çocuk",
+        items: [
+          { label: "Kız Çocuk", href: "/cocuk?sub=kiz-cocuk" },
+          { label: "Erkek Çocuk", href: "/cocuk?sub=erkek-cocuk" },
+          { label: "Bebek Giyim", href: "/cocuk?sub=bebek-giyim" },
         ],
       },
     ],
   },
 ] as const;
+
+/**
+ * Pages where the Kadın/Erkek/Unisex filter makes sense. Keyed by category slug;
+ * `exclude`/`include` list subcategory slugs that opt out/in of the category's default.
+ */
+const GENDER_FILTER_RULES: Record<string, { exclude?: string[]; include?: string[] }> = {
+  "ust-giyim": {},
+  "alt-giyim": { exclude: ["tayt"] },
+  aksesuar: { include: ["taki", "kemer"] },
+};
+
+export function hasGenderFilter(category?: string, subcategory?: string): boolean {
+  if (!category && !subcategory) return false;
+
+  const disallowedCategories = ["elbise", "makyaj", "makyaj-malzemesi", "cocuk"];
+  const disallowedSubcategories = [
+    "midi-elbise",
+    "maxi-elbise",
+    "mini-elbise",
+    "gunluk-elbise",
+    "abiye",
+    "abiye-davet",
+    "midi",
+    "maxi",
+    "mini",
+    "gunluk",
+    "yuz",
+    "goz",
+    "dudak",
+    "kiz-cocuk",
+    "erkek-cocuk",
+    "bebek-giyim",
+  ];
+
+  if (category && disallowedCategories.includes(category.toLowerCase())) {
+    return false;
+  }
+
+  if (
+    subcategory &&
+    (disallowedCategories.includes(subcategory.toLowerCase()) ||
+      disallowedSubcategories.includes(subcategory.toLowerCase()))
+  ) {
+    return false;
+  }
+
+  return true;
+}
 
 export const footerLinks = {
   magaza: [
@@ -151,6 +213,7 @@ export const footerLinks = {
     { label: "Alt Giyim", href: "/alt-giyim" },
     { label: "Makyaj Malzemesi", href: "/makyaj-malzemesi" },
     { label: "İç Çamaşırı", href: "/ic-camasiri" },
+    { label: "Çocuk", href: "/cocuk" },
   ],
   musteriHizmetleri: [
     { label: "Siparişimi Takip Et", href: "/siparis-takip" },

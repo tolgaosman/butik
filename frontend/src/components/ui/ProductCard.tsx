@@ -6,11 +6,16 @@ import { Heart } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
 import { useFavorites } from "@/lib/favorites";
+import { toast } from "@/lib/toast";
 import { Badge } from "./Badge";
 
 export function ProductCard({ product, sizes }: { product: Product; sizes: string }) {
   const { isFavorite, toggle } = useFavorites();
   const saved = isFavorite(product.id);
+
+  function handleToggleFavorite() {
+    toggle(product);
+  }
 
   return (
     <div className="group">
@@ -34,7 +39,7 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
 
         <button
           type="button"
-          onClick={() => toggle(product)}
+          onClick={handleToggleFavorite}
           aria-pressed={saved}
           aria-label={saved ? "Favorilerden çıkar" : "Favorilere ekle"}
           className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center text-ink opacity-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] transition-all duration-300 ease-[var(--ease-organic)] group-hover:opacity-100 group-focus-within:opacity-100 hover:scale-110 [@media(hover:none)]:opacity-100"

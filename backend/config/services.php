@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    /*
+    | 'log' driver writes the OTP to storage/logs/laravel.log instead of
+    | sending a real SMS — the local default until NETGSM_USERCODE/PASSWORD
+    | are filled in, mirroring MAIL_MAILER=log.
+    */
+    'netgsm' => [
+        'driver' => env('NETGSM_DRIVER', 'log'),
+        'usercode' => env('NETGSM_USERCODE'),
+        'password' => env('NETGSM_PASSWORD'),
+        'header' => env('NETGSM_HEADER'),
+    ],
+
 ];

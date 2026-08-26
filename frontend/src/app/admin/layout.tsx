@@ -12,11 +12,13 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Home
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
 const navigation = [
+  { name: "Ana Sayfa", href: "/admin/ana-sayfa", icon: Home },
   { name: "Siparişler", href: "/admin/siparisler", icon: ShoppingCart },
   { name: "Ürünler", href: "/admin/urunler", icon: Package },
   { name: "Kategoriler", href: "/admin/kategoriler", icon: Layers },
@@ -128,7 +130,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-surface px-4 sm:px-6 lg:px-8">
           <button
             type="button"
-            className="text-ink-soft hover:text-ink lg:hidden"
+            className="-m-2 p-2 text-ink-soft transition-colors duration-200 hover:text-ink lg:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu size={24} />

@@ -8,10 +8,16 @@ import { formatPrice } from "@/lib/format";
 import type { Product } from "@/lib/products";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import { apiMutate } from "@/lib/api";
+import { apiMutate, ApiError } from "@/lib/api";
 import { revalidateStore } from "../actions";
+import { iconButtonDanger, iconButtonNeutral } from "@/lib/adminIconButton";
+import { toast } from "@/lib/toast";
 
 const dateFormatter = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" });
+
+const FIXED_SIZES = ["XS", "S", "M", "L", "XL"];
+
+type SizeRow = { size: string; stock: number };
 
 function priceOf(product: any): number {
   return product.price_minor != null ? product.price_minor / 100 : (product.price ?? 0);
@@ -35,6 +41,18 @@ function stockOf(product: any): number | null {
   return variants.reduce((total: number, variant: any) => total + (variant.stock ?? 0), 0);
 }
 
+function deriveProductRow(product: any) {
+  return {
+    variants: product.variants ?? [],
+    productCategories: product.categories ?? [],
+    compareAt: compareAtOf(product),
+    discount: discountOf(product),
+    totalStock: stockOf(product),
+    isActive: product.is_active !== false,
+    createdAt: product.created_at ? new Date(product.created_at) : null,
+  };
+}
+
 export function ProductsTable({ products, categories }: { products: any[], categories: any[] }) {
   const [localProducts, setLocalProducts] = useState<any[]>(products);
   const [query, setQuery] = useState("");
@@ -45,11 +63,12 @@ export function ProductsTable({ products, categories }: { products: any[], categ
   const [priceInput, setPriceInput] = useState(0);
   const [discountInput, setDiscountInput] = useState(0);
   const [isNewInput, setIsNewInput] = useState(false);
+  const [genderInput, setGenderInput] = useState<"kadin" | "erkek" | "unisex">("unisex");
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   
   // Size Form State
   const [sizeType, setSizeType] = useState<"yas" | "sayi" | "harf">("harf");
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [sizeRows, setSizeRows] = useState<SizeRow[]>([]);
   const [sizeInput, setSizeInput] = useState("");
   const dragItem = useRef<number | null>(null);
   const dragOverItem = useRef<number | null>(null);
@@ -99,11 +118,14 @@ export function ProductsTable({ products, categories }: { products: any[], categ
     }
     
     setIsNewInput(!!product.isNew || !!product.is_new);
+    setGenderInput(product.gender || "unisex");
     
     setSelectedCategories(product.categories ? product.categories.map((c: any) => c.id) : []);
     
-    const variantSizes = product.variants ? product.variants.map((v: any) => v.size) : [];
-    setSelectedSizes(variantSizes);
+    const variantSizeRows: SizeRow[] = product.variants
+      ? product.variants.map((v: any) => ({ size: v.size, stock: v.stock ?? 0 }))
+      : [];
+    setSizeRows(variantSizeRows);
     setSizeInput("");
 
     // Reset image states
@@ -120,9 +142,12 @@ export function ProductsTable({ products, categories }: { products: any[], categ
       await apiMutate(`/admin/products/${product.id}`, { method: "DELETE" });
       await revalidateStore();
       setLocalProducts((prev) => prev.filter((p) => p.id !== product.id));
+      toast.success("Ürün silindi", { description: `"${product.name}" kaldırıldı.` });
     } catch (error) {
       console.error("Ürün silinemedi:", error);
-      alert("Silme işlemi sırasında hata oluştu.");
+      toast.error("Silme işlemi başarısız oldu", {
+        description: error instanceof ApiError ? error.message : "Lütfen tekrar deneyin.",
+      });
     }
   };
 
@@ -153,9 +178,10 @@ export function ProductsTable({ products, categories }: { products: any[], categ
       formData.append("price", String(priceInput));
       formData.append("discount", String(discountInput));
       formData.append("isNew", isNewInput ? "1" : "0");
+      formData.append("gender", genderInput);
 
       selectedCategories.forEach(id => formData.append("categories[]", String(id)));
-      selectedSizes.forEach(size => formData.append("sizes[]", size));
+      formData.append("sizes", JSON.stringify(sizeRows));
 
       if (imageFile) {
         formData.append("image", imageFile);
@@ -180,35 +206,44 @@ export function ProductsTable({ products, categories }: { products: any[], categ
         )
       );
       setEditingProduct(null);
+      toast.success("Ürün güncellendi", { description: `"${nameInput}" kaydedildi.` });
     } catch (error) {
       console.error("Ürün güncellenemedi:", error);
-      alert("Bir hata oluştu.");
+      toast.error("Ürün güncellenemedi", {
+        description: error instanceof ApiError ? error.message : "Lütfen tekrar deneyin.",
+      });
     }
   };
 
   const calculatedNewPrice = discountInput > 0 ? priceInput - (priceInput * (discountInput / 100)) : priceInput;
 
-  const handleAddSize = () => {
-    const val = sizeInput.trim();
-    if (val && !selectedSizes.includes(val)) {
-      setSelectedSizes([...selectedSizes, val]);
-      setSizeInput("");
+  const handleAddSize = (size?: string) => {
+    const val = (size ?? sizeInput).trim();
+    if (val && !sizeRows.some((r) => r.size === val)) {
+      setSizeRows([...sizeRows, { size: val, stock: 0 }]);
+      if (!size) setSizeInput("");
     }
   };
 
   const handleRemoveSize = (index: number) => {
-    setSelectedSizes(selectedSizes.filter((_, i) => i !== index));
+    setSizeRows(sizeRows.filter((_, i) => i !== index));
+  };
+
+  const handleStockChange = (index: number, stock: number) => {
+    setSizeRows(sizeRows.map((r, i) => (i === index ? { ...r, stock: Math.max(0, stock) } : r)));
   };
 
   const handleSortSizes = () => {
     if (dragItem.current === null || dragOverItem.current === null) return;
-    const _sizes = [...selectedSizes];
+    const _sizes = [...sizeRows];
     const draggedItemContent = _sizes.splice(dragItem.current, 1)[0];
     _sizes.splice(dragOverItem.current, 0, draggedItemContent);
     dragItem.current = null;
     dragOverItem.current = null;
-    setSelectedSizes(_sizes);
+    setSizeRows(_sizes);
   };
+
+  const missingFixedSizes = FIXED_SIZES.filter((s) => !sizeRows.some((r) => r.size === s));
 
   return (
     <div className="space-y-6">
@@ -229,7 +264,7 @@ export function ProductsTable({ products, categories }: { products: any[], categ
             {filtered.length} / {localProducts.length} ürün
           </p>
           <Button variant="solid" onClick={() => {
-            alert("Yeni ürün ekleme özelliği backend entegrasyonu ile aktif edilecektir.");
+            toast.info("Yakında", { description: "Yeni ürün ekleme özelliği backend entegrasyonu ile aktif edilecektir." });
           }}>
             Yeni Ürün
           </Button>
@@ -237,29 +272,24 @@ export function ProductsTable({ products, categories }: { products: any[], categ
       </div>
 
       <div className="overflow-hidden border border-border bg-surface shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border">
+        <div className="hidden overflow-x-auto md:block">
+          <table className="w-full table-fixed divide-y divide-border">
             <thead>
               <tr className="bg-cream/50">
-                <th scope="col" className="whitespace-nowrap py-3.5 pl-6 pr-3 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Ürün</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Kategoriler</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Bedenler / Stok</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-3.5 text-right text-xs font-medium uppercase tracking-wider text-ink-soft">Toplam Stok</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-3.5 text-right text-xs font-medium uppercase tracking-wider text-ink-soft">Fiyat</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Durum</th>
-                <th scope="col" className="whitespace-nowrap px-3 py-3.5 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Eklendi</th>
-                <th scope="col" className="relative whitespace-nowrap py-3.5 pl-3 pr-6"><span className="sr-only">İşlemler</span></th>
+                <th scope="col" className="w-[20%] py-3.5 px-3 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Ürün</th>
+                <th scope="col" className="w-[13%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Kategoriler</th>
+                <th scope="col" className="w-[20%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Bedenler / Stok</th>
+                <th scope="col" className="w-[11%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Toplam Stok</th>
+                <th scope="col" className="w-[12%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Fiyat</th>
+                <th scope="col" className="w-[10%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Durum</th>
+                <th scope="col" className="w-[10%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Eklendi</th>
+                <th scope="col" className="w-[9%] py-3.5 px-3 text-center"><span className="sr-only">İşlemler</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border bg-surface">
               {filtered.map((product: any) => {
-                const variants = product.variants ?? [];
-                const productCategories = product.categories ?? [];
-                const compareAt = compareAtOf(product);
-                const discount = discountOf(product);
-                const totalStock = stockOf(product);
-                const isActive = product.is_active !== false;
-                const createdAt = product.created_at ? new Date(product.created_at) : null;
+                const { variants, productCategories, compareAt, discount, totalStock, isActive, createdAt } =
+                  deriveProductRow(product);
 
                 return (
                 <tr key={product.id} className="transition-colors duration-200 hover:bg-cream/30">
@@ -288,9 +318,9 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-4 text-sm">
+                  <td className="px-3 py-4 text-center text-sm">
                     {productCategories.length ? (
-                      <div className="flex max-w-[14rem] flex-wrap gap-1">
+                      <div className="flex flex-wrap justify-center gap-1">
                         {productCategories.slice(0, 2).map((c: any) => (
                           <span key={c.id} className="whitespace-nowrap border border-border bg-cream px-2 py-0.5 text-xs text-ink-soft">
                             {c.name}
@@ -309,9 +339,9 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                       <span className="text-xs italic text-ink-soft">Kategorisiz</span>
                     )}
                   </td>
-                  <td className="px-3 py-4 text-sm">
+                  <td className="px-3 py-4 text-center text-sm">
                     {variants.length ? (
-                      <div className="flex max-w-[16rem] flex-wrap gap-1">
+                      <div className="flex flex-wrap justify-center gap-1">
                         {variants.slice(0, 4).map((v: any) => {
                           const stock = v.stock ?? 0;
                           return (
@@ -336,7 +366,7 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                       <span className="text-xs italic text-ink-soft">Beden yok</span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-right text-sm">
+                  <td className="whitespace-nowrap px-3 py-4 text-center text-sm">
                     {totalStock === null ? (
                       <span className="text-ink-soft">—</span>
                     ) : (
@@ -353,43 +383,43 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                       </span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-right text-sm">
+                  <td className="whitespace-nowrap px-3 py-4 text-center text-sm">
                     <div className="font-medium text-ink">{formatPrice(priceOf(product))}</div>
                     {discount > 0 && compareAt && (
-                      <div className="mt-0.5 flex items-center justify-end gap-1.5">
+                      <div className="mt-0.5 flex items-center justify-center gap-1.5">
                         <span className="text-xs text-ink-soft line-through">{formatPrice(compareAt)}</span>
                         <span className="bg-sand px-1.5 py-0.5 text-[10px] font-medium text-ink">-%{discount}</span>
                       </div>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm">
+                  <td className="whitespace-nowrap px-3 py-4 text-center text-sm">
                     <span className="inline-flex items-center gap-2 text-xs text-ink-soft">
                       <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-olive" : "bg-ink-soft/40"}`} />
                       {isActive ? "Yayında" : "Pasif"}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-xs text-ink-soft">
+                  <td className="whitespace-nowrap px-3 py-4 text-center text-xs text-ink-soft">
                     {createdAt ? dateFormatter.format(createdAt) : "—"}
                   </td>
-                  <td className="whitespace-nowrap py-4 pl-3 pr-6 text-right">
-                    <div className="flex items-center justify-end gap-3">
+                  <td className="whitespace-nowrap px-3 py-4 text-center">
+                    <div className="flex items-center justify-center gap-3">
                       <Link
                         href={`/urun/${product.slug ?? product.id}`}
-                        className="inline-flex items-center gap-1 text-xs text-ink-soft transition-colors duration-200 hover:text-olive"
+                        className={iconButtonNeutral}
                         title="Mağazada aç"
                       >
                         <ArrowUpRight size={16} />
                       </Link>
-                      <button 
-                        onClick={() => handleEdit(product)} 
-                        className="text-ink-soft hover:text-olive transition-colors" 
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className={iconButtonNeutral}
                         title="Düzenle"
                       >
                         <Edit2 size={16} />
                       </button>
-                      <button 
-                        onClick={() => handleDelete(product)} 
-                        className="text-ink-soft hover:text-red-600 transition-colors" 
+                      <button
+                        onClick={() => handleDelete(product)}
+                        className={iconButtonDanger}
                         title="Sil"
                       >
                         <Trash2 size={16} />
@@ -409,6 +439,148 @@ export function ProductsTable({ products, categories }: { products: any[], categ
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="divide-y divide-border md:hidden">
+          {filtered.map((product: any) => {
+            const { variants, productCategories, compareAt, discount, totalStock, isActive, createdAt } =
+              deriveProductRow(product);
+
+            return (
+              <div key={product.id} className="space-y-3 p-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden border border-border bg-cream">
+                    <Image src={product.image} alt="" fill sizes="48px" className="object-cover" />
+                    {(product.images ?? []).length > 0 && (
+                      <span className="absolute bottom-0 right-0 bg-ink/70 px-1 text-[10px] leading-4 text-cream">
+                        {(product.images ?? []).length + 1}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-sm font-medium text-ink">{product.name}</span>
+                      {(product.isNew || product.is_new) && (
+                        <span className="whitespace-nowrap bg-sand px-1.5 py-0.5 text-[10px] font-medium tracking-[0.05em] text-ink">
+                          YENİ
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-ink-soft">
+                      #{product.id} · {product.slug ?? "—"}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Kategoriler</div>
+                  {productCategories.length ? (
+                    <div className="flex flex-wrap gap-1">
+                      {productCategories.slice(0, 4).map((c: any) => (
+                        <span key={c.id} className="whitespace-nowrap border border-border bg-cream px-2 py-0.5 text-xs text-ink-soft">
+                          {c.name}
+                        </span>
+                      ))}
+                      {productCategories.length > 4 && (
+                        <span className="px-1 py-0.5 text-xs text-ink-soft">+{productCategories.length - 4}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-xs italic text-ink-soft">Kategorisiz</span>
+                  )}
+                </div>
+
+                <div>
+                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Bedenler</div>
+                  {variants.length ? (
+                    <div className="flex flex-wrap gap-1">
+                      {variants.map((v: any) => {
+                        const stock = v.stock ?? 0;
+                        return (
+                          <span
+                            key={v.id ?? v.size}
+                            className={`whitespace-nowrap border px-2 py-0.5 text-xs transition-colors duration-200 ${
+                              stock === 0
+                                ? "border-border bg-surface text-ink-soft/60 line-through"
+                                : "border-border bg-cream text-ink-soft"
+                            }`}
+                          >
+                            {v.size ?? "Tek"} <span className="text-ink/70">{stock}</span>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <span className="text-xs italic text-ink-soft">Beden yok</span>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Toplam Stok</div>
+                    {totalStock === null ? (
+                      <span className="text-ink-soft">—</span>
+                    ) : (
+                      <span
+                        className={
+                          totalStock === 0
+                            ? "font-medium text-olive-dark"
+                            : totalStock <= 5
+                              ? "font-medium text-gold"
+                              : "text-ink"
+                        }
+                      >
+                        {totalStock === 0 ? "Tükendi" : `${totalStock} adet`}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Fiyat</div>
+                    <div className="font-medium text-ink">{formatPrice(priceOf(product))}</div>
+                    {discount > 0 && compareAt && (
+                      <div className="mt-0.5 flex items-center gap-1.5">
+                        <span className="text-xs text-ink-soft line-through">{formatPrice(compareAt)}</span>
+                        <span className="bg-sand px-1.5 py-0.5 text-[10px] font-medium text-ink">-%{discount}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Durum</div>
+                    <span className="inline-flex items-center gap-2 text-xs text-ink-soft">
+                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-olive" : "bg-ink-soft/40"}`} />
+                      {isActive ? "Yayında" : "Pasif"}
+                    </span>
+                  </div>
+                  <div>
+                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Eklendi</div>
+                    <span className="text-xs text-ink-soft">{createdAt ? dateFormatter.format(createdAt) : "—"}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-1 border-t border-border pt-3">
+                  <Link
+                    href={`/urun/${product.slug ?? product.id}`}
+                    className={iconButtonNeutral}
+                    title="Mağazada aç"
+                  >
+                    <ArrowUpRight size={16} />
+                  </Link>
+                  <button onClick={() => handleEdit(product)} className={iconButtonNeutral} title="Düzenle">
+                    <Edit2 size={16} />
+                  </button>
+                  <button onClick={() => handleDelete(product)} className={iconButtonDanger} title="Sil">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {filtered.length === 0 && (
+            <p className="py-12 text-center text-sm text-ink-soft">
+              &ldquo;{query}&rdquo; için ürün bulunamadı.
+            </p>
+          )}
         </div>
       </div>
 
@@ -438,9 +610,26 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                   type="checkbox"
                   checked={isNewInput}
                   onChange={(e) => setIsNewInput(e.target.checked)}
-                  className="rounded border-border text-olive focus:ring-olive"
+                  className="rounded border-border accent-olive focus:ring-olive"
                 />
                 <label htmlFor="isNew" className="text-sm font-medium text-ink">Yeni Sezon Etiketi</label>
+              </div>
+              <div className="space-y-2 pt-2 border-t border-border">
+                <label className="block text-sm font-medium text-ink">Cinsiyet</label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-ink">
+                    <input type="radio" name="gender" value="kadin" checked={genderInput === 'kadin'} onChange={() => setGenderInput('kadin')} className="accent-olive focus:ring-olive border-border" />
+                    Kadın
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-ink">
+                    <input type="radio" name="gender" value="erkek" checked={genderInput === 'erkek'} onChange={() => setGenderInput('erkek')} className="accent-olive focus:ring-olive border-border" />
+                    Erkek
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer text-sm text-ink">
+                    <input type="radio" name="gender" value="unisex" checked={genderInput === 'unisex'} onChange={() => setGenderInput('unisex')} className="accent-olive focus:ring-olive border-border" />
+                    Unisex
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -489,7 +678,7 @@ export function ProductsTable({ products, categories }: { products: any[], categ
             {/* KATEGORİLER */}
             <div className="space-y-3 rounded border border-border p-4 bg-cream/30">
               <h3 className="text-sm font-semibold text-ink uppercase tracking-wider">Kategoriler</h3>
-              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto sm:grid-cols-2">
                 {categories.map((cat: any) => (
                   <div key={cat.id} className="flex items-center gap-2">
                     <input
@@ -500,7 +689,7 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                         if (e.target.checked) setSelectedCategories([...selectedCategories, cat.id]);
                         else setSelectedCategories(selectedCategories.filter(id => id !== cat.id));
                       }}
-                      className="rounded border-border text-olive focus:ring-olive"
+                      className="rounded border-border accent-olive focus:ring-olive"
                     />
                     <label htmlFor={`cat-${cat.id}`} className="text-sm text-ink">{cat.name}</label>
                   </div>
@@ -513,26 +702,44 @@ export function ProductsTable({ products, categories }: { products: any[], categ
             <div className="space-y-4 rounded border border-border p-4 bg-cream/30">
               <h3 className="text-sm font-semibold text-ink uppercase tracking-wider">Beden Seçimi</h3>
               
-              <div className="flex gap-6 mb-2">
+              <div className="flex flex-wrap gap-x-4 gap-y-2 mb-2">
                 <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-ink">
-                  <input type="radio" name="sizeType" value="yas" checked={sizeType === 'yas'} onChange={() => setSizeType('yas')} className="text-olive focus:ring-olive border-border" />
+                  <input type="radio" name="sizeType" value="yas" checked={sizeType === 'yas'} onChange={() => setSizeType('yas')} className="accent-olive focus:ring-olive border-border" />
                   Yaş Grubu
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-ink">
-                  <input type="radio" name="sizeType" value="sayi" checked={sizeType === 'sayi'} onChange={() => setSizeType('sayi')} className="text-olive focus:ring-olive border-border" />
+                  <input type="radio" name="sizeType" value="sayi" checked={sizeType === 'sayi'} onChange={() => setSizeType('sayi')} className="accent-olive focus:ring-olive border-border" />
                   Sayı
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-ink">
-                  <input type="radio" name="sizeType" value="harf" checked={sizeType === 'harf'} onChange={() => setSizeType('harf')} className="text-olive focus:ring-olive border-border" />
+                  <input type="radio" name="sizeType" value="harf" checked={sizeType === 'harf'} onChange={() => setSizeType('harf')} className="accent-olive focus:ring-olive border-border" />
                   Harf
                 </label>
               </div>
               
+              {missingFixedSizes.length > 0 && (
+                <div className="mb-4">
+                  <p className="mb-1.5 text-xs text-ink-soft">Bu üründe olmayan bedenler — eklemek için tıkla:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {missingFixedSizes.map((size) => (
+                      <button
+                        key={size}
+                        type="button"
+                        onClick={() => handleAddSize(size)}
+                        className="border border-dashed border-border px-2.5 py-1 text-xs text-ink-soft transition-colors duration-200 hover:border-olive hover:text-olive"
+                      >
+                        + {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex gap-2 mb-4">
-                <input 
-                  type="text" 
-                  value={sizeInput} 
-                  onChange={(e) => setSizeInput(e.target.value)} 
+                <input
+                  type="text"
+                  value={sizeInput}
+                  onChange={(e) => setSizeInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -546,14 +753,14 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                   }
                   className="flex-1 rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
                 />
-                <Button variant="solid" onClick={handleAddSize} type="button">Ekle</Button>
+                <Button variant="solid" onClick={() => handleAddSize()} type="button">Ekle</Button>
               </div>
-              
-              {selectedSizes.length > 0 ? (
+
+              {sizeRows.length > 0 ? (
                 <div className="space-y-2">
-                  {selectedSizes.map((size, index) => (
-                    <div 
-                      key={size}
+                  {sizeRows.map((row, index) => (
+                    <div
+                      key={row.size}
                       draggable
                       onDragStart={() => (dragItem.current = index)}
                       onDragEnter={() => (dragOverItem.current = index)}
@@ -563,10 +770,21 @@ export function ProductsTable({ products, categories }: { products: any[], categ
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-ink-soft cursor-grab">⋮⋮</span>
-                        <span className="text-sm font-medium text-ink">{size}</span>
+                        <span className="text-sm font-medium text-ink">{row.size}</span>
+                        <label className="flex items-center gap-1.5 text-xs text-ink-soft">
+                          Stok:
+                          <input
+                            type="number"
+                            min="0"
+                            value={row.stock}
+                            onChange={(e) => handleStockChange(index, Number(e.target.value))}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-16 rounded border border-border bg-cream px-2 py-1 text-xs text-ink focus:border-olive focus:outline-none"
+                          />
+                        </label>
                       </div>
-                      <button 
-                        type="button" 
+                      <button
+                        type="button"
                         onClick={() => handleRemoveSize(index)}
                         className="text-ink-soft hover:text-red-500 transition-colors px-2"
                       >
@@ -584,7 +802,7 @@ export function ProductsTable({ products, categories }: { products: any[], categ
             <div className="space-y-4 rounded border border-border p-4 bg-cream/30">
               <h3 className="text-sm font-semibold text-ink uppercase tracking-wider">Fiyatlandırma</h3>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <label htmlFor="price" className="block text-sm font-medium text-ink">Normal Fiyat (TL)</label>
                   <input

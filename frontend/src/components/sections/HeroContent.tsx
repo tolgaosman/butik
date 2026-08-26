@@ -32,8 +32,7 @@ export function HeroContent() {
       </motion.h1>
 
       <motion.p variants={item} className="max-w-lg text-balance text-ink-soft">
-        Kıbrıs&apos;ın her yerinden gelenler bizde aynı şeyi arıyor: giyince kendini iyi
-        hissettiren, dolapta durup kalmayacak parçalar.
+        Kıbrıs&apos;ın her yerinden gelenler bizde aynı şeyi arıyor: Kadın, erkek ve çocuk koleksiyonlarımızda, giyince kendini iyi hissettiren ve dolapta durup kalmayacak parçalar.
       </motion.p>
 
       <motion.div variants={item}>

@@ -1,7 +1,10 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { apiMutate, ApiError } from "./api";
+import { useAuth } from "./auth";
+import { toast } from "./toast";
 
 export type CartItem = {
   id: number;
@@ -38,7 +41,7 @@ const EMPTY_CART: Cart = {
 type CartContextValue = {
   cart: Cart;
   isLoading: boolean;
-  addItem: (productSlug: string, size: string | null, quantity: number) => Promise<void>;
+  addItem: (productSlug: string, size: string | null, quantity: number) => Promise<boolean>;
   updateQuantity: (itemId: number, quantity: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
   refresh: () => Promise<void>;
@@ -47,6 +50,8 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const router = useRouter();
   const [cart, setCart] = useState<Cart>(EMPTY_CART);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -65,17 +70,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
     refresh();
   }, [refresh]);
 
-  const addItem = useCallback(async (productSlug: string, size: string | null, quantity: number) => {
+  const addItem = useCallback(async (productSlug: string, size: string | null, quantity: number): Promise<boolean> => {
+    if (!user) {
+      toast.error("Giriş Yapmalısınız", { description: "Sepete ürün eklemek için lütfen giriş yapın." });
+      router.push("/hesabim");
+      return false;
+    }
+
     const previous = cart;
-    const data = await apiMutate<Cart>("/cart/items", {
-      method: "POST",
-      body: JSON.stringify({ product_slug: productSlug, size, quantity }),
-    }).catch((err) => {
+    try {
+      const data = await apiMutate<Cart>("/cart/items", {
+        method: "POST",
+        body: JSON.stringify({ product_slug: productSlug, size, quantity }),
+      });
+      setCart(data);
+      return true;
+    } catch (err) {
       setCart(previous);
       throw err;
-    });
-    setCart(data);
-  }, [cart]);
+    }
+  }, [cart, user, router]);
 
   const updateQuantity = useCallback(async (itemId: number, quantity: number) => {
     const previous = cart;

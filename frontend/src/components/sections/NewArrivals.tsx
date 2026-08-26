@@ -1,13 +1,11 @@
 import { PackageSearch } from "lucide-react";
-import { getNewArrivals } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { ProductCard } from "@/components/ui/ProductCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MotionStagger, MotionItem } from "@/components/ui/MotionReveal";
 
-export async function NewArrivals() {
-  const products = (await getNewArrivals()).slice(0, 4);
-
+export function NewArrivals({ products }: { products: Product[] }) {
   return (
     <section id="yeni-sezon" className="bg-cream py-12 sm:py-20">
       <div className="container-site">

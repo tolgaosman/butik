@@ -1,12 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import { MotionConfig } from "framer-motion";
 import { Raleway } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AuthProvider } from "@/lib/auth";
 import { CartProvider } from "@/lib/cart";
 import { FavoritesProvider } from "@/lib/favorites";
 import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
+import { Toaster } from "@/components/ui/Toaster";
+import { MetaPixel } from "@/components/ui/MetaPixel";
 import "./globals.css";
 
 
@@ -36,24 +39,28 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export const dynamic = "force-dynamic";
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+
   return (
     <html lang="tr" className={raleway.variable}>
-      <body className="font-sans antialiased">
+      <body className="flex min-h-screen flex-col font-sans antialiased lining-nums">
+        {pixelId && <MetaPixel pixelId={pixelId} />}
         <MotionConfig reducedMotion="user">
           <AuthProvider>
             <CartProvider>
               <FavoritesProvider>
                 <Header />
-                <main>{children}</main>
+                <main className="flex-1">{children}</main>
                 <Footer />
                 <FloatingWhatsApp />
+                <Toaster />
               </FavoritesProvider>
             </CartProvider>
           </AuthProvider>
         </MotionConfig>
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );

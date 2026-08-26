@@ -1,9 +1,8 @@
-import { getNewArrivals } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { HeroContent } from "./HeroContent";
 import { HeroCarousel } from "./HeroCarousel";
 
-export async function Hero() {
-  const products = await getNewArrivals();
+export function Hero({ products }: { products: Product[] }) {
 
   return (
     <section className="relative overflow-x-clip bg-cream pb-[clamp(0.5rem,2.4vh,1.5rem)]">
