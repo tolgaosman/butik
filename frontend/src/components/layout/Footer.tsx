@@ -12,16 +12,16 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-surface-alt">
       <div className="container-site py-6 sm:py-4">
-        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row sm:gap-0">
-          <div className="flex flex-1 justify-center sm:justify-start">
+        <div className="flex items-center justify-between gap-4 sm:gap-0">
+          <div className="flex flex-1 justify-start">
             <Image src="/sevgiLogo-ink.png" alt="Sevgi Butik" width={180} height={65} className="h-8 w-auto object-contain" />
           </div>
           
-          <div className="flex flex-1 justify-center text-center">
+          <div className="hidden flex-1 justify-center text-center sm:flex">
             <p className="text-sm text-ink-soft">{business.address}</p>
           </div>
           
-          <div className="flex flex-1 items-center justify-center gap-4 sm:justify-end">
+          <div className="flex flex-1 items-center justify-end gap-4">
             <a
               href={business.instagram}
               target="_blank"

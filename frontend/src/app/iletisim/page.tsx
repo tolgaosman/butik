@@ -115,7 +115,7 @@ export default function ContactPage() {
         </MotionItem>
       </MotionStagger>
 
-      <div className="mt-12 grid grid-cols-1 gap-12 sm:mt-16 lg:grid-cols-[380px_1fr] lg:gap-16">
+      <div className="mt-10 grid grid-cols-1 gap-8 sm:mt-16 sm:gap-12 lg:grid-cols-[380px_1fr] lg:gap-16">
         {/* Sol Sütun: Çalışma Saatleri */}
         <MotionReveal>
           <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/70 bg-surface p-6 shadow-sm transition-shadow duration-300 hover:shadow-xl hover:shadow-ink/5 sm:p-8">
@@ -136,10 +136,10 @@ export default function ContactPage() {
                   return (
                     <div
                       key={h.day}
-                      className={`group flex flex-1 items-center justify-between text-sm transition-colors duration-200 ${
+                      className={`group flex flex-1 items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors duration-200 sm:py-2 ${
                         isToday
-                          ? "rounded-lg bg-olive px-4 text-white shadow-md shadow-olive/20"
-                          : "px-2 hover:bg-cream"
+                          ? "bg-olive text-white shadow-md shadow-olive/20"
+                          : "hover:bg-cream"
                       }`}
                     >
                       <dt className="flex items-center gap-2">

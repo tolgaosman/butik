@@ -157,7 +157,7 @@ export function ProductListing({ title, products, subcategories = [], category, 
                 </button>
 
                 {filterOpen && (
-                  <div className="absolute right-0 top-full z-20 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-surface shadow-xl sm:w-80">
+                  <div className="absolute left-0 top-full z-20 mt-2 w-[min(18rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-xl sm:left-auto sm:right-0 sm:w-80">
                     <div className="flex flex-col divide-y divide-border">
                       {showGenderFilter && (
                         <div className="px-5 pt-4 pb-2">
@@ -210,7 +210,7 @@ export function ProductListing({ title, products, subcategories = [], category, 
               </div>
             )}
 
-            <div className="relative w-full min-w-[14rem] shrink-0 sm:w-64">
+            <div className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
               <Search
                 className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-soft"
                 size={18}
