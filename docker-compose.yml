@@ -53,7 +53,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      network: butik-network
     container_name: butik-frontend
     restart: unless-stopped
     depends_on:
