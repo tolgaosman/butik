@@ -21,7 +21,7 @@ export function Footer() {
             <p className="text-sm text-ink-soft">{business.address}</p>
           </div>
           
-          <div className="flex flex-1 items-center justify-end gap-4">
+          <div className="flex flex-1 items-center justify-center gap-4 sm:justify-end">
             <a
               href={business.instagram}
               target="_blank"
@@ -41,6 +41,8 @@ export function Footer() {
               <Facebook size={18} />
             </a>
           </div>
+
+          <div className="flex-1 sm:hidden" aria-hidden />
         </div>
       </div>
     </footer>
