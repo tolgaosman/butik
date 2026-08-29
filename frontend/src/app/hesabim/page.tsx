@@ -715,7 +715,7 @@ function ProfileHero({
         </div>
 
         <div className="px-5 pb-6 sm:px-8 sm:pb-8">
-          <div className="-mt-10 flex sm:-mt-12">
+          <div className="relative z-10 -mt-10 flex sm:-mt-12">
             <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-surface bg-olive text-2xl font-medium text-white shadow-sm sm:size-24 sm:text-3xl">
               {initials}
             </div>
@@ -748,7 +748,7 @@ function ProfileHero({
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 lg:pt-20 lg:text-right">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-end lg:justify-end lg:pt-20 lg:text-right">
               <MetaGroup label="Üyelik Durumu" icon={BadgeCheck}>
                 <Pill>{user.isAdmin ? "Yönetici" : "Kayıtlı Üye"}</Pill>
               </MetaGroup>

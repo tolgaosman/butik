@@ -7,7 +7,7 @@ import { MotionStagger, MotionItem } from "@/components/ui/MotionReveal";
 
 export function NewArrivals({ products }: { products: Product[] }) {
   return (
-    <section id="yeni-sezon" className="bg-cream py-12 sm:py-20">
+    <section id="yeni-sezon" className="bg-white py-12 sm:py-20">
       <div className="container-site">
         <SectionHeader eyebrow="YENİ SEZON" title="Yeni Geldi!" />
 

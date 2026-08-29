@@ -23,7 +23,6 @@
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   --animate-reveal: reveal 0.7s var(--ease-organic) forwards;
-  --animate-hero-marquee: hero-marquee 50s linear infinite;
 
   @keyframes reveal {
     from {
@@ -33,15 +32,6 @@
     to {
       opacity: 1;
       transform: translateY(0);
-    }
-  }
-
-  @keyframes hero-marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-25%);
     }
   }
 }
@@ -84,12 +74,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-
-  /* Ambient decorative loop, not a vestibular-trigger scroll effect — keep it spinning. */
-  .animate-hero-marquee {
-    animation-duration: 50s !important;
-    animation-iteration-count: infinite !important;
   }
 }
 

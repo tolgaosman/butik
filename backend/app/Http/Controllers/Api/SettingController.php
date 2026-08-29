@@ -129,7 +129,9 @@ class SettingController extends Controller
             $withStock = fn ($query) => $query->withExists(['variants as in_stock' => fn ($q) => $q->where('is_active', true)->where('stock', '>', 0)]);
 
             $heroProducts = count($heroIds) > 0
-                ? $withStock(Product::with(['images', 'categories'])->whereIn('slug', $heroIds))->get()
+                ? $withStock(Product::with(['images', 'categories'])->whereIn('slug', $heroIds))
+                    ->orderByRaw('FIELD(slug, ' . implode(',', array_fill(0, count($heroIds), '?')) . ')', $heroIds)
+                    ->get()
                 : $withStock(Product::with(['images', 'categories'])->inRandomOrder())->limit(3)->get(); // Fallback
 
             $newArrivals = count($newArrivalIds) > 0

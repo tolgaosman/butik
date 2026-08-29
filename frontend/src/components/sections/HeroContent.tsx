@@ -19,14 +19,14 @@ const item: Variants = {
 export function HeroContent() {
   return (
     <motion.div
-      className="mx-auto flex max-w-3xl flex-col items-center gap-[clamp(0.75rem,3vh,1.5rem)] px-5 pb-[clamp(0.75rem,4vh,2rem)] pt-[clamp(1.25rem,7.3vh,6rem)] text-center sm:px-10"
+      className="flex flex-col items-center gap-[clamp(0.75rem,3vh,1.5rem)] text-center lg:items-start lg:text-left"
       initial="hidden"
       animate="show"
       variants={container}
     >
       <motion.h1
         variants={item}
-        className="font-display text-[clamp(1.75rem,min(9vw,7vh),4.5rem)] font-semibold leading-[1.1] text-ink"
+        className="font-display text-[clamp(2rem,7vw,4rem)] font-semibold leading-[1.1] text-ink"
       >
         Az dolaş, <span className="italic text-olive">çok şık görün</span>
       </motion.h1>

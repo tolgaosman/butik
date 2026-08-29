@@ -10,15 +10,13 @@ export function TrustBadge({
   subtitle: string;
 }) {
   return (
-    <div className="group flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3.5">
-      <Icon
-        className="shrink-0 text-olive transition-colors duration-300 ease-[var(--ease-organic)] group-hover:text-olive-dark"
-        size={24}
-        strokeWidth={1.25}
-      />
+    <div className="flex items-start gap-3.5 rounded-2xl bg-cream p-5">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-olive">
+        <Icon className="size-4" strokeWidth={2} aria-hidden />
+      </span>
       <div>
-        <p className="text-sm font-medium text-ink sm:text-base">{title}</p>
-        <p className="text-xs text-ink-soft sm:text-sm">{subtitle}</p>
+        <p className="font-serif text-sm font-semibold text-ink">{title}</p>
+        <p className="mt-1 text-xs leading-relaxed text-ink-soft">{subtitle}</p>
       </div>
     </div>
   );

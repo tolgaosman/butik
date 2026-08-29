@@ -78,12 +78,12 @@ export function HomepageSettingsClient({
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Hero Carousel Section */}
+      {/* Hero Showcase Section */}
       <section className="bg-surface border border-border p-6 shadow-sm">
         <div className="flex justify-between items-start mb-2">
-          <h2 className="text-xl font-serif text-ink">Çark Ürünleri</h2>
+          <h2 className="text-xl font-serif text-ink">Ana Sayfada Üstte Neler Görünsün</h2>
           {heroIds.length > 0 && (
-            <button 
+            <button
               onClick={() => setHeroIds([])}
               className="text-xs text-olive hover:underline font-medium"
             >
@@ -91,7 +91,7 @@ export function HomepageSettingsClient({
             </button>
           )}
         </div>
-        <p className="text-sm text-ink-soft mb-4">Ana sayfanın en üstündeki büyük çarkta dönecek ürünleri seçin.</p>
+        <p className="text-sm text-ink-soft mb-4">Ana sayfanın en üstünde gösterilecek ürünleri seçin. İlk seçtiğiniz ürün büyük öne çıkan kartta, diğerleri yanındaki küçük kartlarda görünür (en fazla 3 ürün gösterilir).</p>
         
         <div className="max-h-60 overflow-y-auto border border-border divide-y divide-border">
           {products.map(product => (

@@ -4,7 +4,7 @@ import type { Category } from "@/lib/products";
 
 export function CategoryCard({ category, sizes }: { category: Category; sizes: string }) {
   return (
-    <Link href={category.href} className="group relative block h-full overflow-hidden bg-sand">
+    <Link href={category.href} className="group relative block h-full overflow-hidden rounded-md bg-sand">
       <Image
         src={category.image}
         alt={category.name}

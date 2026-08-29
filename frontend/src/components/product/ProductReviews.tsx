@@ -2,12 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import { Star } from "lucide-react";
-import { apiGet, apiMutate, ApiError } from "@/lib/api";
+import { apiMutate, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/lib/toast";
-import type { Review, ReviewsPage, ReviewsMeta } from "@/lib/reviews";
+import { getProductReviews, type Review, type ReviewsMeta } from "@/lib/reviews";
 
 const dateFormatter = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", year: "numeric" });
 
@@ -33,11 +33,9 @@ export function ProductReviews({ productSlug, initialReviews, initialMeta }: Pro
     setLoadingMore(true);
     try {
       const nextPage = meta.current_page + 1;
-      const res = await apiGet<ReviewsPage>(`/products/${productSlug}/reviews?page=${nextPage}`);
-      if (res) {
-        setReviews((prev) => [...prev, ...res.data]);
-        setMeta(res.meta);
-      }
+      const res = await getProductReviews(productSlug, nextPage);
+      setReviews((prev) => [...prev, ...res.data]);
+      setMeta(res.meta);
     } finally {
       setLoadingMore(false);
     }

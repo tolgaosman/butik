@@ -34,7 +34,7 @@ export function PromoBanner({ imageUrl }: { imageUrl: string }) {
           className="object-cover"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-ink/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/25 to-transparent" />
 
       <motion.div
         className="relative flex h-full flex-col items-center justify-center gap-5 px-5 text-center"
@@ -43,7 +43,10 @@ export function PromoBanner({ imageUrl }: { imageUrl: string }) {
         viewport={{ once: true, amount: 0.4 }}
         variants={container}
       >
-        <motion.p variants={item} className="text-xs font-medium tracking-[0.25em] text-cream">
+        <motion.p
+          variants={item}
+          className="rounded-full border border-cream/30 px-4 py-1.5 text-xs font-medium tracking-[0.25em] text-cream"
+        >
           SEN OL, GÜZEL OL
         </motion.p>
         <motion.h2

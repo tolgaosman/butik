@@ -88,26 +88,31 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   const toggle = useCallback(
     async (product: Product): Promise<boolean> => {
-      if (!user) {
-        toast.error("Giriş Yapmalısınız", { description: "Favorilere eklemek için lütfen giriş yapın." });
-        router.push("/hesabim");
-        return false;
-      }
-
       const slug = product.id;
       const wasFavorite = slugs.has(slug);
       const nextSlugs = new Set(slugs);
+      
       if (wasFavorite) {
         nextSlugs.delete(slug);
       } else {
         nextSlugs.add(slug);
       }
+      
       setSlugs(nextSlugs);
+      setProducts((prev) => {
+        if (wasFavorite) return prev.filter((p) => p.id !== slug);
+        return prev.some((p) => p.id === slug) ? prev : [...prev, product];
+      });
 
       if (wasFavorite) {
         toast.info("Favorilerden çıkarıldı", { description: product.name });
       } else {
         toast.success("Favorilere eklendi", { description: product.name });
+      }
+
+      if (!user) {
+        writeLocalFavorites(Array.from(nextSlugs));
+        return true;
       }
 
       try {
@@ -118,12 +123,17 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         }
         return true;
       } catch {
-        setSlugs(slugs); // revert on failure
+        // Revert on failure
+        setSlugs(slugs);
+        setProducts((prev) => {
+          if (wasFavorite) return prev.some((p) => p.id === slug) ? prev : [...prev, product];
+          return prev.filter((p) => p.id !== slug);
+        });
         toast.error("İşlem gerçekleştirilemedi", { description: "Lütfen tekrar deneyin." });
         return false;
       }
     },
-    [slugs, user, router],
+    [slugs, user],
   );
 
   return (

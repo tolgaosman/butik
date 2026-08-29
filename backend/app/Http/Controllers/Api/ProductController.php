@@ -200,7 +200,7 @@ class ProductController extends Controller
                     Product::where('is_active', true)
                         ->whereNotIn('id', $products->pluck('id'))
                         ->with('categories')
-                        ->orderByDesc('rating_avg')
+                        ->inRandomOrder()
                 )->limit($limit - $products->count())->get();
 
                 $products = $products->concat($fallback);

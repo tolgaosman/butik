@@ -18,8 +18,8 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
   }
 
   return (
-    <div className="group">
-      <div className="relative aspect-[3/4] overflow-hidden bg-cream">
+    <div className="group transition-transform duration-500 ease-[var(--ease-organic)] hover:-translate-y-1">
+      <div className="relative aspect-[3/4] overflow-hidden rounded-md bg-cream shadow-sm transition-shadow duration-500 ease-[var(--ease-organic)] group-hover:shadow-xl group-hover:shadow-ink/10">
         <Link href={`/urun/${product.id}`} className="block h-full w-full">
           <Image
             src={product.image}
@@ -45,9 +45,9 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
           onClick={handleToggleFavorite}
           aria-pressed={saved}
           aria-label={saved ? "Favorilerden çıkar" : "Favorilere ekle"}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center text-ink opacity-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)] transition-all duration-300 ease-[var(--ease-organic)] group-hover:opacity-100 group-focus-within:opacity-100 hover:scale-110 [@media(hover:none)]:opacity-100"
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 text-ink opacity-100 shadow-sm backdrop-blur-sm transition-all duration-300 ease-[var(--ease-organic)] lg:opacity-0 lg:group-hover:opacity-100 group-focus-within:opacity-100 hover:scale-110"
         >
-          <Heart size={19} className={saved ? "fill-olive text-olive" : "fill-white/70"} />
+          <Heart size={17} className={saved ? "fill-olive text-olive" : "text-ink"} />
         </button>
 
         <Link
@@ -58,20 +58,19 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
         </Link>
       </div>
 
-      <div className="mt-3.5 space-y-1">
+      <div className="mt-3.5 space-y-0.5">
         <Link href={`/urun/${product.id}`} className="block font-serif text-lg text-ink transition-colors duration-200 hover:text-olive">
           {product.name}
         </Link>
         {product.reviewCount > 0 && <StarRating rating={product.rating} reviewCount={product.reviewCount} size={12} />}
-        <p className="flex flex-wrap items-center gap-x-2 text-sm">
-          <span className={product.originalPrice ? "font-medium text-olive" : "text-ink"}>
+        <p className="flex flex-wrap items-center gap-x-2 pt-0.5 text-sm">
+          <span className={product.originalPrice ? "font-semibold text-olive" : "font-medium text-ink"}>
             {formatPrice(product.price)}
           </span>
           {product.originalPrice && (
             <span className="text-ink-soft line-through">{formatPrice(product.originalPrice)}</span>
           )}
         </p>
-
       </div>
     </div>
   );
