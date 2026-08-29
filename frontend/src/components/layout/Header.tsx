@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, type FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Search, User, Phone, Heart, ShoppingBag, Menu, X, ChevronDown, Package } from "lucide-react";
 import { primaryNav } from "@/lib/nav";
 import { useCart } from "@/lib/cart";
@@ -15,6 +15,8 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { cart } = useCart();
   const cartCount = cart.itemCount;
   const { slugs } = useFavorites();
@@ -22,6 +24,21 @@ export function Header() {
   const reduceMotion = useReducedMotion();
   const lastY = useRef(0);
   const pathname = usePathname();
+  const router = useRouter();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  function handleSearchSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(`/arama?q=${encodeURIComponent(query)}`);
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
+
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
 
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -107,7 +124,15 @@ export function Header() {
 
         <div className="flex flex-1 items-center justify-end gap-1 text-ink sm:gap-2 [&_a]:transition-colors [&_a:hover]:text-olive">
 
-
+          <button
+            type="button"
+            onClick={() => setSearchOpen((v) => !v)}
+            aria-label={searchOpen ? "Aramayı kapat" : "Ara"}
+            aria-expanded={searchOpen}
+            className="p-2.5 transition-transform duration-200 hover:scale-110"
+          >
+            {searchOpen ? <X size={19} /> : <Search size={19} />}
+          </button>
           <Link
             href="/iletisim"
             aria-label="İletişim"
@@ -158,6 +183,27 @@ export function Header() {
           >
             <User size={19} />
           </Link>
+        </div>
+      </div>
+
+      <div
+        className={`grid overflow-hidden border-b border-border bg-surface transition-[grid-template-rows] duration-300 ease-[var(--ease-organic)] ${
+          searchOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="min-h-0">
+          <form onSubmit={handleSearchSubmit} className="container-site flex items-center gap-3 py-3">
+            <Search size={18} className="shrink-0 text-ink-soft" aria-hidden />
+            <input
+              ref={searchInputRef}
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Ürün ara..."
+              aria-label="Ürün ara"
+              className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-ink-soft"
+            />
+          </form>
         </div>
       </div>
 

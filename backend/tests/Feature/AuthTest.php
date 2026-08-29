@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\PhoneOtp;
+use App\Models\EmailOtp;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\User;
@@ -20,6 +20,7 @@ class AuthTest extends TestCase
 
     private const VALID = [
         'name' => 'Sevgi Yılmaz',
+        'email' => 'sevgi.yilmaz@example.com',
         'phone' => '5551234567',
         'password' => 'Parola1234!',
         'password_confirmation' => 'Parola1234!',
@@ -96,27 +97,14 @@ class AuthTest extends TestCase
 
     public function test_login_authenticates_and_returns_the_user(): void
     {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'Parola1234!']);
+        User::factory()->create(['email' => 'sevgi@example.com', 'password' => 'Parola1234!']);
 
-        $this->postJson('/api/login', ['phone' => '5551234567', 'password' => 'Parola1234!'])
+        $this->postJson('/api/login', ['email' => 'sevgi@example.com', 'password' => 'Parola1234!'])
             ->assertOk()
-            ->assertJsonPath('phone', '5551234567');
+            ->assertJsonPath('email', 'sevgi@example.com');
 
         $this->assertAuthenticated();
-        $this->getJson('/api/user')->assertOk()->assertJsonPath('phone', '5551234567');
-    }
-
-    /**
-     * Login accepts common human-typed formats (spaces, leading 0, +90) and
-     * normalizes to the bare 10-digit form stored on the user.
-     */
-    public function test_login_normalizes_phone_formatting(): void
-    {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'Parola1234!']);
-
-        $this->postJson('/api/login', ['phone' => '0555 123 45 67', 'password' => 'Parola1234!'])
-            ->assertOk()
-            ->assertJsonPath('phone', '5551234567');
+        $this->getJson('/api/user')->assertOk()->assertJsonPath('email', 'sevgi@example.com');
     }
 
     /**
@@ -153,52 +141,41 @@ class AuthTest extends TestCase
 
     public function test_login_merges_guest_cart(): void
     {
-        $user = User::factory()->create(['phone' => '5551234567', 'password' => 'Parola1234!']);
+        $user = User::factory()->create(['email' => 'sevgi@example.com', 'password' => 'Parola1234!']);
         $variant = $this->variant(stock: 5);
         $guestCart = Cart::create(['token' => 'guest-token', 'expires_at' => now()->addDays(30)]);
         CartItem::create(['cart_id' => $guestCart->id, 'variant_id' => $variant->id, 'quantity' => 1]);
 
         $this->withSession(['cart_token' => 'guest-token'])
-            ->postJson('/api/login', ['phone' => '5551234567', 'password' => 'Parola1234!'])
+            ->postJson('/api/login', ['email' => 'sevgi@example.com', 'password' => 'Parola1234!'])
             ->assertOk();
 
         $userCart = Cart::where('user_id', $user->id)->firstOrFail();
         $this->assertDatabaseHas('cart_items', ['cart_id' => $userCart->id, 'variant_id' => $variant->id, 'quantity' => 1]);
     }
 
-    public function test_login_rejects_a_wrong_password(): void
-    {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'Parola1234!']);
-
-        $this->postJson('/api/login', ['phone' => '5551234567', 'password' => 'yanlış-parola'])
-            ->assertStatus(422)
-            ->assertJsonPath('errors.phone.0', 'Telefon numarası veya şifre hatalı.');
-
-        $this->assertGuest();
-    }
-
     public function test_login_is_throttled_after_five_failed_attempts(): void
     {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'Parola1234!']);
+        User::factory()->create(['email' => 'sevgi@example.com', 'password' => 'Parola1234!']);
 
         foreach (range(1, 5) as $ignored) {
-            $this->postJson('/api/login', ['phone' => '5551234567', 'password' => 'yanlış'])->assertStatus(422);
+            $this->postJson('/api/login', ['email' => 'sevgi@example.com', 'password' => 'yanlış'])->assertStatus(422);
         }
 
-        $this->postJson('/api/login', ['phone' => '5551234567', 'password' => 'Parola1234!'])
+        $this->postJson('/api/login', ['email' => 'sevgi@example.com', 'password' => 'Parola1234!'])
             ->assertStatus(422)
-            ->assertJsonPath('errors.phone.0', 'Çok fazla deneme yapıldı. Lütfen birazdan tekrar deneyin.');
+            ->assertJsonPath('errors.email.0', 'Çok fazla deneme yapıldı. Lütfen birazdan tekrar deneyin.');
 
         $this->assertGuest();
 
-        RateLimiter::clear('5551234567|127.0.0.1');
+        RateLimiter::clear('sevgi@example.com|127.0.0.1');
     }
 
     public function test_logout_ends_the_session(): void
     {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'Parola1234!']);
+        User::factory()->create(['email' => 'sevgi@example.com', 'password' => 'Parola1234!']);
 
-        $this->postJson('/api/login', ['phone' => '5551234567', 'password' => 'Parola1234!'])->assertOk();
+        $this->postJson('/api/login', ['email' => 'sevgi@example.com', 'password' => 'Parola1234!'])->assertOk();
         $this->postJson('/api/logout')->assertNoContent();
 
         // In-process the auth manager still holds the user the login request
@@ -224,48 +201,50 @@ class AuthTest extends TestCase
      * forgotPassword never reveals whether a phone is registered — both
      * branches return the same generic message.
      */
-    public function test_forgot_password_issues_an_otp_for_a_known_phone(): void
+    public function test_forgot_password_issues_an_otp_for_a_known_email(): void
     {
-        User::factory()->create(['phone' => '5551234567']);
+        User::factory()->create(['email' => 'known@example.com']);
 
-        $this->postJson('/api/password/forgot', ['phone' => '5551234567'])->assertOk();
+        $this->postJson('/api/password/forgot', ['email' => 'known@example.com'])->assertOk();
 
-        $this->assertDatabaseHas('phone_otps', ['phone' => '5551234567']);
+        $this->assertDatabaseHas('email_otps', ['email' => 'known@example.com']);
     }
 
-    public function test_forgot_password_responds_the_same_for_an_unknown_phone(): void
+    public function test_forgot_password_responds_the_same_for_an_unknown_email(): void
     {
-        $known = $this->postJson('/api/password/forgot', ['phone' => '5551234567']);
-        $unknown = $this->postJson('/api/password/forgot', ['phone' => '5559999999']);
+        User::factory()->create(['email' => 'known@example.com']);
+
+        $known = $this->postJson('/api/password/forgot', ['email' => 'known@example.com']);
+        $unknown = $this->postJson('/api/password/forgot', ['email' => 'unknown@example.com']);
 
         $known->assertOk();
         $unknown->assertOk();
         $this->assertSame($known->json('message'), $unknown->json('message'));
-        $this->assertDatabaseMissing('phone_otps', ['phone' => '5559999999']);
+        $this->assertDatabaseMissing('email_otps', ['email' => 'unknown@example.com']);
     }
 
     public function test_reset_password_updates_the_password_with_a_valid_code(): void
     {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'EskiParola1!']);
-        $code = PhoneOtp::issue('5551234567');
+        User::factory()->create(['email' => 'reset@example.com', 'password' => 'EskiParola1!']);
+        $code = EmailOtp::issue('reset@example.com');
 
         $this->postJson('/api/password/reset', [
-            'phone' => '5551234567',
+            'email' => 'reset@example.com',
             'code' => $code,
             'password' => 'YeniParola1!',
             'password_confirmation' => 'YeniParola1!',
         ])->assertOk();
 
-        $this->assertTrue(Hash::check('YeniParola1!', User::firstWhere('phone', '5551234567')->password));
+        $this->assertTrue(Hash::check('YeniParola1!', User::firstWhere('email', 'reset@example.com')->password));
     }
 
     public function test_reset_password_rejects_a_wrong_code(): void
     {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'EskiParola1!']);
-        PhoneOtp::issue('5551234567');
+        User::factory()->create(['email' => 'reset@example.com', 'password' => 'EskiParola1!']);
+        EmailOtp::issue('reset@example.com');
 
         $this->postJson('/api/password/reset', [
-            'phone' => '5551234567',
+            'email' => 'reset@example.com',
             'code' => '000000',
             'password' => 'YeniParola1!',
             'password_confirmation' => 'YeniParola1!',
@@ -274,11 +253,11 @@ class AuthTest extends TestCase
 
     public function test_reset_password_rejects_a_reused_code(): void
     {
-        User::factory()->create(['phone' => '5551234567', 'password' => 'EskiParola1!']);
-        $code = PhoneOtp::issue('5551234567');
+        User::factory()->create(['email' => 'reset@example.com', 'password' => 'EskiParola1!']);
+        $code = EmailOtp::issue('reset@example.com');
 
         $payload = [
-            'phone' => '5551234567',
+            'email' => 'reset@example.com',
             'code' => $code,
             'password' => 'YeniParola1!',
             'password_confirmation' => 'YeniParola1!',

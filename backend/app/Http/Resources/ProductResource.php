@@ -22,6 +22,12 @@ class ProductResource extends JsonResource
             'reviewCount' => $this->displayReviewCount(),
             'gender' => $this->gender,
             'categories' => $this->whenLoaded('categories', fn () => $this->categories->pluck('slug')->all()),
+            // Full variants (detail page) beat the withExists() flag (list
+            // queries) when both happen to be loaded; absent either, default
+            // to true so a card never wrongly claims "Tükendi".
+            'inStock' => $this->relationLoaded('variants')
+                ? $this->variants->contains(fn ($v) => $v->is_active && $v->stock > 0)
+                : (bool) ($this->in_stock ?? true),
 
             $this->mergeWhen((bool) $this->is_new, ['isNew' => true]),
             $this->mergeWhen($this->compare_at_price_minor !== null, fn () => [

@@ -1,28 +1,15 @@
-import { Package } from "lucide-react";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { apiGetAuthed } from "@/lib/api";
-import type { Product } from "@/lib/products";
+import type { AdminProduct, AdminCategory } from "@/lib/admin";
 import { ProductsTable } from "./ProductsTable";
-
-export type AdminCategory = {
-  id: number;
-  name: string;
-  slug: string;
-  parent_id: number | null;
-  parent_name: string | null;
-  href: string;
-  image: string;
-  itemCount: number;
-};
 
 /**
  * /api/admin/* auth:sanctum + is_admin arkasında, bu yüzden apiGetAuthed —
  * ziyaretçinin oturum çerezini Laravel'e taşıyan tek sunucu tarafı yardımcı.
  * Yetkisiz istek 401/403 döner; sayfa bunu "yüklenemedi" olarak gösterir.
  */
-async function loadProducts(): Promise<Product[] | null> {
+async function loadProducts(): Promise<AdminProduct[] | null> {
   try {
-    return (await apiGetAuthed<Product[]>("/admin/products")) ?? [];
+    return (await apiGetAuthed<AdminProduct[]>("/admin/products")) ?? [];
   } catch {
     return null;
   }
@@ -50,14 +37,6 @@ export default async function AdminProductsPage() {
         <p className="border border-border bg-surface p-6 text-sm text-ink-soft shadow-sm">
           Ürünler şu anda yüklenemedi. Sayfayı yenileyip tekrar deneyin.
         </p>
-      ) : products.length === 0 ? (
-        <div className="border border-border bg-surface shadow-sm">
-          <EmptyState
-            icon={Package}
-            title="Henüz ürün yok"
-            description="Yayına alınan ürünler burada listelenir."
-          />
-        </div>
       ) : (
         <ProductsTable products={products} categories={categories} />
       )}

@@ -4,55 +4,72 @@ import { useState } from "react";
 import { Search, Download, Edit2 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { apiMutate, ApiError } from "@/lib/api";
 import { revalidateStore } from "../actions";
 import { iconButtonNeutral } from "@/lib/adminIconButton";
 import { toast } from "@/lib/toast";
+import type { AdminCustomer } from "@/lib/admin";
 
-export function CustomersTable({ customers: initialCustomers }: { customers: any[] }) {
-  const [customers, setCustomers] = useState<any[]>(initialCustomers);
+function downloadCsv(customers: AdminCustomer[]) {
+  const header = ["Ad Soyad", "E-posta", "Telefon", "Kayıt Tarihi", "Sipariş Sayısı", "Toplam Harcama"];
+  const escape = (value: string) => `"${value.replace(/"/g, '""')}"`;
+  const rows = customers.map((c) => [c.name, c.email, c.phone ?? "", c.joined, String(c.orders), c.spent].map(escape).join(","));
+  const csv = [header.map(escape).join(","), ...rows].join("\n");
+
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `musteriler-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+export function CustomersTable({ customers: initialCustomers }: { customers: AdminCustomer[] }) {
+  const [customers, setCustomers] = useState<AdminCustomer[]>(initialCustomers);
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingCustomer, setEditingCustomer] = useState<any | null>(null);
+  const [editingCustomer, setEditingCustomer] = useState<AdminCustomer | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const [nameInput, setNameInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
   const [phoneInput, setPhoneInput] = useState("");
 
   const filteredCustomers = customers.filter((c) =>
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.phone.toLowerCase().includes(searchTerm.toLowerCase())
+    c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.phone ?? "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleEdit = (customer: any) => {
+  const handleEdit = (customer: AdminCustomer) => {
     setEditingCustomer(customer);
     setNameInput(customer.name);
-    setPhoneInput(customer.phone);
+    setEmailInput(customer.email);
+    setPhoneInput(customer.phone ?? "");
   };
 
   const handleSave = async () => {
     if (!editingCustomer) return;
+    setSaving(true);
 
     try {
-      await apiMutate(`/admin/customers/${editingCustomer.id}`, {
+      const updated = await apiMutate<AdminCustomer>(`/admin/customers/${editingCustomer.id}`, {
         method: "PUT",
-        body: JSON.stringify({ name: nameInput, phone: phoneInput })
+        body: JSON.stringify({ name: nameInput, email: emailInput, phone: phoneInput }),
       });
 
       await revalidateStore();
 
-      setCustomers((prev) =>
-        prev.map((c) =>
-          c.id === editingCustomer.id
-            ? { ...c, name: nameInput, phone: phoneInput }
-            : c
-        )
-      );
+      setCustomers((prev) => prev.map((c) => (c.id === editingCustomer.id ? updated : c)));
       setEditingCustomer(null);
-      toast.success("Müşteri güncellendi", { description: `${nameInput} kaydedildi.` });
+      toast.success("Müşteri güncellendi", { description: `${updated.name} kaydedildi.` });
     } catch (e) {
-      console.error("Müşteri güncellenemedi", e);
       toast.error("Müşteri güncellenemedi", {
         description: e instanceof ApiError ? e.message : "Lütfen tekrar deneyin.",
       });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -63,7 +80,10 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
           <h1 className="font-serif text-2xl font-medium text-ink">Müşteriler</h1>
           <p className="mt-1 text-sm text-ink-soft">Mağazanıza kayıtlı tüm müşteriler ve harcama detayları.</p>
         </div>
-        <button className="inline-flex items-center gap-2 rounded bg-surface px-4 py-2 text-sm font-medium text-ink shadow-sm border border-border hover:bg-cream transition-colors">
+        <button
+          onClick={() => downloadCsv(filteredCustomers)}
+          className="inline-flex items-center gap-2 rounded bg-surface px-4 py-2 text-sm font-medium text-ink shadow-sm border border-border hover:bg-cream transition-colors"
+        >
           <Download size={16} />
           Dışa Aktar (CSV)
         </button>
@@ -74,7 +94,7 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
           <input
             type="text"
-            placeholder="İsim veya telefon ara..."
+            placeholder="İsim, e-posta veya telefon ara..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full rounded border border-border bg-cream py-2 pl-9 pr-4 text-sm focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
@@ -87,12 +107,13 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
           <table className="w-full table-fixed divide-y divide-border">
             <thead>
               <tr className="bg-cream/50">
-                <th scope="col" className="w-[26%] py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Müşteri Adı</th>
-                <th scope="col" className="w-[18%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Telefon</th>
-                <th scope="col" className="w-[18%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Kayıt Tarihi</th>
-                <th scope="col" className="w-[14%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Siparişler</th>
-                <th scope="col" className="w-[16%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Toplam Harcama</th>
-                <th scope="col" className="w-[8%] py-3.5 px-3 text-center"><span className="sr-only">İşlemler</span></th>
+                <th scope="col" className="w-[22%] py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Müşteri Adı</th>
+                <th scope="col" className="w-[20%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">E-posta</th>
+                <th scope="col" className="w-[14%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Telefon</th>
+                <th scope="col" className="w-[14%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Kayıt Tarihi</th>
+                <th scope="col" className="w-[10%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Siparişler</th>
+                <th scope="col" className="w-[13%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Toplam Harcama</th>
+                <th scope="col" className="w-[7%] py-3.5 px-3 text-center"><span className="sr-only">İşlemler</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border bg-surface">
@@ -107,7 +128,8 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
                         <div className="truncate text-sm font-medium text-ink">{customer.name}</div>
                       </div>
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-ink">{customer.phone}</td>
+                    <td className="px-3 py-4 text-center text-sm text-ink-soft">{customer.email}</td>
+                    <td className="px-3 py-4 text-center text-sm text-ink">{customer.phone ?? "—"}</td>
                     <td className="px-3 py-4 text-center text-sm text-ink-soft">{customer.joined}</td>
                     <td className="px-3 py-4 text-center text-sm font-medium text-ink">{customer.orders}</td>
                     <td className="px-3 py-4 text-center text-sm font-medium text-olive">{customer.spent}</td>
@@ -120,7 +142,7 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-sm text-ink-soft">
+                  <td colSpan={7} className="py-8 text-center text-sm text-ink-soft">
                     Müşteri bulunamadı.
                   </td>
                 </tr>
@@ -139,7 +161,8 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
                   </div>
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium text-ink">{customer.name}</div>
-                    <div className="truncate text-xs text-ink-soft">{customer.phone}</div>
+                    <div className="truncate text-xs text-ink-soft">{customer.email}</div>
+                    <div className="truncate text-xs text-ink-soft">{customer.phone ?? "—"}</div>
                   </div>
                 </div>
 
@@ -171,38 +194,16 @@ export function CustomersTable({ customers: initialCustomers }: { customers: any
         </div>
       </div>
 
-      <Modal
-        isOpen={!!editingCustomer}
-        onClose={() => setEditingCustomer(null)}
-        title="Müşteri Düzenle"
-      >
+      <Modal isOpen={!!editingCustomer} onClose={() => setEditingCustomer(null)} title="Müşteri Düzenle">
         {editingCustomer && (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-medium text-ink">Ad Soyad</label>
-              <input
-                id="name"
-                type="text"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="phone" className="block text-sm font-medium text-ink">Telefon</label>
-              <input
-                id="phone"
-                type="tel"
-                value={phoneInput}
-                onChange={(e) => setPhoneInput(e.target.value)}
-                className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
-              />
-            </div>
+            <Input id="name" label="Ad Soyad" value={nameInput} onChange={(e) => setNameInput(e.target.value)} />
+            <Input id="email" label="E-posta" type="email" value={emailInput} onChange={(e) => setEmailInput(e.target.value)} />
+            <Input id="phone" label="Telefon" type="tel" value={phoneInput} onChange={(e) => setPhoneInput(e.target.value)} />
 
             <div className="pt-4 flex justify-end gap-3">
               <Button variant="outline" onClick={() => setEditingCustomer(null)}>İptal</Button>
-              <Button variant="solid" onClick={handleSave}>Kaydet</Button>
+              <Button variant="solid" onClick={handleSave} loading={saving}>Kaydet</Button>
             </div>
           </div>
         )}

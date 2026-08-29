@@ -27,7 +27,9 @@ export default async function Home() {
         <BestSellers />
       </Suspense>
       <SocialProof />
-      <LocationMap />
+      <Suspense fallback={<GridSkeleton background="bg-white" />}>
+        <LocationMap />
+      </Suspense>
     </>
   );
 }

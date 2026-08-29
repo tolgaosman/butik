@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/homepage', [\App\Http\Controllers\Api\SettingController::class, 'getHomepageData']);
+Route::get('/settings/store', [\App\Http\Controllers\Api\SettingController::class, 'getStoreSettings']);
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/slugs', [ProductController::class, 'slugs']);
+Route::get('/products/best-sellers', [ProductController::class, 'bestSellers']);
 Route::get('/products/{slug}/related', [ProductController::class, 'related']);
 Route::get('/products/{slug}/reviews', [ReviewController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
@@ -63,7 +65,7 @@ Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'uns
 // plus an is_admin check; the Next.js panel at /admin_login is the only client.
 Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::get('/orders', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index']);
-    Route::put('/orders/{orderNumber}/status', [\App\Http\Controllers\Api\Admin\OrderController::class, 'updateStatus']);
+    Route::put('/orders/{orderNumber}', [\App\Http\Controllers\Api\Admin\OrderController::class, 'update']);
     
     Route::get('/customers', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'index']);
     Route::put('/customers/{id}', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'update']);
@@ -76,7 +78,13 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::post('/products', [\App\Http\Controllers\Api\Admin\ProductController::class, 'store']);
     Route::put('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'update']);
     Route::delete('/products/{id}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'destroy']);
+    Route::delete('/products/{id}/images/{imageId}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'destroyImage']);
     
     Route::get('/settings/homepage', [\App\Http\Controllers\Api\SettingController::class, 'getHomepageSettings']);
     Route::put('/settings/homepage', [\App\Http\Controllers\Api\SettingController::class, 'updateHomepageSettings']);
+    Route::put('/settings/store', [\App\Http\Controllers\Api\SettingController::class, 'updateStoreSettings']);
+
+    Route::get('/reviews', [\App\Http\Controllers\Api\Admin\ReviewController::class, 'index']);
+    Route::put('/reviews/{review}', [\App\Http\Controllers\Api\Admin\ReviewController::class, 'update']);
+    Route::delete('/reviews/{review}', [\App\Http\Controllers\Api\Admin\ReviewController::class, 'destroy']);
 });

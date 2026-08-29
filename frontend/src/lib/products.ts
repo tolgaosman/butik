@@ -16,6 +16,7 @@ export type Product = {
   image: string;
   rating: number;
   reviewCount: number;
+  inStock: boolean;
   isNew?: boolean;
   discountPercent?: number;
   originalPrice?: number;
@@ -34,9 +35,9 @@ export async function getCategories(): Promise<Category[]> {
   }
 }
 
-export async function getNewArrivals(): Promise<Product[]> {
+export async function getNewArrivals(limit = 10): Promise<Product[]> {
   try {
-    const data = await apiGet<Product[]>("/products?is_new=1&limit=10", {
+    const data = await apiGet<Product[]>(`/products?is_new=1&limit=${limit}`, {
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];
@@ -63,9 +64,9 @@ export async function getHomepageData(): Promise<HomepageData> {
   return { hero_products: [], new_arrivals: [], promo_banner_url: "" };
 }
 
-export async function getBestSellers(): Promise<Product[]> {
+export async function getBestSellers(limit = 4): Promise<Product[]> {
   try {
-    const data = await apiGet<Product[]>("/products?category=cok-satanlar&limit=4", {
+    const data = await apiGet<Product[]>(`/products/best-sellers?limit=${limit}`, {
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];
@@ -81,9 +82,15 @@ export type ProductVariant = {
   isActive: boolean;
 };
 
+export type ProductImage = {
+  url: string;
+  alt: string | null;
+};
+
 export type ProductDetail = Product & {
   description: string;
   variants: ProductVariant[];
+  images: ProductImage[];
 };
 
 export async function getProductById(id: string): Promise<Product | undefined> {
@@ -131,6 +138,18 @@ export async function getRelatedProducts(productId: string, limit = 4): Promise<
 export async function getAllProductIds(): Promise<string[]> {
   try {
     const data = await apiGet<string[]>("/products/slugs", { cache: "no-store" });
+    return data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function searchProducts(query: string): Promise<Product[]> {
+  if (!query.trim()) return [];
+  try {
+    const data = await apiGet<Product[]>(`/products?search=${encodeURIComponent(query)}&limit=60`, {
+      cache: "no-store",
+    });
     return data ?? [];
   } catch {
     return [];

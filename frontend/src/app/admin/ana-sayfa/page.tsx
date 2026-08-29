@@ -1,22 +1,28 @@
 import { apiGetAuthed } from "@/lib/api";
-import { HomepageSettingsClient } from "./HomepageSettingsClient";
+import { HomepageSettingsClient, type AdminProductOption, type HomepageSettings } from "./HomepageSettingsClient";
 import { Home } from "lucide-react";
+
+const EMPTY_SETTINGS: HomepageSettings = {
+  hero_product_ids: [],
+  new_arrival_product_ids: [],
+  promo_banner_url: "",
+};
 
 // /admin/products returns the raw Eloquent Product model (numeric id, slug,
 // price_minor, ...) — not the public storefront Product shape (id === slug).
-async function loadProducts(): Promise<any[]> {
+async function loadProducts(): Promise<AdminProductOption[]> {
   try {
-    return (await apiGetAuthed<any[]>("/admin/products")) ?? [];
+    return (await apiGetAuthed<AdminProductOption[]>("/admin/products")) ?? [];
   } catch {
     return [];
   }
 }
 
-async function loadSettings(): Promise<any> {
+async function loadSettings(): Promise<HomepageSettings> {
   try {
-    return (await apiGetAuthed<any>("/admin/settings/homepage")) ?? {};
+    return (await apiGetAuthed<HomepageSettings>("/admin/settings/homepage")) ?? EMPTY_SETTINGS;
   } catch {
-    return {};
+    return EMPTY_SETTINGS;
   }
 }
 

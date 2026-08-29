@@ -14,11 +14,15 @@ function apiBase(): string {
 export class ApiError extends Error {
   status: number;
   errors?: Record<string, string[]>;
+  /** The full parsed error response, for endpoints that return structured
+   *  data beyond message/errors (e.g. a delete confirmation payload). */
+  body?: unknown;
 
-  constructor(status: number, message: string, errors?: Record<string, string[]>) {
+  constructor(status: number, message: string, errors?: Record<string, string[]>, body?: unknown) {
     super(message);
     this.status = status;
     this.errors = errors;
+    this.body = body;
   }
 }
 
@@ -123,7 +127,7 @@ export async function apiMutate<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.message ?? "Request failed", body.errors);
+    throw new ApiError(res.status, body.message ?? "Request failed", body.errors, body);
   }
 
   if (res.status === 204) return undefined as T;

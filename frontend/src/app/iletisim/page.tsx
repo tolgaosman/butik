@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { MapPin, Phone, Clock, Instagram, Facebook, Mail } from "lucide-react";
 import { business } from "@/lib/business";
+import { getStoreSettings } from "@/lib/settings";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { MotionReveal, MotionStagger, MotionItem } from "@/components/ui/MotionReveal";
@@ -10,12 +11,12 @@ export const metadata: Metadata = {
   description: "Sevgi Butik ile iletişime geçin — adres, telefon ve çalışma saatleri.",
 };
 
-
-
+// Opening hours aren't part of the admin settings form yet — kept from business.ts.
 const dayIndexMap = [6, 0, 1, 2, 3, 4, 5]; // JS getDay() (0=Sun) -> business.hours index (0=Mon)
 
-export default function ContactPage() {
-  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(business.mapsQuery)}`;
+export default async function ContactPage() {
+  const settings = await getStoreSettings();
+  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(settings.mapsQuery)}`;
   const todayIndex = dayIndexMap[new Date().getDay()];
 
 
@@ -38,7 +39,7 @@ export default function ContactPage() {
         <MotionItem className="mt-8 grid grid-cols-1 gap-3 sm:mt-10 sm:grid-cols-3">
           {/* Telefon */}
           <a
-            href={`tel:${business.phone.replace(/\s/g, "")}`}
+            href={`tel:${settings.phone.replace(/\s/g, "")}`}
             className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
@@ -46,13 +47,13 @@ export default function ContactPage() {
             </span>
             <span className="min-w-0">
               <span className="block text-xs font-medium text-ink-soft">Telefon</span>
-              <span className="block truncate text-sm font-medium text-ink" title={business.phone}>{business.phone}</span>
+              <span className="block truncate text-sm font-medium text-ink" title={settings.phone}>{settings.phone}</span>
             </span>
           </a>
 
           {/* E-posta */}
           <a
-            href="mailto:karabasaksevgi4@gmail.com"
+            href={`mailto:${settings.email}`}
             className="group flex items-center gap-3.5 rounded-2xl border border-border/70 bg-cream/40 p-4 transition-all duration-300 ease-[var(--ease-organic)] hover:-translate-y-1 hover:border-olive hover:bg-cream hover:shadow-lg hover:shadow-olive/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sand text-olive-dark transition-colors duration-300 ease-[var(--ease-organic)] group-hover:bg-olive group-hover:text-cream">
@@ -60,7 +61,7 @@ export default function ContactPage() {
             </span>
             <span className="min-w-0">
               <span className="block text-xs font-medium text-ink-soft">E-posta</span>
-              <span className="block truncate text-sm font-medium text-ink" title="karabasaksevgi4@gmail.com">karabasaksevgi4@gmail.com</span>
+              <span className="block truncate text-sm font-medium text-ink" title={settings.email}>{settings.email}</span>
             </span>
           </a>
 
@@ -76,12 +77,12 @@ export default function ContactPage() {
             </span>
             <span className="min-w-0">
               <span className="block text-xs font-medium text-ink-soft">Adres</span>
-              <span className="block text-sm font-medium text-ink leading-tight" title={business.address}>{business.address}</span>
+              <span className="block text-sm font-medium text-ink leading-tight" title={settings.address}>{settings.address}</span>
             </span>
           </a>
           {/* Instagram */}
           <a
-            href={business.instagram}
+            href={settings.instagram}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
@@ -98,7 +99,7 @@ export default function ContactPage() {
 
           {/* Facebook */}
           <a
-            href={business.facebook}
+            href={settings.facebook}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ContactMessageReceived;
 use App\Models\ContactMessage;
+use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
 class ContactController extends Controller
@@ -33,11 +37,19 @@ class ContactController extends Controller
             'message' => 'required|string|min:10|max:2000',
         ]);
 
-        ContactMessage::create([
+        $contactMessage = ContactMessage::create([
             ...$data,
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        $ownerEmail = Setting::where('key', 'store_email')->value('value') ?: config('mail.from.address');
+
+        try {
+            Mail::to($ownerEmail)->send(new ContactMessageReceived($contactMessage));
+        } catch (\Exception $e) {
+            Log::error('Contact notification email failed: ' . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Mesajınız gönderildi.'], 201);
     }

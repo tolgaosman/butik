@@ -10,6 +10,7 @@ import { FavoritesProvider } from "@/lib/favorites";
 import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 import { Toaster } from "@/components/ui/Toaster";
 import { MetaPixel } from "@/components/ui/MetaPixel";
+import { getStoreSettings } from "@/lib/settings";
 import "./globals.css";
 
 
@@ -39,9 +40,10 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const settings = await getStoreSettings();
 
   return (
     <html lang="tr" className={raleway.variable}>
@@ -53,8 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <FavoritesProvider>
                 <Header />
                 <main className="flex-1">{children}</main>
-                <Footer />
-                <FloatingWhatsApp />
+                <Footer settings={settings} />
+                <FloatingWhatsApp settings={settings} />
                 <Toaster />
               </FavoritesProvider>
             </CartProvider>

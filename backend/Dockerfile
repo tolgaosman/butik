@@ -36,4 +36,4 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Expose port 8000 and start php artisan serve
 EXPOSE 8000
-CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+CMD ["sh", "-c", "php artisan migrate --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=8000"]

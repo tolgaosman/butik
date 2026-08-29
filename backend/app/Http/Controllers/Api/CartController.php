@@ -25,7 +25,7 @@ class CartController extends Controller
     {
         $data = $request->validate([
             'product_slug' => 'required|string|exists:products,slug',
-            'size' => 'nullable|string|in:XS,S,M,L,XL',
+            'size' => 'nullable|string|max:32',
             'quantity' => 'required|integer|min:1|max:10',
         ]);
 

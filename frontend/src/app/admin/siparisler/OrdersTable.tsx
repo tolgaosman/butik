@@ -1,28 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { apiMutate, ApiError } from "@/lib/api";
 import { revalidateStore } from "../actions";
 import { toast } from "@/lib/toast";
+import { ORDER_STATUS_LABELS } from "@/lib/orders";
+import type { AdminOrder, AdminOrderStatus, AdminPaymentStatus } from "@/lib/admin";
 
-function statusDotClass(status: string) {
-  return status === "Hazırlanıyor"
-    ? "bg-gold"
-    : status === "Kargoya Verildi"
-      ? "bg-olive/50"
-      : status === "İptal Edildi"
-        ? "bg-ink-soft/40"
-        : "bg-olive";
+const STATUS_OPTIONS: AdminOrderStatus[] = ["pending", "confirmed", "preparing", "shipped", "delivered", "cancelled", "refunded"];
+const PAYMENT_STATUS_LABELS: Record<AdminPaymentStatus, string> = {
+  unpaid: "Ödenmedi",
+  paid: "Ödendi",
+  refunded: "İade Edildi",
+};
+const PAYMENT_METHOD_LABELS: Record<AdminOrder["paymentMethod"], string> = {
+  cash_on_delivery: "Kapıda Ödeme",
+  bank_transfer: "Havale / EFT",
+};
+
+function statusDotClass(status: AdminOrderStatus) {
+  switch (status) {
+    case "shipped":
+      return "bg-olive/50";
+    case "delivered":
+      return "bg-olive";
+    case "cancelled":
+    case "refunded":
+      return "bg-ink-soft/40";
+    default:
+      return "bg-gold";
+  }
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: AdminOrderStatus }) {
   return (
     <span className="inline-flex items-center gap-2 text-xs font-medium text-ink-soft">
       <span className={`h-1.5 w-1.5 rounded-full ${statusDotClass(status)}`} />
-      {status}
+      {ORDER_STATUS_LABELS[status]}
     </span>
   );
 }
@@ -31,21 +48,32 @@ function formatMoney(value: number) {
   return "₺" + value.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
-  const [orders, setOrders] = useState<any[]>(initialOrders);
+export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] }) {
+  const [orders, setOrders] = useState<AdminOrder[]>(initialOrders);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
-  const [statusInput, setStatusInput] = useState("");
+  const [statusFilter, setStatusFilter] = useState<AdminOrderStatus | "all">("all");
+  const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [statusInput, setStatusInput] = useState<AdminOrderStatus>("pending");
+  const [paymentStatusInput, setPaymentStatusInput] = useState<AdminPaymentStatus>("unpaid");
+  const [trackingInput, setTrackingInput] = useState("");
+  const [noteInput, setNoteInput] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const filteredOrders = orders.filter((o) =>
-    o.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    o.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOrders = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    return orders.filter((o) => {
+      const matchesTerm = !term || o.customer.toLowerCase().includes(term) || o.id.toLowerCase().includes(term);
+      const matchesStatus = statusFilter === "all" || o.status === statusFilter;
+      return matchesTerm && matchesStatus;
+    });
+  }, [orders, searchTerm, statusFilter]);
 
-  const handleOpen = (order: any) => {
+  const handleOpen = (order: AdminOrder) => {
     setSelectedOrder(order);
     setStatusInput(order.status);
+    setPaymentStatusInput(order.paymentStatus);
+    setTrackingInput(order.trackingNumber ?? "");
+    setNoteInput(order.adminNote ?? "");
   };
 
   const handleSave = async () => {
@@ -53,20 +81,22 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
     setSaving(true);
 
     try {
-      await apiMutate(`/admin/orders/${selectedOrder.id}/status`, {
+      const updated = await apiMutate<AdminOrder>(`/admin/orders/${selectedOrder.orderNumber}`, {
         method: "PUT",
-        body: JSON.stringify({ status: statusInput })
+        body: JSON.stringify({
+          status: statusInput,
+          payment_status: paymentStatusInput,
+          tracking_number: trackingInput || null,
+          admin_note: noteInput || null,
+        }),
       });
 
       await revalidateStore();
 
-      setOrders((prev) =>
-        prev.map((o) => (o.id === selectedOrder.id ? { ...o, status: statusInput } : o))
-      );
+      setOrders((prev) => prev.map((o) => (o.orderNumber === updated.orderNumber ? updated : o)));
       setSelectedOrder(null);
-      toast.success("Sipariş durumu güncellendi", { description: `${selectedOrder.id} → ${statusInput}` });
+      toast.success("Sipariş güncellendi", { description: `${updated.orderNumber} kaydedildi.` });
     } catch (e) {
-      console.error("Sipariş güncellenemedi", e);
       toast.error("Sipariş güncellenemedi", {
         description: e instanceof ApiError ? e.message : "Lütfen tekrar deneyin.",
       });
@@ -82,7 +112,7 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
         <p className="mt-1 text-sm text-ink-soft">Tüm müşteri siparişlerini yönetin ve takip edin.</p>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-border bg-surface p-4 shadow-sm">
+      <div className="flex flex-col gap-4 border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
           <input
@@ -93,6 +123,17 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
             className="w-full rounded border border-border bg-cream py-2 pl-9 pr-4 text-sm focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
           />
         </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as AdminOrderStatus | "all")}
+          aria-label="Duruma göre filtrele"
+          className="rounded border border-border bg-cream px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
+        >
+          <option value="all">Tüm Durumlar</option>
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
+          ))}
+        </select>
       </div>
 
       <div className="overflow-hidden border border-border bg-surface shadow-sm">
@@ -111,12 +152,12 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <tr
-                    key={order.id}
+                    key={order.orderNumber}
                     onClick={() => handleOpen(order)}
                     className="cursor-pointer transition-colors hover:bg-cream/30"
                   >
                     <td className="px-3 py-4 text-center">
-                      <div className="text-sm font-medium text-ink">{order.id}</div>
+                      <div className="text-sm font-medium text-ink">{order.orderNumber}</div>
                       <div className="text-xs text-ink-soft">{order.customer}</div>
                     </td>
                     <td className="px-3 py-4 text-center text-sm text-ink-soft">{order.date}</td>
@@ -142,13 +183,13 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
           {filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
               <div
-                key={order.id}
+                key={order.orderNumber}
                 onClick={() => handleOpen(order)}
                 className="cursor-pointer space-y-3 p-4 transition-colors hover:bg-cream/30"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-ink">{order.id}</div>
+                    <div className="text-sm font-medium text-ink">{order.orderNumber}</div>
                     <div className="text-xs text-ink-soft">{order.customer}</div>
                   </div>
                   <StatusBadge status={order.status} />
@@ -179,7 +220,7 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
       <Modal
         isOpen={!!selectedOrder}
         onClose={() => setSelectedOrder(null)}
-        title={`Sipariş Detayı (${selectedOrder?.id})`}
+        title={`Sipariş Detayı (${selectedOrder?.orderNumber})`}
       >
         {selectedOrder && (
           <div className="max-h-[70vh] space-y-6 overflow-y-auto pr-2">
@@ -214,25 +255,43 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
             <div className="grid grid-cols-2 gap-4 rounded border border-border bg-cream/30 p-4">
               <div>
                 <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Ödeme Yöntemi</div>
-                <p className="text-sm text-ink">{selectedOrder.paymentMethod}</p>
+                <p className="text-sm text-ink">{PAYMENT_METHOD_LABELS[selectedOrder.paymentMethod]}</p>
               </div>
-              <div>
-                <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Ödeme Durumu</div>
-                <p className="text-sm text-ink">{selectedOrder.paymentStatus}</p>
+              <div className="space-y-1">
+                <label htmlFor="payment_status" className="block text-[11px] font-medium uppercase tracking-wider text-ink-soft">
+                  Ödeme Durumu
+                </label>
+                <select
+                  id="payment_status"
+                  value={paymentStatusInput}
+                  onChange={(e) => setPaymentStatusInput(e.target.value as AdminPaymentStatus)}
+                  className="w-full rounded border border-border bg-surface px-2 py-1.5 text-sm text-ink focus:border-olive focus:outline-none"
+                >
+                  {(Object.keys(PAYMENT_STATUS_LABELS) as AdminPaymentStatus[]).map((s) => (
+                    <option key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</option>
+                  ))}
+                </select>
               </div>
-              {selectedOrder.trackingNumber && (
-                <div className="col-span-2">
-                  <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Kargo Takip No</div>
-                  <p className="text-sm text-ink">{selectedOrder.trackingNumber}</p>
-                </div>
-              )}
+              <div className="col-span-2 space-y-1">
+                <label htmlFor="tracking_number" className="block text-[11px] font-medium uppercase tracking-wider text-ink-soft">
+                  Kargo Takip No
+                </label>
+                <input
+                  id="tracking_number"
+                  type="text"
+                  value={trackingInput}
+                  onChange={(e) => setTrackingInput(e.target.value)}
+                  placeholder="Örn. PTT123456789"
+                  className="w-full rounded border border-border bg-surface px-2 py-1.5 text-sm text-ink focus:border-olive focus:outline-none"
+                />
+              </div>
             </div>
 
             {/* ÜRÜNLER */}
             <div className="space-y-3 rounded border border-border bg-cream/30 p-4">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-ink">Ürünler</h3>
               <div className="divide-y divide-border">
-                {(selectedOrder.lineItems ?? []).map((item: any, i: number) => (
+                {selectedOrder.lineItems.map((item, i) => (
                   <div key={i} className="flex items-center justify-between gap-3 py-2">
                     <div className="min-w-0">
                       <p className="truncate text-sm text-ink">{item.name}</p>
@@ -281,19 +340,32 @@ export function OrdersTable({ orders: initialOrders }: { orders: any[] }) {
               <select
                 id="status"
                 value={statusInput}
-                onChange={(e) => setStatusInput(e.target.value)}
+                onChange={(e) => setStatusInput(e.target.value as AdminOrderStatus)}
                 className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
               >
-                <option value="Hazırlanıyor">Hazırlanıyor</option>
-                <option value="Kargoya Verildi">Kargoya Verildi</option>
-                <option value="Teslim Edildi">Teslim Edildi</option>
-                <option value="İptal Edildi">İptal Edildi</option>
+                {STATUS_OPTIONS.map((s) => (
+                  <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
+                ))}
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="admin_note" className="block text-sm font-medium text-ink">
+                Dahili Not
+              </label>
+              <textarea
+                id="admin_note"
+                rows={2}
+                value={noteInput}
+                onChange={(e) => setNoteInput(e.target.value)}
+                placeholder="Sadece ekip içi görünür"
+                className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
+              />
             </div>
 
             <div className="sticky bottom-0 flex justify-end gap-3 border-t border-border bg-surface pt-4">
               <Button variant="outline" onClick={() => setSelectedOrder(null)}>Kapat</Button>
-              <Button variant="solid" onClick={handleSave} loading={saving}>Durumu Kaydet</Button>
+              <Button variant="solid" onClick={handleSave} loading={saving}>Kaydet</Button>
             </div>
           </div>
         )}

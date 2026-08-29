@@ -97,7 +97,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
       const slug = product.id;
       const wasFavorite = slugs.has(slug);
       const nextSlugs = new Set(slugs);
-      wasFavorite ? nextSlugs.delete(slug) : nextSlugs.add(slug);
+      if (wasFavorite) {
+        nextSlugs.delete(slug);
+      } else {
+        nextSlugs.add(slug);
+      }
       setSlugs(nextSlugs);
 
       if (wasFavorite) {
@@ -113,7 +117,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           await apiMutate("/favorites", { method: "POST", body: JSON.stringify({ product_slug: slug }) });
         }
         return true;
-      } catch (err) {
+      } catch {
         setSlugs(slugs); // revert on failure
         toast.error("İşlem gerçekleştirilemedi", { description: "Lütfen tekrar deneyin." });
         return false;

@@ -17,9 +17,10 @@ class VariantsRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Select::make('size')
+            Forms\Components\TextInput::make('size')
                 ->label('Beden')
-                ->options(['XS' => 'XS', 'S' => 'S', 'M' => 'M', 'L' => 'L', 'XL' => 'XL'])
+                ->maxLength(32)
+                ->helperText('Örn: XS, S, M, L, XL, 36, 4-5 Yaş — bedensiz ürün için boş bırakın.')
                 ->nullable(),
             Forms\Components\TextInput::make('sku')
                 ->label('SKU')

@@ -6,8 +6,8 @@ import { Heart } from "lucide-react";
 import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
 import { useFavorites } from "@/lib/favorites";
-import { toast } from "@/lib/toast";
 import { Badge } from "./Badge";
+import { StarRating } from "./StarRating";
 
 export function ProductCard({ product, sizes }: { product: Product; sizes: string }) {
   const { isFavorite, toggle } = useFavorites();
@@ -26,12 +26,15 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
             alt={product.name}
             fill
             sizes={sizes}
-            className="object-cover transition-transform duration-700 ease-[var(--ease-organic)] group-hover:scale-[1.04]"
+            className={`object-cover transition-transform duration-700 ease-[var(--ease-organic)] group-hover:scale-[1.04] ${
+              product.inStock ? "" : "opacity-60 grayscale-[30%]"
+            }`}
           />
         </Link>
 
-        {(product.isNew || product.discountPercent) && (
+        {(product.isNew || product.discountPercent || !product.inStock) && (
           <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+            {!product.inStock && <Badge variant="neutral">Tükendi</Badge>}
             {product.isNew && <Badge variant="new">Yeni</Badge>}
             {product.discountPercent && <Badge variant="sale">%{product.discountPercent}</Badge>}
           </div>
@@ -59,6 +62,7 @@ export function ProductCard({ product, sizes }: { product: Product; sizes: strin
         <Link href={`/urun/${product.id}`} className="block font-serif text-lg text-ink transition-colors duration-200 hover:text-olive">
           {product.name}
         </Link>
+        {product.reviewCount > 0 && <StarRating rating={product.rating} reviewCount={product.reviewCount} size={12} />}
         <p className="flex flex-wrap items-center gap-x-2 text-sm">
           <span className={product.originalPrice ? "font-medium text-olive" : "text-ink"}>
             {formatPrice(product.price)}

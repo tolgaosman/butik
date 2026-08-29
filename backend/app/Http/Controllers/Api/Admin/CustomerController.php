@@ -30,6 +30,7 @@ class CustomerController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'phone' => ['required', 'regex:/^5\d{9}$/', 'unique:users,phone,'.$user->id],
         ], [
             'phone.regex' => 'Geçerli bir telefon numarası girin (Örn. 5XX XXX XX XX).',
@@ -47,6 +48,7 @@ class CustomerController extends Controller
         return [
             'id' => $user->id,
             'name' => $user->name,
+            'email' => $user->email,
             'phone' => $user->phone,
             'joined' => $user->created_at ? $user->created_at->format('d M Y') : '-',
             'orders' => $user->orders_count ?? 0,

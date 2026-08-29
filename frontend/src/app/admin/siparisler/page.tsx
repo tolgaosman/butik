@@ -1,9 +1,10 @@
 import { apiGetAuthed } from "@/lib/api";
+import type { AdminOrder } from "@/lib/admin";
 import { OrdersTable } from "./OrdersTable";
 
-async function loadOrders(): Promise<any[]> {
+async function loadOrders(): Promise<AdminOrder[]> {
   try {
-    return (await apiGetAuthed<any[]>("/admin/orders")) ?? [];
+    return (await apiGetAuthed<AdminOrder[]>("/admin/orders")) ?? [];
   } catch {
     return [];
   }

@@ -14,10 +14,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/api/:path*", destination: `${BACKEND_URL}/api/:path*` },
       { source: "/sanctum/:path*", destination: `${BACKEND_URL}/sanctum/:path*` },
+      { source: "/storage/:path*", destination: `${BACKEND_URL}/storage/:path*` },
     ];
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 };
 

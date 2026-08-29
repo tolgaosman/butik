@@ -47,13 +47,6 @@ class OrderController extends Controller
         $order = $this->orders->placeFromCart($cart, $user, $data);
         $order->load('items');
 
-        // Send Email
-        try {
-            \Illuminate\Support\Facades\Mail::to($order->email)->send(new \App\Mail\OrderCreated($order));
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Order email failed: ' . $e->getMessage());
-        }
-
         return new OrderResource($order);
     }
 
@@ -125,16 +118,6 @@ class OrderController extends Controller
             return response()->json(['message' => 'Sipariş bulunamadı.'], 404);
         }
 
-        if (! in_array($order->status, ['pending', 'confirmed'], true)) {
-            return response()->json(['message' => 'Bu sipariş artık iptal edilemez.'], 422);
-        }
-
-        $order->update(['status' => 'cancelled']);
-
-        foreach ($order->items as $item) {
-            $item->variant?->increment('stock', $item->quantity);
-        }
-
-        return new OrderResource($order->fresh('items'));
+        return new OrderResource($this->orders->cancel($order));
     }
 }

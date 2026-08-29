@@ -1,12 +1,15 @@
 import { MapPin, Navigation } from "lucide-react";
 import { business } from "@/lib/business";
+import { getStoreSettings } from "@/lib/settings";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MotionReveal } from "@/components/ui/MotionReveal";
 
-export function LocationMap() {
+export async function LocationMap() {
+  const settings = await getStoreSettings();
+  // Coordinates aren't part of the admin settings form yet — kept from business.ts.
   const { lat, lng } = business.coords;
   const embedSrc = `https://www.google.com/maps?q=${lat},${lng}&hl=tr&z=16&output=embed`;
-  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(business.mapsQuery)}`;
+  const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(settings.mapsQuery)}`;
 
   return (
     <section className="bg-white py-12 sm:py-20">
@@ -14,7 +17,7 @@ export function LocationMap() {
         <SectionHeader eyebrow="BİZİ ZİYARET EDİN" title="Kaliteli Giyimin Adresi" align="center" />
         <p className="mx-auto -mt-4 mb-8 flex max-w-md items-center justify-center gap-2 text-sm text-ink-soft sm:mb-10">
           <MapPin size={16} className="shrink-0" />
-          {business.address}
+          {settings.address}
         </p>
 
         <MotionReveal>

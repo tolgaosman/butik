@@ -1,7 +1,7 @@
 import { Tags } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { apiGetAuthed } from "@/lib/api";
-import type { AdminCategory } from "../urunler/page";
+import type { AdminCategory } from "@/lib/admin";
 import { CategoriesTable } from "./CategoriesTable";
 
 /**

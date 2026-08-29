@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Edit2, ChevronDown, ChevronRight, Trash2 } from "lucide-react";
-import type { AdminCategory } from "../urunler/page";
+import type { AdminCategory } from "@/lib/admin";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { apiMutate, ApiError } from "@/lib/api";
@@ -221,22 +221,41 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
   };
 
   const handleDelete = async (category: CategoryNode) => {
-    if (!window.confirm(`"${category.name}" kategorisini ve alt kategorilerini kalıcı olarak silmek istediğinize emin misiniz?`))
-      return;
-
     try {
+      // First call reports impact instead of deleting — the category cascade
+      // orphans (doesn't delete) its products, so the confirmation needs the
+      // real counts, not just "are you sure".
       await apiMutate(`/admin/categories/${category.id}`, { method: "DELETE" });
-      await revalidateStore();
-
-      const idsToRemove = new Set<number>([category.id, ...category.subcategories.map((s) => s.id)]);
-      setLocalCategories((prev) => prev.filter((c) => !idsToRemove.has(c.id)));
-      toast.success("Kategori silindi", { description: `"${category.name}" kaldırıldı.` });
     } catch (error) {
-      console.error("Kategori silinemedi:", error);
-      toast.error("Silme işlemi başarısız oldu", {
-        description: error instanceof ApiError ? error.message : "Lütfen tekrar deneyin.",
-      });
+      if (error instanceof ApiError && error.status === 409) {
+        const impact = error.body as { productCount: number; subcategoryCount: number };
+        const parts = [`${impact.productCount} ürün kategorisiz kalacak`];
+        if (impact.subcategoryCount > 0) parts.push(`${impact.subcategoryCount} alt kategori silinecek`);
+
+        if (!window.confirm(`"${category.name}" kategorisini silmek üzeresiniz: ${parts.join(", ")}. Devam edilsin mi?`)) {
+          return;
+        }
+
+        try {
+          await apiMutate(`/admin/categories/${category.id}?confirm=1`, { method: "DELETE" });
+        } catch (confirmError) {
+          toast.error("Silme işlemi başarısız oldu", {
+            description: confirmError instanceof ApiError ? confirmError.message : "Lütfen tekrar deneyin.",
+          });
+          return;
+        }
+      } else {
+        toast.error("Silme işlemi başarısız oldu", {
+          description: error instanceof ApiError ? error.message : "Lütfen tekrar deneyin.",
+        });
+        return;
+      }
     }
+
+    await revalidateStore();
+    const idsToRemove = new Set<number>([category.id, ...category.subcategories.map((s) => s.id)]);
+    setLocalCategories((prev) => prev.filter((c) => !idsToRemove.has(c.id)));
+    toast.success("Kategori silindi", { description: `"${category.name}" kaldırıldı.` });
   };
 
   return (

@@ -13,6 +13,8 @@ import { useFavorites } from "@/lib/favorites";
 import { useCart } from "@/lib/cart";
 import { apiMutate } from "@/lib/api";
 import { cn } from "@/lib/cn";
+import { toast } from "@/lib/toast";
+import { ORDER_STATUS_LABELS, type Order } from "@/lib/orders";
 
 /** A color is never a valid background-image layer — one invalid layer drops the whole declaration. */
 const coverColor = "#f53380";
@@ -340,13 +342,6 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   );
 }
 
-type Order = {
-  orderNumber: string;
-  status: string;
-  total: number;
-  createdAt: string;
-};
-
 function PersonalInfoForm() {
   const { user, refresh } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -429,24 +424,49 @@ function PersonalInfoForm() {
   );
 }
 
-function OrderHistory({ orders, loading }: { orders: Order[]; loading: boolean }) {
-  const statusLabels: Record<string, string> = {
-    pending: "Bekliyor",
-    confirmed: "Onaylandı",
-    preparing: "Hazırlanıyor",
-    shipped: "Kargoya Verildi",
-    delivered: "Teslim Edildi",
-    cancelled: "İptal Edildi",
-  };
+const CANCELLABLE_STATUSES = new Set(["pending", "confirmed"]);
 
-  const statusColors: Record<string, string> = {
-    pending: "bg-amber-100 text-amber-800",
-    confirmed: "bg-blue-100 text-blue-800",
-    preparing: "bg-indigo-100 text-indigo-800",
-    shipped: "bg-purple-100 text-purple-800",
-    delivered: "bg-green-100 text-green-800",
-    cancelled: "bg-red-100 text-red-800",
-  };
+const ORDER_STATUS_COLORS: Record<Order["status"], string> = {
+  pending: "bg-amber-100 text-amber-800",
+  confirmed: "bg-blue-100 text-blue-800",
+  preparing: "bg-indigo-100 text-indigo-800",
+  shipped: "bg-purple-100 text-purple-800",
+  delivered: "bg-green-100 text-green-800",
+  cancelled: "bg-red-100 text-red-800",
+  refunded: "bg-gray-100 text-gray-800",
+};
+
+function OrderHistory({
+  orders,
+  loading,
+  onOrderUpdated,
+}: {
+  orders: Order[];
+  loading: boolean;
+  onOrderUpdated: (order: Order) => void;
+}) {
+  const [cancelling, setCancelling] = useState<Set<string>>(new Set());
+
+  async function handleCancel(orderNumber: string) {
+    if (!confirm(`${orderNumber} numaralı siparişi iptal etmek istediğinize emin misiniz?`)) return;
+
+    setCancelling((prev) => new Set(prev).add(orderNumber));
+    try {
+      const updated = await apiMutate<Order>(`/orders/${orderNumber}/cancel`, { method: "POST" });
+      onOrderUpdated(updated);
+      toast.success("Sipariş iptal edildi", { description: `${orderNumber} numaralı sipariş iptal edildi.` });
+    } catch (err) {
+      toast.error("Sipariş iptal edilemedi", {
+        description: err instanceof ApiError ? err.message : "Lütfen tekrar deneyin.",
+      });
+    } finally {
+      setCancelling((prev) => {
+        const next = new Set(prev);
+        next.delete(orderNumber);
+        return next;
+      });
+    }
+  }
 
   if (loading) {
     return (
@@ -486,15 +506,22 @@ function OrderHistory({ orders, loading }: { orders: Order[]; loading: boolean }
                 </p>
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    statusColors[order.status] || "bg-gray-100 text-gray-800"
+                    ORDER_STATUS_COLORS[order.status] ?? "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {statusLabels[order.status] || order.status}
+                  {ORDER_STATUS_LABELS[order.status] ?? order.status}
                 </span>
-                <Link
-                  href={`/siparis-takibi?order_number=${order.orderNumber}`}
-                  className="text-sm font-medium text-olive hover:underline"
-                >
+                {CANCELLABLE_STATUSES.has(order.status) && (
+                  <button
+                    type="button"
+                    onClick={() => handleCancel(order.orderNumber)}
+                    disabled={cancelling.has(order.orderNumber)}
+                    className="text-sm font-medium text-red-600 hover:underline disabled:opacity-50"
+                  >
+                    {cancelling.has(order.orderNumber) ? "İptal ediliyor..." : "İptal Et"}
+                  </button>
+                )}
+                <Link href={`/siparis/${order.orderNumber}`} className="text-sm font-medium text-olive hover:underline">
                   Detay
                 </Link>
               </div>
@@ -688,7 +715,12 @@ function ProfileHero({
         </div>
 
         <div className="px-5 pb-6 sm:px-8 sm:pb-8">
-          <div className="pt-6 sm:pt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12">
+          <div className="-mt-10 flex sm:-mt-12">
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-full border-4 border-surface bg-olive text-2xl font-medium text-white shadow-sm sm:size-24 sm:text-3xl">
+              {initials}
+            </div>
+          </div>
+          <div className="pt-4 sm:pt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12">
             <div>
               <h2 className="font-serif text-2xl font-medium leading-tight text-ink sm:text-3xl">
                 {user.name}
@@ -777,7 +809,7 @@ function AccountDashboard() {
           setOrders(data.data ?? []);
           setOrderTotal(data.meta?.total ?? data.data?.length ?? 0);
         }
-      } catch (e) {
+      } catch {
         // Ignored
       } finally {
         setOrdersLoading(false);
@@ -794,7 +826,7 @@ function AccountDashboard() {
     try {
       await apiMutate("/user", { method: "DELETE" });
       window.location.href = "/";
-    } catch (err) {
+    } catch {
       alert("Hesabınız silinirken bir hata oluştu.");
       setDeleteLoading(false);
     }
@@ -806,7 +838,13 @@ function AccountDashboard() {
 
       <div className="mt-8 space-y-8">
         <div id="siparis-gecmisi" className="w-full scroll-mt-24">
-          <OrderHistory orders={orders} loading={ordersLoading} />
+          <OrderHistory
+            orders={orders}
+            loading={ordersLoading}
+            onOrderUpdated={(updated) =>
+              setOrders((prev) => prev.map((o) => (o.orderNumber === updated.orderNumber ? updated : o)))
+            }
+          />
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -851,6 +889,7 @@ export default function AccountPage() {
 
   return (
     <div className="container-site pb-8 pt-4 sm:pb-12 sm:pt-6">
+      <Breadcrumbs items={[{ label: "Hesabım" }]} />
       {isLoading ? (
         <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
           {Array.from({ length: 2 }, (_, i) => (

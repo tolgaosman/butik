@@ -5,17 +5,21 @@ import { useRouter } from "next/navigation";
 import { apiMutate, ApiError } from "@/lib/api";
 import { toast } from "@/lib/toast";
 
-type HomepageSettings = {
+export type HomepageSettings = {
   hero_product_ids: string[];
   new_arrival_product_ids: string[];
   promo_banner_url: string;
 };
 
+// The admin products endpoint returns the raw Eloquent Product model — only
+// these two fields are used to build the hero/new-arrivals picker below.
+export type AdminProductOption = { slug: string; name: string };
+
 export function HomepageSettingsClient({
   products,
   settings
 }: {
-  products: any[],
+  products: AdminProductOption[],
   settings: HomepageSettings
 }) {
   const router = useRouter();
@@ -52,7 +56,7 @@ export function HomepageSettingsClient({
         formData.append("promo_banner_image", promoBannerFile);
       }
 
-      const res = await apiMutate<any>("/admin/settings/homepage", {
+      const res = await apiMutate<unknown>("/admin/settings/homepage", {
         method: "POST",
         body: formData,
       });
@@ -118,7 +122,7 @@ export function HomepageSettingsClient({
             </button>
           )}
         </div>
-        <p className="text-sm text-ink-soft mb-4">Ana sayfadaki "Yeni Sezon" grid'inde sergilenecek ürünleri seçin.</p>
+        <p className="text-sm text-ink-soft mb-4">Ana sayfadaki &quot;Yeni Sezon&quot; grid&apos;inde sergilenecek ürünleri seçin.</p>
         
         <div className="max-h-60 overflow-y-auto border border-border divide-y divide-border">
           {products.map(product => (

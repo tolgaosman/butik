@@ -5,30 +5,81 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import { formatPrice } from "@/lib/format";
 import { ORDER_STATUS_LABELS, type Order } from "@/lib/orders";
+import { getStoreSettings, type StoreSettings } from "@/lib/settings";
+import { trackPurchase } from "@/lib/analytics";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Mail, Landmark } from "lucide-react";
 
 const STORAGE_KEY = "sevgi-butik:last-order";
+
+const PAYMENT_METHOD_LABELS: Record<Order["paymentMethod"], string> = {
+  cash_on_delivery: "Kapıda Ödeme",
+  bank_transfer: "Havale / EFT",
+};
 
 export default function OrderConfirmationPage() {
   const { orderNumber } = useParams<{ orderNumber: string }>();
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
+  const [settings, setSettings] = useState<StoreSettings | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
+    // Paint instantly from the order the checkout just placed, if this is that tab.
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        setOrder(null);
-        return;
+      if (raw) {
+        const stored: Order = JSON.parse(raw);
+        if (stored.orderNumber === orderNumber) setOrder(stored);
       }
-      const stored: Order = JSON.parse(raw);
-      setOrder(stored.orderNumber === orderNumber ? stored : null);
     } catch {
-      setOrder(null);
+      // sessionStorage unavailable — the API fetch below still covers it
     }
+
+    // Then always fetch the canonical record — covers a refresh, a shared
+    // link, or the sessionStorage snapshot going stale after an admin edit.
+    (async () => {
+      try {
+        const res = await fetch(`/api/orders/${orderNumber}`, {
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+        if (res.ok) {
+          const fresh: Order = await res.json();
+          if (!cancelled) setOrder(fresh);
+          return;
+        }
+      } catch {
+        // network error — fall through to whatever sessionStorage produced
+      }
+      if (!cancelled) setOrder((prev) => (prev === undefined ? null : prev));
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [orderNumber]);
+
+  useEffect(() => {
+    getStoreSettings().then(setSettings);
+  }, []);
+
+  // Fire Purchase/purchase exactly once per order — a refresh or a shared
+  // link must not inflate ad-platform conversion counts.
+  useEffect(() => {
+    if (!order) return;
+    const trackedKey = "sevgi-butik:purchase-tracked";
+    try {
+      const tracked: string[] = JSON.parse(localStorage.getItem(trackedKey) ?? "[]");
+      if (tracked.includes(order.orderNumber)) return;
+      trackPurchase(order);
+      localStorage.setItem(trackedKey, JSON.stringify([...tracked, order.orderNumber]));
+    } catch {
+      trackPurchase(order);
+    }
+  }, [order]);
 
   if (order === undefined) {
     return (
@@ -69,13 +120,15 @@ export default function OrderConfirmationPage() {
           Sipariş detaylarınızı görüntülemek için siparişinizi takip edebilirsiniz.
         </p>
         <div className="mt-6 flex justify-center">
-          <Button href="/siparis-takip" variant="solid">
+          <Button href="/siparis-takibi" variant="solid">
             Siparişimi Takip Et
           </Button>
         </div>
       </div>
     );
   }
+
+  const showBankDetails = order.paymentMethod === "bank_transfer" && settings?.bankIban;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -90,7 +143,43 @@ export default function OrderConfirmationPage() {
           Sipariş numaranız: <span className="font-medium text-ink">{order.orderNumber}</span>
         </p>
         <p className="mt-1 text-xs text-ink-soft">Durum: {ORDER_STATUS_LABELS[order.status]}</p>
+        <p className="mt-3 flex items-center gap-1.5 text-xs text-ink-soft">
+          <Mail size={13} aria-hidden />
+          Onay e-postası gönderildi.
+        </p>
       </div>
+
+      {showBankDetails && (
+        <div className="mt-8 flex items-start gap-3.5 rounded-2xl border border-olive/20 bg-olive/5 p-5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-olive">
+            <Landmark className="size-4" aria-hidden />
+          </span>
+          <div>
+            <p className="font-serif text-sm font-semibold text-ink">Havale / EFT Bilgileri</p>
+            <p className="mt-1 text-xs leading-relaxed text-ink-soft">
+              Ödemenizi aşağıdaki hesaba yapıp sipariş numaranızı açıklama olarak eklemeniz yeterli.
+            </p>
+            <dl className="mt-3 space-y-1 text-sm">
+              {settings?.bankName && (
+                <div className="flex gap-2">
+                  <dt className="text-ink-soft">Banka:</dt>
+                  <dd className="font-medium text-ink">{settings.bankName}</dd>
+                </div>
+              )}
+              {settings?.bankAccountHolder && (
+                <div className="flex gap-2">
+                  <dt className="text-ink-soft">Hesap Sahibi:</dt>
+                  <dd className="font-medium text-ink">{settings.bankAccountHolder}</dd>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <dt className="text-ink-soft">IBAN:</dt>
+                <dd className="font-medium text-ink">{settings?.bankIban}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      )}
 
       <div className="mt-10 divide-y divide-border border border-border">
         {order.items.map((item, i) => (
@@ -110,13 +199,26 @@ export default function OrderConfirmationPage() {
         ))}
       </div>
 
+      <div className="mt-4 space-y-2 border border-border p-4 text-sm text-ink-soft">
+        <div className="flex justify-between">
+          <span>Ödeme Yöntemi</span>
+          <span className="text-ink">{PAYMENT_METHOD_LABELS[order.paymentMethod]}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Teslimat Adresi</span>
+          <span className="max-w-[65%] text-right text-ink">
+            {order.shippingAddress.line1}, {order.shippingAddress.district} / {order.shippingAddress.city}
+          </span>
+        </div>
+      </div>
+
       <div className="mt-4 flex justify-between border border-border p-4 font-serif text-lg font-medium text-ink">
         <span>Toplam</span>
         <span>{formatPrice(order.total)}</span>
       </div>
 
       <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-        <Button href="/siparis-takip" variant="outline">
+        <Button href="/siparis-takibi" variant="outline">
           Siparişimi Takip Et
         </Button>
         <Button href="/" variant="solid">

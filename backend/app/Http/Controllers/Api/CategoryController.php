@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Support\CatalogCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
@@ -18,7 +19,7 @@ class CategoryController extends Controller
      */
     public function index(): JsonResponse
     {
-        $payload = Cache::remember('api_categories_tree', 3600, function () {
+        $payload = Cache::remember('api_categories_tree_v' . CatalogCache::version(), 3600, function () {
             $categories = Category::where('is_active', true)
                 ->whereNull('parent_id')
                 ->with(['subcategories' => function ($q) {

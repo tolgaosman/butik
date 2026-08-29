@@ -9,4 +9,6 @@ import { revalidateTag } from "next/cache";
 export async function revalidateStore() {
   revalidateTag("products");
   revalidateTag("categories");
+  revalidateTag("homepage");
+  revalidateTag("store-settings");
 }

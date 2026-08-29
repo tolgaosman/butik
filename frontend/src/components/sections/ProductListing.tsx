@@ -63,12 +63,10 @@ export function ProductListing({ title, products, subcategories = [], category, 
   const filterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (subQuery) {
-      const sub = subcategories.find((s) => s.id === subQuery);
-      if (sub && !selectedSubcategories.includes(sub.id)) {
-        setSelectedSubcategories((prev) => [...prev, sub.id]);
-      }
-    }
+    if (!subQuery) return;
+    const sub = subcategories.find((s) => s.id === subQuery);
+    if (!sub) return;
+    setSelectedSubcategories((prev) => (prev.includes(sub.id) ? prev : [...prev, sub.id]));
   }, [subQuery, subcategories]);
 
   const showGenderFilter = hasGenderFilter(category, subcategory);

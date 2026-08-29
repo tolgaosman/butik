@@ -1,8 +1,15 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import type { StoreSettings } from "@/lib/settings";
 
-export function FloatingWhatsApp() {
+/** "0542 873 91 96" -> "905428739196" (drop the leading 0, prefix the TR country code). */
+function toWhatsAppNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  return `90${digits.replace(/^0/, "")}`;
+}
+
+export function FloatingWhatsApp({ settings }: { settings: StoreSettings }) {
   const pathname = usePathname();
 
   // Don't render on the contact page where the form already exists or in admin routes
@@ -10,7 +17,7 @@ export function FloatingWhatsApp() {
 
   return (
     <a
-      href="https://wa.me/905428739196"
+      href={`https://wa.me/${toWhatsAppNumber(settings.phone)}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="WhatsApp üzerinden bizimle iletişime geçin"

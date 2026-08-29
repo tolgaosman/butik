@@ -14,7 +14,7 @@ export async function BestSellers() {
         <SectionHeader
           eyebrow="ÇOK SATANLAR"
           title="En Çok Satan Parçalar"
-          href="/yeni-gelenler/cok-satanlar"
+          href="/cok-satanlar"
           linkLabel="Tümünü Gör"
         />
 

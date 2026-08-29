@@ -1,5 +1,35 @@
 version: '3.8'
 
+x-backend-env: &backend-env
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?APP_KEY zorunlu - php artisan key:generate --show ile uretip .env dosyasina koyun}
+  APP_URL: https://sevgibutik.com
+  APP_LOCALE: tr
+  DB_CONNECTION: mysql
+  DB_HOST: db
+  DB_PORT: 3306
+  DB_DATABASE: ${DB_DATABASE:-butik}
+  DB_USERNAME: ${DB_USERNAME:-butikuser}
+  DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD zorunlu}
+  FRONTEND_URL: https://sevgibutik.com
+  SANCTUM_STATEFUL_DOMAINS: sevgibutik.com
+  # Next.js her /api ve /sanctum cagrisini ayni origin'den (sevgibutik.com) proxy'ler,
+  # bu yuzden tarayicinin gordugu cookie Domain'i de bu olmali.
+  SESSION_DOMAIN: sevgibutik.com
+  SESSION_DRIVER: database
+  SESSION_SECURE_COOKIE: "true"
+  CACHE_STORE: database
+  QUEUE_CONNECTION: database
+  MAIL_MAILER: ${MAIL_MAILER:-smtp}
+  MAIL_HOST: ${MAIL_HOST:?MAIL_HOST zorunlu - siparis/kargo/sifre e-postalari icin bir SMTP saglayici gerekiyor}
+  MAIL_PORT: ${MAIL_PORT:-587}
+  MAIL_USERNAME: ${MAIL_USERNAME}
+  MAIL_PASSWORD: ${MAIL_PASSWORD}
+  MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-siparis@sevgibutik.com}
+  MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Sevgi Butik}
+
 services:
   db:
     image: mysql:8.0
@@ -7,15 +37,18 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-butik}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD zorunlu - DB_PASSWORD'dan farkli, ayri bir sifre kullanin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD zorunlu}
       MYSQL_USER: ${DB_USERNAME:-butikuser}
-    ports:
-      - "33061:3306"
     volumes:
       - db-data:/var/lib/mysql
     networks:
       - butik-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   backend:
     build:
@@ -24,28 +57,46 @@ services:
     container_name: butik-backend
     restart: unless-stopped
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - APP_KEY=${APP_KEY:?APP_KEY zorunlu - php artisan key:generate --show ile uretip .env dosyasina koyun}
-      - APP_URL=https://sevgibutik.com
-      - APP_LOCALE=tr
-      - DB_CONNECTION=mysql
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-butik}
-      - DB_USERNAME=${DB_USERNAME:-butikuser}
-      - DB_PASSWORD=${DB_PASSWORD:-secret}
-      - FRONTEND_URL=https://sevgibutik.com
-      - SANCTUM_STATEFUL_DOMAINS=sevgibutik.com
-      # SESSION_DOMAIN bilerek bos: cookie Domain niteligi bir IP olamaz (RFC 6265),
-      # tarayici boyle bir Set-Cookie'yi yok sayar ve oturum hic kalici olmaz.
-      - SESSION_DRIVER=database
-      - SESSION_SECURE_COOKIE=false
-      - CACHE_STORE=database
-      - QUEUE_CONNECTION=database
-      - MAIL_MAILER=log
+      <<: *backend-env
+    volumes:
+      - backend-storage:/var/www/storage/app/public
+    networks:
+      - butik-network
+
+  queue:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: butik-queue
+    restart: unless-stopped
+    command: ["sh", "-c", "php artisan queue:work --tries=3 --backoff=10"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      <<: *backend-env
+    volumes:
+      - backend-storage:/var/www/storage/app/public
+    networks:
+      - butik-network
+
+  scheduler:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: butik-scheduler
+    restart: unless-stopped
+    command: ["sh", "-c", "php artisan schedule:work"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      <<: *backend-env
+    volumes:
+      - backend-storage:/var/www/storage/app/public
     networks:
       - butik-network
 
@@ -72,3 +123,4 @@ networks:
 
 volumes:
   db-data:
+  backend-storage:

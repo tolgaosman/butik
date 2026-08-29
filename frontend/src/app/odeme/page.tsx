@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { Landmark } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { apiMutate, ApiError } from "@/lib/api";
+import { getStoreSettings, type StoreSettings } from "@/lib/settings";
+import { trackInitiateCheckout } from "@/lib/analytics";
 import type { Order } from "@/lib/orders";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
@@ -22,12 +25,27 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const checkoutTracked = useRef(false);
 
   useEffect(() => {
     if (!isAuthLoading && !user) {
       router.push("/hesabim");
     }
   }, [isAuthLoading, user, router]);
+
+  useEffect(() => {
+    getStoreSettings().then(setSettings);
+  }, []);
+
+  useEffect(() => {
+    if (checkoutTracked.current || isLoading || cart.items.length === 0) return;
+    checkoutTracked.current = true;
+    trackInitiateCheckout(
+      cart.items.map((item) => ({ id: item.productId, name: item.name, price: item.unitPrice, quantity: item.quantity })),
+      cart.total,
+    );
+  }, [isLoading, cart]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -227,6 +245,39 @@ export default function CheckoutPage() {
                 </label>
               ))}
             </div>
+
+            {paymentMethod === "bank_transfer" && settings?.bankIban && (
+              <div className="mt-4 flex items-start gap-3.5 rounded-2xl border border-olive/20 bg-olive/5 p-5">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-olive">
+                  <Landmark className="size-4" aria-hidden />
+                </span>
+                <div>
+                  <p className="font-serif text-sm font-semibold text-ink">Havale / EFT Bilgileri</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ink-soft">
+                    Siparişi tamamladıktan sonra ödemenizi aşağıdaki hesaba yapıp sipariş numaranızı açıklama
+                    olarak eklemeniz yeterli.
+                  </p>
+                  <dl className="mt-3 space-y-1 text-sm">
+                    {settings.bankName && (
+                      <div className="flex gap-2">
+                        <dt className="text-ink-soft">Banka:</dt>
+                        <dd className="font-medium text-ink">{settings.bankName}</dd>
+                      </div>
+                    )}
+                    {settings.bankAccountHolder && (
+                      <div className="flex gap-2">
+                        <dt className="text-ink-soft">Hesap Sahibi:</dt>
+                        <dd className="font-medium text-ink">{settings.bankAccountHolder}</dd>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <dt className="text-ink-soft">IBAN:</dt>
+                      <dd className="font-medium text-ink">{settings.bankIban}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </div>
+            )}
           </section>
         </div>
 

@@ -156,16 +156,6 @@ export const primaryNav: NavItem[] = [
   },
 ] as const;
 
-/**
- * Pages where the Kadın/Erkek/Unisex filter makes sense. Keyed by category slug;
- * `exclude`/`include` list subcategory slugs that opt out/in of the category's default.
- */
-const GENDER_FILTER_RULES: Record<string, { exclude?: string[]; include?: string[] }> = {
-  "ust-giyim": {},
-  "alt-giyim": { exclude: ["tayt"] },
-  aksesuar: { include: ["taki", "kemer"] },
-};
-
 export function hasGenderFilter(category?: string, subcategory?: string): boolean {
   if (!category && !subcategory) return false;
 
@@ -216,7 +206,7 @@ export const footerLinks = {
     { label: "Çocuk", href: "/cocuk" },
   ],
   musteriHizmetleri: [
-    { label: "Siparişimi Takip Et", href: "/siparis-takip" },
+    { label: "Siparişimi Takip Et", href: "/siparis-takibi" },
     { label: "Kargo ve Teslimat", href: "/kargo-teslimat" },
     { label: "Beden Rehberi", href: "/beden-rehberi" },
     { label: "İletişim", href: "/iletisim" },

@@ -4,16 +4,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
-import { 
-  Package, 
+import {
+  Package,
   Layers,
-  ShoppingCart, 
-  Users, 
-  Settings, 
+  ShoppingCart,
+  Users,
+  Settings,
   LogOut,
   Menu,
   X,
-  Home
+  Home,
+  Star
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Ürünler", href: "/admin/urunler", icon: Package },
   { name: "Kategoriler", href: "/admin/kategoriler", icon: Layers },
   { name: "Müşteriler", href: "/admin/musteriler", icon: Users },
+  { name: "Değerlendirmeler", href: "/admin/degerlendirmeler", icon: Star },
   { name: "Ayarlar", href: "/admin/ayarlar", icon: Settings },
 ];
 
