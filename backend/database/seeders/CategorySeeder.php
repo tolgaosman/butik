@@ -17,6 +17,13 @@ class CategorySeeder extends Seeder
     {
         $rows = [
             [
+                'slug' => 'giyim',
+                'name' => 'Giyim',
+                'item_count' => 260,
+                'href' => '/giyim',
+                'image' => 'https://images.unsplash.com/photo-1760245097385-9029fe89a112?q=80&w=800&auto=format&fit=crop', // Reusing elbise image for aggregate
+            ],
+            [
                 'slug' => 'elbise',
                 'name' => 'Elbise',
                 'item_count' => 120,
