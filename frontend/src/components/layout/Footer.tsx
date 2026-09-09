@@ -67,11 +67,11 @@ export function Footer({ settings }: { settings: StoreSettings }) {
         <div className="relative z-10 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.5fr]">
           <div className="flex flex-col">
             <Image
-              src="/sevgiLogo-white.png"
+              src="/sevgiLogo-ink.png"
               alt="Sevgi Butik"
               width={180}
               height={65}
-              className="h-10 w-auto object-contain drop-shadow-md"
+              className="h-10 w-auto object-contain drop-shadow-md brightness-0 invert"
             />
             <p className="mt-6 max-w-xs text-[0.95rem] leading-relaxed text-white/70">{settings.address}</p>
             <div className="mt-8 flex items-center gap-4">
