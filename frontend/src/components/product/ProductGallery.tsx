@@ -38,7 +38,7 @@ export function ProductGallery({ images, alt, isNew, discountPercent }: Props) {
                 fill
                 priority
                 sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-contain bg-white"
+                className="object-contain bg-transparent"
               />
             </motion.div>
           </AnimatePresence>
@@ -74,7 +74,7 @@ export function ProductGallery({ images, alt, isNew, discountPercent }: Props) {
                   }`}
                 >
                   <div className="absolute inset-0 bg-ink/0 transition-colors duration-300 group-hover:bg-ink/10 z-10" />
-                  <Image src={src} alt="" fill sizes="25vw" className="object-contain bg-white transition-transform duration-700 ease-[var(--ease-organic)] group-hover:scale-105" />
+                  <Image src={src} alt="" fill sizes="25vw" className="object-contain bg-transparent transition-transform duration-700 ease-[var(--ease-organic)] group-hover:scale-105" />
                 </button>
               );
             })}
@@ -100,7 +100,7 @@ export function ProductGallery({ images, alt, isNew, discountPercent }: Props) {
                 fill
                 priority
                 sizes="100vw"
-                className="object-contain bg-white"
+                className="object-contain bg-transparent"
               />
             </motion.div>
           </AnimatePresence>
