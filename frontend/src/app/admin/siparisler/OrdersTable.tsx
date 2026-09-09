@@ -112,22 +112,22 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
         <p className="mt-1 text-sm text-ink-soft">Tüm müşteri siparişlerini yönetin ve takip edin.</p>
       </div>
 
-      <div className="flex flex-col gap-4 border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
           <input
             type="text"
             placeholder="Sipariş no veya müşteri ara..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded border border-border bg-cream py-2 pl-9 pr-4 text-sm focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
+            className="w-full rounded-2xl border border-border/80 bg-cream/50 py-2.5 pl-11 pr-4 text-sm transition-all focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as AdminOrderStatus | "all")}
           aria-label="Duruma göre filtrele"
-          className="rounded border border-border bg-cream px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
+          className="rounded-2xl border border-border/80 bg-cream/50 px-4 py-2.5 text-sm text-ink transition-all focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30"
         >
           <option value="all">Tüm Durumlar</option>
           {STATUS_OPTIONS.map((s) => (
@@ -136,41 +136,43 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
         </select>
       </div>
 
-      <div className="overflow-hidden border border-border bg-surface shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-sm">
         <div className="hidden overflow-x-auto md:block">
-          <table className="w-full table-fixed divide-y divide-border">
+          <table className="w-full table-fixed">
             <thead>
-              <tr className="bg-cream/50">
-                <th scope="col" className="w-[28%] py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Sipariş Detayı</th>
-                <th scope="col" className="w-[18%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Tarih</th>
-                <th scope="col" className="w-[22%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Durum</th>
-                <th scope="col" className="w-[16%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Ürün Sayısı</th>
-                <th scope="col" className="w-[16%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Tutar</th>
+              <tr className="bg-cream/50 border-b border-border/60">
+                <th scope="col" className="w-[28%] py-4 px-4 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft pl-6">Sipariş Detayı</th>
+                <th scope="col" className="w-[18%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Tarih</th>
+                <th scope="col" className="w-[22%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Durum</th>
+                <th scope="col" className="w-[16%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Ürün Sayısı</th>
+                <th scope="col" className="w-[16%] py-4 px-3 text-right text-xs font-semibold uppercase tracking-wider text-ink-soft pr-6">Tutar</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-surface">
+            <tbody className="divide-y divide-border/40 bg-surface">
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <tr
                     key={order.orderNumber}
                     onClick={() => handleOpen(order)}
-                    className="cursor-pointer transition-colors hover:bg-cream/30"
+                    className="group cursor-pointer transition-colors hover:bg-cream/40"
                   >
-                    <td className="px-3 py-4 text-center">
-                      <div className="text-sm font-medium text-ink">{order.orderNumber}</div>
-                      <div className="text-xs text-ink-soft">{order.customer}</div>
+                    <td className="px-4 py-5 text-left pl-6">
+                      <div className="text-base font-bold text-ink group-hover:text-olive transition-colors">{order.orderNumber}</div>
+                      <div className="text-xs font-medium text-ink-soft/80 mt-1">{order.customer}</div>
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-ink-soft">{order.date}</td>
-                    <td className="px-3 py-4 text-center text-sm">
-                      <StatusBadge status={order.status} />
+                    <td className="px-3 py-5 text-center text-sm font-medium text-ink-soft/80">{order.date}</td>
+                    <td className="px-3 py-5 text-center text-sm">
+                      <span className="inline-block rounded-xl bg-cream/50 px-3 py-1.5 border border-border/60 shadow-sm">
+                        <StatusBadge status={order.status} />
+                      </span>
                     </td>
-                    <td className="px-3 py-4 text-center text-sm text-ink-soft">{order.items} Adet</td>
-                    <td className="px-3 py-4 text-center text-sm font-medium text-ink">{order.total}</td>
+                    <td className="px-3 py-5 text-center text-sm font-bold text-ink-soft">{order.items} Adet</td>
+                    <td className="px-3 py-5 text-right text-base font-bold text-ink pr-6">{order.total}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-ink-soft">
+                  <td colSpan={5} className="py-12 text-center text-sm font-medium text-ink-soft">
                     Sipariş bulunamadı.
                   </td>
                 </tr>
@@ -179,40 +181,42 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
           </table>
         </div>
 
-        <div className="divide-y divide-border md:hidden">
+        <div className="divide-y divide-border/40 md:hidden">
           {filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
               <div
                 key={order.orderNumber}
                 onClick={() => handleOpen(order)}
-                className="cursor-pointer space-y-3 p-4 transition-colors hover:bg-cream/30"
+                className="cursor-pointer space-y-4 p-5 transition-colors hover:bg-cream/30"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-ink">{order.orderNumber}</div>
-                    <div className="text-xs text-ink-soft">{order.customer}</div>
+                    <div className="text-base font-bold text-ink">{order.orderNumber}</div>
+                    <div className="text-xs font-medium text-ink-soft/80 mt-1">{order.customer}</div>
                   </div>
-                  <StatusBadge status={order.status} />
+                  <span className="inline-block rounded-xl bg-cream/50 px-3 py-1.5 border border-border/60 shadow-sm">
+                    <StatusBadge status={order.status} />
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-cream/50 p-4 rounded-2xl border border-border/40">
                   <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Tarih</div>
-                    <span className="text-ink-soft">{order.date}</span>
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Tarih</div>
+                    <span className="font-medium text-ink-soft">{order.date}</span>
                   </div>
                   <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Ürün Sayısı</div>
-                    <span className="text-ink-soft">{order.items} Adet</span>
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Ürün Sayısı</div>
+                    <span className="font-bold text-ink-soft">{order.items} Adet</span>
                   </div>
-                  <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Tutar</div>
-                    <span className="font-medium text-ink">{order.total}</span>
+                  <div className="col-span-2 border-t border-border/40 pt-3 flex justify-between items-center">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Tutar</div>
+                    <span className="font-bold text-lg text-ink">{order.total}</span>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <p className="py-8 text-center text-sm text-ink-soft">Sipariş bulunamadı.</p>
+            <p className="py-12 text-center text-sm font-medium text-ink-soft">Sipariş bulunamadı.</p>
           )}
         </div>
       </div>
@@ -223,57 +227,57 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
         title={`Sipariş Detayı (${selectedOrder?.orderNumber})`}
       >
         {selectedOrder && (
-          <div className="max-h-[70vh] space-y-6 overflow-y-auto pr-2">
+          <div className="max-h-[70vh] space-y-6 overflow-y-auto pr-2 custom-scrollbar">
             {/* MÜŞTERİ */}
-            <div className="space-y-1 rounded border border-border bg-cream/30 p-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-ink">Müşteri</h3>
-              <p className="text-sm text-ink">{selectedOrder.customer}</p>
-              <p className="text-xs text-ink-soft">{selectedOrder.email}</p>
-              {selectedOrder.phone && <p className="text-xs text-ink-soft">{selectedOrder.phone}</p>}
+            <div className="space-y-1 rounded-3xl border border-border/70 bg-cream/30 p-6 shadow-sm">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-soft/70 mb-3">Müşteri</h3>
+              <p className="text-base font-bold text-ink">{selectedOrder.customer}</p>
+              <p className="text-sm font-medium text-ink-soft">{selectedOrder.email}</p>
+              {selectedOrder.phone && <p className="text-sm font-medium text-ink-soft">{selectedOrder.phone}</p>}
             </div>
 
             {/* TESLİMAT ADRESİ */}
             {selectedOrder.shippingAddress?.line1 && (
-              <div className="space-y-1 rounded border border-border bg-cream/30 p-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-ink">Teslimat Adresi</h3>
-                <p className="text-sm text-ink">{selectedOrder.shippingAddress.name}</p>
-                <p className="text-xs text-ink-soft">
+              <div className="space-y-1 rounded-3xl border border-border/70 bg-cream/30 p-6 shadow-sm">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-soft/70 mb-3">Teslimat Adresi</h3>
+                <p className="text-base font-bold text-ink">{selectedOrder.shippingAddress.name}</p>
+                <p className="text-sm font-medium text-ink-soft">
                   {selectedOrder.shippingAddress.line1}
                   {selectedOrder.shippingAddress.line2 && `, ${selectedOrder.shippingAddress.line2}`}
                 </p>
-                <p className="text-xs text-ink-soft">
+                <p className="text-sm font-medium text-ink-soft">
                   {selectedOrder.shippingAddress.district}, {selectedOrder.shippingAddress.city}
                   {selectedOrder.shippingAddress.postalCode && ` ${selectedOrder.shippingAddress.postalCode}`}
                 </p>
                 {selectedOrder.shippingAddress.phone && (
-                  <p className="text-xs text-ink-soft">{selectedOrder.shippingAddress.phone}</p>
+                  <p className="text-sm font-medium text-ink-soft">{selectedOrder.shippingAddress.phone}</p>
                 )}
               </div>
             )}
 
             {/* ÖDEME */}
-            <div className="grid grid-cols-2 gap-4 rounded border border-border bg-cream/30 p-4">
+            <div className="grid grid-cols-2 gap-4 rounded-3xl border border-border/70 bg-cream/30 p-6 shadow-sm">
               <div>
-                <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Ödeme Yöntemi</div>
-                <p className="text-sm text-ink">{PAYMENT_METHOD_LABELS[selectedOrder.paymentMethod]}</p>
+                <div className="mb-1 text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">Ödeme Yöntemi</div>
+                <p className="text-sm font-bold text-ink">{PAYMENT_METHOD_LABELS[selectedOrder.paymentMethod]}</p>
               </div>
-              <div className="space-y-1">
-                <label htmlFor="payment_status" className="block text-[11px] font-medium uppercase tracking-wider text-ink-soft">
+              <div className="space-y-1.5">
+                <label htmlFor="payment_status" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">
                   Ödeme Durumu
                 </label>
                 <select
                   id="payment_status"
                   value={paymentStatusInput}
                   onChange={(e) => setPaymentStatusInput(e.target.value as AdminPaymentStatus)}
-                  className="w-full rounded border border-border bg-surface px-2 py-1.5 text-sm text-ink focus:border-olive focus:outline-none"
+                  className="w-full rounded-xl border border-border/60 bg-surface px-3 py-2 text-sm font-medium text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-all"
                 >
                   {(Object.keys(PAYMENT_STATUS_LABELS) as AdminPaymentStatus[]).map((s) => (
                     <option key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</option>
                   ))}
                 </select>
               </div>
-              <div className="col-span-2 space-y-1">
-                <label htmlFor="tracking_number" className="block text-[11px] font-medium uppercase tracking-wider text-ink-soft">
+              <div className="col-span-2 space-y-1.5">
+                <label htmlFor="tracking_number" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">
                   Kargo Takip No
                 </label>
                 <input
@@ -282,43 +286,43 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
                   value={trackingInput}
                   onChange={(e) => setTrackingInput(e.target.value)}
                   placeholder="Örn. PTT123456789"
-                  className="w-full rounded border border-border bg-surface px-2 py-1.5 text-sm text-ink focus:border-olive focus:outline-none"
+                  className="w-full rounded-xl border border-border/60 bg-surface px-3 py-2 text-sm font-medium text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-all"
                 />
               </div>
             </div>
 
             {/* ÜRÜNLER */}
-            <div className="space-y-3 rounded border border-border bg-cream/30 p-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-ink">Ürünler</h3>
-              <div className="divide-y divide-border">
+            <div className="space-y-4 rounded-3xl border border-border/70 bg-cream/30 p-6 shadow-sm">
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">Ürünler</h3>
+              <div className="divide-y divide-border/40">
                 {selectedOrder.lineItems.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between gap-3 py-2">
+                  <div key={i} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm text-ink">{item.name}</p>
-                      <p className="text-xs text-ink-soft">
+                      <p className="truncate text-sm font-bold text-ink">{item.name}</p>
+                      <p className="text-xs font-medium text-ink-soft/80 mt-1">
                         {item.size && `Beden: ${item.size} · `}Adet: {item.quantity}
                       </p>
                     </div>
-                    <p className="shrink-0 text-sm font-medium text-ink">{formatMoney(item.lineTotal)}</p>
+                    <p className="shrink-0 text-sm font-bold text-ink">{formatMoney(item.lineTotal)}</p>
                   </div>
                 ))}
               </div>
-              <div className="space-y-1 border-t border-border pt-3 text-sm">
-                <div className="flex justify-between text-ink-soft">
+              <div className="space-y-2 border-t border-border/40 pt-4 text-sm bg-surface p-4 rounded-2xl border-border/60 border">
+                <div className="flex justify-between font-medium text-ink-soft">
                   <span>Ara Toplam</span>
                   <span>{formatMoney(selectedOrder.subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-ink-soft">
+                <div className="flex justify-between font-medium text-ink-soft">
                   <span>Kargo</span>
                   <span>{formatMoney(selectedOrder.shipping)}</span>
                 </div>
                 {selectedOrder.discount > 0 && (
-                  <div className="flex justify-between text-ink-soft">
+                  <div className="flex justify-between font-medium text-gold">
                     <span>İndirim</span>
                     <span>-{formatMoney(selectedOrder.discount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-medium text-ink">
+                <div className="flex justify-between font-bold text-lg text-ink pt-2 border-t border-border/40">
                   <span>Toplam</span>
                   <span>{formatMoney(selectedOrder.totalValue)}</span>
                 </div>
@@ -326,22 +330,22 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
             </div>
 
             {selectedOrder.customerNote && (
-              <div className="space-y-1 rounded border border-border bg-cream/30 p-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-ink">Müşteri Notu</h3>
-                <p className="text-sm text-ink-soft">{selectedOrder.customerNote}</p>
+              <div className="space-y-2 rounded-3xl border border-border/70 bg-cream/30 p-6 shadow-sm">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">Müşteri Notu</h3>
+                <p className="text-sm font-medium text-ink leading-relaxed">{selectedOrder.customerNote}</p>
               </div>
             )}
 
             {/* DURUM */}
             <div className="space-y-2">
-              <label htmlFor="status" className="block text-sm font-medium text-ink">
+              <label htmlFor="status" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70 pl-1">
                 Sipariş Durumu
               </label>
               <select
                 id="status"
                 value={statusInput}
                 onChange={(e) => setStatusInput(e.target.value as AdminOrderStatus)}
-                className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
+                className="w-full rounded-xl border border-border/60 bg-surface px-4 py-3 text-sm font-bold text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-all"
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
@@ -350,7 +354,7 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="admin_note" className="block text-sm font-medium text-ink">
+              <label htmlFor="admin_note" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70 pl-1">
                 Dahili Not
               </label>
               <textarea
@@ -359,11 +363,11 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
                 value={noteInput}
                 onChange={(e) => setNoteInput(e.target.value)}
                 placeholder="Sadece ekip içi görünür"
-                className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
+                className="w-full rounded-2xl border border-border/60 bg-surface px-4 py-3 text-sm font-medium text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-all resize-none"
               />
             </div>
 
-            <div className="sticky bottom-0 flex justify-end gap-3 border-t border-border bg-surface pt-4">
+            <div className="sticky bottom-0 flex justify-end gap-3 bg-surface pt-4 pb-2 border-t border-border/40">
               <Button variant="outline" onClick={() => setSelectedOrder(null)}>Kapat</Button>
               <Button variant="solid" onClick={handleSave} loading={saving}>Kaydet</Button>
             </div>

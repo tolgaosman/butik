@@ -137,182 +137,195 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <Breadcrumbs items={[{ label: "Sepetim", href: "/sepet" }, { label: "Ödeme" }]} />
-      <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Ödeme</h1>
+    <div className="bg-cream/40 min-h-[70vh] py-8 sm:py-12">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[{ label: "Sepetim", href: "/sepet" }, { label: "Ödeme" }]} />
+        <h1 className="mt-5 font-serif text-3xl font-medium tracking-tight text-ink sm:text-4xl lg:text-5xl">Ödeme</h1>
 
-      <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_320px] lg:gap-10">
-        <div className="space-y-8">
-          <section>
-            <h2 className="font-serif text-xl font-medium text-ink">Teslimat Bilgileri</h2>
-            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <Input
-                  id="email"
-                  name="email"
-                  label="E-posta (sipariş bildirimleri için)"
-                  type="email"
-                  defaultValue={user?.email || ""}
-                  autoComplete="email"
-                  required
-                  error={errors.email?.[0]}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Input
-                  id="phone"
-                  name="phone"
-                  label="Telefon Numarası (kargo teslimatı için)"
-                  type="tel"
-                  defaultValue={user?.phone || ""}
-                  placeholder="5XX XXX XX XX"
-                  autoComplete="tel"
-                  required
-                  error={errors.phone?.[0]}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Input
-                  id="shipping_line1"
-                  name="shipping_line1"
-                  label="Adres"
-                  autoComplete="address-line1"
-                  required
-                  error={errors.shipping_line1?.[0]}
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Input
-                  id="shipping_line2"
-                  name="shipping_line2"
-                  label="Adres (devamı, opsiyonel)"
-                  autoComplete="address-line2"
-                />
-              </div>
-              <Input
-                id="shipping_district"
-                name="shipping_district"
-                label="İlçe / Semt"
-                required
-                error={errors.shipping_district?.[0]}
-              />
-              <Input
-                id="shipping_city"
-                name="shipping_city"
-                label="Şehir"
-                autoComplete="address-level1"
-                required
-                error={errors.shipping_city?.[0]}
-              />
-              <Input id="shipping_postal" name="shipping_postal" label="Posta Kodu (opsiyonel)" />
-            </div>
-            <div className="mt-4">
-              <label htmlFor="customer_note" className="mb-1.5 block text-xs font-medium text-ink-soft">
-                Sipariş Notu (opsiyonel)
-              </label>
-              <textarea
-                id="customer_note"
-                name="customer_note"
-                rows={3}
-                className="w-full border border-border px-4 py-2.5 text-sm transition-colors duration-200 focus:border-olive focus-visible:outline-none"
-              />
-            </div>
-          </section>
-
-          <section>
-            <h2 className="font-serif text-xl font-medium text-ink">Ödeme Yöntemi</h2>
-            <div className="mt-4 space-y-3">
-              {(
-                [
-                  { value: "cash_on_delivery", label: "Kapıda Ödeme" },
-                  { value: "bank_transfer", label: "Havale / EFT" },
-                ] as const
-              ).map((option) => (
-                <label
-                  key={option.value}
-                  className={`flex cursor-pointer items-center gap-3 border px-4 py-3.5 text-sm transition-colors duration-200 ${
-                    paymentMethod === option.value ? "border-olive bg-olive/5" : "border-border"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="payment_method_display"
-                    checked={paymentMethod === option.value}
-                    onChange={() => setPaymentMethod(option.value)}
-                    className="accent-olive"
+        <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px] lg:gap-10">
+          <div className="space-y-8">
+            <section className="rounded-3xl border border-border/70 bg-surface p-6 sm:p-8 shadow-sm">
+              <h2 className="font-serif text-xl font-medium text-ink">Teslimat Bilgileri</h2>
+              <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <Input
+                    id="email"
+                    name="email"
+                    label="E-posta (sipariş bildirimleri için)"
+                    type="email"
+                    defaultValue={user?.email || ""}
+                    autoComplete="email"
+                    required
+                    error={errors.email?.[0]}
                   />
-                  <span className="text-ink">{option.label}</span>
+                </div>
+                <div className="sm:col-span-2">
+                  <Input
+                    id="phone"
+                    name="phone"
+                    label="Telefon Numarası (kargo teslimatı için)"
+                    type="tel"
+                    defaultValue={user?.phone || ""}
+                    placeholder="5XX XXX XX XX"
+                    autoComplete="tel"
+                    required
+                    error={errors.phone?.[0]}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Input
+                    id="shipping_line1"
+                    name="shipping_line1"
+                    label="Adres"
+                    autoComplete="address-line1"
+                    required
+                    error={errors.shipping_line1?.[0]}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <Input
+                    id="shipping_line2"
+                    name="shipping_line2"
+                    label="Adres (devamı, opsiyonel)"
+                    autoComplete="address-line2"
+                  />
+                </div>
+                <Input
+                  id="shipping_district"
+                  name="shipping_district"
+                  label="İlçe / Semt"
+                  required
+                  error={errors.shipping_district?.[0]}
+                />
+                <Input
+                  id="shipping_city"
+                  name="shipping_city"
+                  label="Şehir"
+                  autoComplete="address-level1"
+                  required
+                  error={errors.shipping_city?.[0]}
+                />
+                <Input id="shipping_postal" name="shipping_postal" label="Posta Kodu (opsiyonel)" />
+              </div>
+              <div className="mt-5">
+                <label htmlFor="customer_note" className="mb-2 block text-sm font-medium text-ink-soft pl-1">
+                  Sipariş Notu (opsiyonel)
                 </label>
-              ))}
-            </div>
+                <textarea
+                  id="customer_note"
+                  name="customer_note"
+                  rows={3}
+                  className="w-full rounded-2xl border border-border/80 bg-surface px-5 py-4 text-sm text-ink outline-none transition-all duration-300 focus:border-olive focus:ring-1 focus:ring-olive/30"
+                />
+              </div>
+            </section>
 
-            {paymentMethod === "bank_transfer" && settings?.bankIban && (
-              <div className="mt-4 flex items-start gap-3.5 rounded-2xl border border-olive/20 bg-olive/5 p-5">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-olive">
-                  <Landmark className="size-4" aria-hidden />
-                </span>
-                <div>
-                  <p className="font-serif text-sm font-semibold text-ink">Havale / EFT Bilgileri</p>
-                  <p className="mt-1 text-xs leading-relaxed text-ink-soft">
-                    Siparişi tamamladıktan sonra ödemenizi aşağıdaki hesaba yapıp sipariş numaranızı açıklama
-                    olarak eklemeniz yeterli.
-                  </p>
-                  <dl className="mt-3 space-y-1 text-sm">
-                    {settings.bankName && (
+            <section className="rounded-3xl border border-border/70 bg-surface p-6 sm:p-8 shadow-sm">
+              <h2 className="font-serif text-xl font-medium text-ink">Ödeme Yöntemi</h2>
+              <div className="mt-6 space-y-3">
+                {(
+                  [
+                    { value: "cash_on_delivery", label: "Kapıda Ödeme" },
+                    { value: "bank_transfer", label: "Havale / EFT" },
+                  ] as const
+                ).map((option) => (
+                  <label
+                    key={option.value}
+                    className={`flex cursor-pointer items-center gap-4 rounded-2xl border px-5 py-4 text-sm font-medium transition-all duration-300 ${
+                      paymentMethod === option.value ? "border-olive bg-olive/5 shadow-sm" : "border-border/80 hover:border-ink/20"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="payment_method_display"
+                      checked={paymentMethod === option.value}
+                      onChange={() => setPaymentMethod(option.value)}
+                      className="accent-olive size-4"
+                    />
+                    <span className="text-ink">{option.label}</span>
+                  </label>
+                ))}
+              </div>
+
+              {paymentMethod === "bank_transfer" && settings?.bankIban && (
+                <div className="mt-5 flex items-start gap-4 rounded-2xl border border-olive/20 bg-olive/5 p-5 shadow-inner">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-olive shadow-sm">
+                    <Landmark className="size-4" strokeWidth={2.5} aria-hidden />
+                  </span>
+                  <div>
+                    <p className="font-serif text-base font-semibold text-ink">Havale / EFT Bilgileri</p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">
+                      Siparişi tamamladıktan sonra ödemenizi aşağıdaki hesaba yapıp sipariş numaranızı açıklama
+                      olarak eklemeniz yeterli.
+                    </p>
+                    <dl className="mt-4 space-y-2 text-sm bg-white/50 p-4 rounded-xl">
+                      {settings.bankName && (
+                        <div className="flex gap-2">
+                          <dt className="text-ink-soft w-24">Banka:</dt>
+                          <dd className="font-semibold text-ink">{settings.bankName}</dd>
+                        </div>
+                      )}
+                      {settings.bankAccountHolder && (
+                        <div className="flex gap-2">
+                          <dt className="text-ink-soft w-24">Hesap Sahibi:</dt>
+                          <dd className="font-semibold text-ink">{settings.bankAccountHolder}</dd>
+                        </div>
+                      )}
                       <div className="flex gap-2">
-                        <dt className="text-ink-soft">Banka:</dt>
-                        <dd className="font-medium text-ink">{settings.bankName}</dd>
+                        <dt className="text-ink-soft w-24">IBAN:</dt>
+                        <dd className="font-semibold text-ink break-all">{settings.bankIban}</dd>
                       </div>
-                    )}
-                    {settings.bankAccountHolder && (
-                      <div className="flex gap-2">
-                        <dt className="text-ink-soft">Hesap Sahibi:</dt>
-                        <dd className="font-medium text-ink">{settings.bankAccountHolder}</dd>
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <dt className="text-ink-soft">IBAN:</dt>
-                      <dd className="font-medium text-ink">{settings.bankIban}</dd>
+                    </dl>
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+
+          <div className="space-y-6 lg:sticky lg:top-28 lg:h-fit">
+            <div className="rounded-3xl border border-border/70 bg-surface p-6 sm:p-7 shadow-sm">
+              <h2 className="font-serif text-xl font-medium tracking-tight text-ink">
+                Sipariş Özeti
+              </h2>
+              <div className="mt-6 max-h-64 space-y-4 overflow-y-auto pr-2 scrollbar-hide">
+                {cart.items.map((item) => (
+                  <div key={item.id} className="flex justify-between gap-3 text-sm">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-ink line-clamp-1">{item.name}</span>
+                      <span className="text-xs text-ink-soft mt-0.5">
+                        {item.size && `Beden: ${item.size} • `}Adet: {item.quantity}
+                      </span>
                     </div>
-                  </dl>
+                    <span className="shrink-0 font-semibold text-ink">{formatPrice(item.lineTotal)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 space-y-3 border-t border-border/60 pt-5 text-sm text-ink-soft">
+                <div className="flex justify-between">
+                  <span>Ara Toplam</span>
+                  <span className="font-medium text-ink">{formatPrice(cart.subtotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Kargo</span>
+                  {cart.shipping === 0 ? (
+                    <span className="font-medium text-olive">Ücretsiz</span>
+                  ) : (
+                    <span className="font-medium text-ink">{formatPrice(cart.shipping)}</span>
+                  )}
                 </div>
               </div>
-            )}
-          </section>
-        </div>
-
-        <div className="h-fit border border-border p-6">
-          <p className="font-serif text-lg font-medium text-ink">Sipariş Özeti</p>
-          <div className="mt-4 max-h-64 space-y-3 overflow-y-auto">
-            {cart.items.map((item) => (
-              <div key={item.id} className="flex justify-between gap-2 text-sm">
-                <span className="text-ink-soft">
-                  {item.name} {item.size && `(${item.size})`} × {item.quantity}
-                </span>
-                <span className="shrink-0 text-ink">{formatPrice(item.lineTotal)}</span>
+              <div className="mt-5 flex items-baseline justify-between border-t border-border/60 pt-5 font-serif text-lg font-medium text-ink">
+                <span>Toplam</span>
+                <span className="text-2xl font-bold">{formatPrice(cart.total)}</span>
               </div>
-            ))}
-          </div>
-          <div className="mt-4 space-y-2 border-t border-border pt-4 text-sm text-ink-soft">
-            <div className="flex justify-between">
-              <span>Ara Toplam</span>
-              <span className="text-ink">{formatPrice(cart.subtotal)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Kargo</span>
-              <span className="text-ink">{cart.shipping === 0 ? "Ücretsiz" : formatPrice(cart.shipping)}</span>
+              {formError && <p className="mt-4 text-xs font-medium text-red-500 bg-red-50 p-3 rounded-xl">{formError}</p>}
+              <Button type="submit" variant="solid" className="mt-6 w-full rounded-2xl py-4 shadow-md shadow-olive/15" loading={loading}>
+                Siparişi Tamamla
+              </Button>
             </div>
           </div>
-          <div className="mt-4 flex justify-between border-t border-border pt-4 font-serif text-lg font-medium text-ink">
-            <span>Toplam</span>
-            <span>{formatPrice(cart.total)}</span>
-          </div>
-          {formError && <p className="mt-3 text-xs text-red-500">{formError}</p>}
-          <Button type="submit" variant="solid" className="mt-6 w-full" loading={loading}>
-            Siparişi Tamamla
-          </Button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

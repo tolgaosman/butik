@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/password', [AuthController::class, 'updatePassword']);
     Route::delete('/user', [AuthController::class, 'destroy']);
 
+    Route::get('/products/{slug}/eligible-orders', [ReviewController::class, 'eligibleOrders']);
     Route::post('/products/{slug}/reviews', [ReviewController::class, 'store']);
 
     Route::get('/favorites', [FavoriteController::class, 'index']);

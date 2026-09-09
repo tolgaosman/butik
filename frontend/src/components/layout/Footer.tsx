@@ -39,15 +39,15 @@ function NewsletterForm() {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="E-posta adresiniz"
         aria-label="E-posta adresiniz"
-        className="w-full border border-border bg-surface px-4 py-2.5 text-sm text-ink outline-none transition-colors duration-200 focus:border-olive"
+        className="w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 text-sm text-white placeholder-white/50 outline-none transition-all duration-300 focus:border-white/60 focus:bg-white/10"
       />
       <button
         type="submit"
         disabled={loading}
         aria-label="Bültene abone ol"
-        className="flex shrink-0 items-center justify-center rounded-full bg-olive px-4 text-white transition-colors duration-200 hover:bg-olive-dark disabled:opacity-60"
+        className="flex shrink-0 items-center justify-center rounded-full bg-white px-5 text-ink transition-transform duration-300 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:hover:scale-100"
       >
-        <Send size={16} />
+        <Send size={18} strokeWidth={2.5} />
       </button>
     </form>
   );
@@ -58,25 +58,29 @@ export function Footer({ settings }: { settings: StoreSettings }) {
   if (pathname?.startsWith("/admin")) return null;
 
   return (
-    <footer className="border-t border-border bg-surface-alt">
-      <div className="container-site py-12 sm:py-16">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
-          <div>
+    <footer className="mt-auto bg-ink text-surface overflow-hidden">
+      <div className="container-site relative py-16 sm:py-24">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[800px] h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-white/5 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="relative z-10 grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1.5fr]">
+          <div className="flex flex-col">
             <Image
-              src="/sevgiLogo-ink.png"
+              src="/sevgiLogo-white.png"
               alt="Sevgi Butik"
               width={180}
               height={65}
-              className="h-9 w-auto object-contain"
+              className="h-10 w-auto object-contain drop-shadow-md"
             />
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-soft">{settings.address}</p>
-            <div className="mt-4 flex items-center gap-3">
+            <p className="mt-6 max-w-xs text-[0.95rem] leading-relaxed text-white/70">{settings.address}</p>
+            <div className="mt-8 flex items-center gap-4">
               <a
                 href={settings.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="-m-2 p-2 text-ink-soft transition-colors duration-200 hover:text-olive"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-white hover:text-ink hover:scale-110"
               >
                 <Instagram size={18} />
               </a>
@@ -85,7 +89,7 @@ export function Footer({ settings }: { settings: StoreSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="-m-2 p-2 text-ink-soft transition-colors duration-200 hover:text-olive"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-white hover:text-ink hover:scale-110"
               >
                 <Facebook size={18} />
               </a>
@@ -93,11 +97,11 @@ export function Footer({ settings }: { settings: StoreSettings }) {
           </div>
 
           <div>
-            <p className="font-serif text-sm font-semibold text-ink">Mağaza</p>
-            <ul className="mt-4 space-y-2.5">
+            <p className="font-serif text-[1.1rem] font-medium tracking-wide text-white">Mağaza</p>
+            <ul className="mt-6 space-y-3">
               {footerLinks.magaza.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-ink-soft transition-colors duration-200 hover:text-olive">
+                  <Link href={link.href} className="inline-block text-[0.95rem] text-white/70 transition-colors duration-300 hover:text-white hover:translate-x-1">
                     {link.label}
                   </Link>
                 </li>
@@ -106,11 +110,11 @@ export function Footer({ settings }: { settings: StoreSettings }) {
           </div>
 
           <div>
-            <p className="font-serif text-sm font-semibold text-ink">Müşteri Hizmetleri</p>
-            <ul className="mt-4 space-y-2.5">
+            <p className="font-serif text-[1.1rem] font-medium tracking-wide text-white">Müşteri Hizmetleri</p>
+            <ul className="mt-6 space-y-3">
               {footerLinks.musteriHizmetleri.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-ink-soft transition-colors duration-200 hover:text-olive">
+                  <Link href={link.href} className="inline-block text-[0.95rem] text-white/70 transition-colors duration-300 hover:text-white hover:translate-x-1">
                     {link.label}
                   </Link>
                 </li>
@@ -119,19 +123,20 @@ export function Footer({ settings }: { settings: StoreSettings }) {
           </div>
 
           <div>
-            <p className="font-serif text-sm font-semibold text-ink">Bültenimize Katılın</p>
-            <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-              Yeni ürünler ve özel kampanyalar için e-posta listemize katılın.
+            <p className="font-serif text-[1.1rem] font-medium tracking-wide text-white">Bültenimize Katılın</p>
+            <p className="mt-4 text-[0.95rem] leading-relaxed text-white/70 mb-6">
+              Yeni ürünler ve özel kampanyalar için e-posta listemize katılın. Size sadece güzel haberler göndereceğiz.
             </p>
-            <div className="mt-4">
-              <NewsletterForm />
-            </div>
+            <NewsletterForm />
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 text-xs text-ink-soft sm:flex-row">
+        <div className="relative z-10 mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-white/50 sm:flex-row">
           <p>&copy; {new Date().getFullYear()} {settings.name}. Tüm hakları saklıdır.</p>
-          <p>{settings.phone}</p>
+          <div className="flex items-center gap-6">
+            <span>{settings.phone}</span>
+            <Link href="/iletisim" className="hover:text-white transition-colors">İletişim</Link>
+          </div>
         </div>
       </div>
     </footer>

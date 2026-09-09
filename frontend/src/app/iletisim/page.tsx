@@ -14,16 +14,18 @@ export const metadata: Metadata = {
 // Opening hours aren't part of the admin settings form yet — kept from business.ts.
 const dayIndexMap = [6, 0, 1, 2, 3, 4, 5]; // JS getDay() (0=Sun) -> business.hours index (0=Mon)
 
+import { MotifBackground } from "@/components/ui/MotifBackground";
+
 export default async function ContactPage() {
   const settings = await getStoreSettings();
   const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(settings.mapsQuery)}`;
   const todayIndex = dayIndexMap[new Date().getDay()];
 
-
-
   return (
-    <div className="container-site py-8 sm:py-12">
-      <Breadcrumbs items={[{ label: "İletişim" }]} />
+    <div className="relative overflow-hidden bg-cream pb-12 pt-[calc(2rem+6rem)] -mt-[6rem] min-h-[70vh]">
+      <MotifBackground mask="linear-gradient(to bottom, black 0%, transparent 100%)" />
+      <div className="container-site relative z-10">
+        <Breadcrumbs items={[{ label: "İletişim" }]} />
 
       <MotionStagger className="mt-3">
         <MotionItem>
@@ -173,6 +175,7 @@ export default async function ContactPage() {
         </MotionReveal>
       </div>
 
+    </div>
     </div>
   );
 }

@@ -5,13 +5,17 @@ import { ProductCard } from "@/components/ui/ProductCard";
 import { TrustBar } from "@/components/sections/TrustBar";
 import { getNewArrivals } from "@/lib/products";
 
+import { MotifBackground } from "@/components/ui/MotifBackground";
+
 export default async function FavoritesPage() {
   const recommended = await getNewArrivals();
 
   return (
     <>
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <Breadcrumbs items={[{ label: "Favorilerim" }]} />
+      <div className="relative overflow-hidden bg-cream pb-12 pt-[calc(2rem+6rem)] -mt-[6rem] min-h-[70vh]">
+        <MotifBackground mask="linear-gradient(to bottom, black 0%, transparent 100%)" />
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 relative z-10">
+          <Breadcrumbs items={[{ label: "Favorilerim" }]} />
         <h1 className="mt-3 font-serif text-4xl font-medium text-ink sm:text-5xl">Favorilerim</h1>
 
         <FavoritesGrid />
@@ -28,6 +32,7 @@ export default async function FavoritesPage() {
             </MotionStagger>
           </section>
         )}
+        </div>
       </div>
 
       <TrustBar />

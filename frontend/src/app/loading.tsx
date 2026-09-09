@@ -1,4 +1,4 @@
-﻿export default function Loading() {
+export default function Loading() {
   return (
     <div className="animate-pulse">
       <div className="bg-cream pb-10 sm:pb-14">
@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1600px] px-4 py-12 sm:px-6 sm:py-20 lg:px-8">
+      <div className="mx-auto max-w-[100rem] px-4 py-12 sm:px-6 sm:py-20 lg:px-8">
         <div className="mb-8 h-8 w-56 bg-sand/40" />
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 4 }, (_, i) => (

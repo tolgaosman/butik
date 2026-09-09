@@ -75,74 +75,76 @@ export function CustomersTable({ customers: initialCustomers }: { customers: Adm
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-medium text-ink">Müşteriler</h1>
           <p className="mt-1 text-sm text-ink-soft">Mağazanıza kayıtlı tüm müşteriler ve harcama detayları.</p>
         </div>
         <button
           onClick={() => downloadCsv(filteredCustomers)}
-          className="inline-flex items-center gap-2 rounded bg-surface px-4 py-2 text-sm font-medium text-ink shadow-sm border border-border hover:bg-cream transition-colors"
+          className="inline-flex items-center gap-2 rounded-2xl bg-surface px-5 py-2.5 text-sm font-semibold text-ink shadow-sm border border-border/70 hover:bg-cream hover:border-olive/30 transition-all"
         >
           <Download size={16} />
           Dışa Aktar (CSV)
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-border bg-surface p-4 shadow-sm">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-3xl border border-border/70 bg-surface p-5 shadow-sm">
         <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
+          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft pointer-events-none" />
           <input
             type="text"
             placeholder="İsim, e-posta veya telefon ara..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded border border-border bg-cream py-2 pl-9 pr-4 text-sm focus:border-olive focus:outline-none focus:ring-1 focus:ring-olive"
+            className="w-full rounded-2xl border border-border/80 bg-cream/50 py-2.5 pl-11 pr-4 text-sm transition-all duration-200 placeholder:text-ink-soft focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30"
           />
         </div>
       </div>
 
-      <div className="overflow-hidden border border-border bg-surface shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-sm">
         <div className="hidden overflow-x-auto md:block">
-          <table className="w-full table-fixed divide-y divide-border">
+          <table className="w-full table-fixed">
             <thead>
-              <tr className="bg-cream/50">
-                <th scope="col" className="w-[22%] py-3.5 px-3 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Müşteri Adı</th>
-                <th scope="col" className="w-[20%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">E-posta</th>
-                <th scope="col" className="w-[14%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Telefon</th>
-                <th scope="col" className="w-[14%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Kayıt Tarihi</th>
-                <th scope="col" className="w-[10%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Siparişler</th>
-                <th scope="col" className="w-[13%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Toplam Harcama</th>
-                <th scope="col" className="w-[7%] py-3.5 px-3 text-center"><span className="sr-only">İşlemler</span></th>
+              <tr className="bg-cream/50 border-b border-border/60">
+                <th scope="col" className="w-[22%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft pl-6">Müşteri Adı</th>
+                <th scope="col" className="w-[20%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">E-posta</th>
+                <th scope="col" className="w-[14%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Telefon</th>
+                <th scope="col" className="w-[14%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Kayıt Tarihi</th>
+                <th scope="col" className="w-[10%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Siparişler</th>
+                <th scope="col" className="w-[13%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Toplam Harcama</th>
+                <th scope="col" className="w-[7%] py-4 px-3 text-center pr-6"><span className="sr-only">İşlemler</span></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-surface">
+            <tbody className="divide-y divide-border/40 bg-surface">
               {filteredCustomers.length > 0 ? (
                 filteredCustomers.map((customer) => (
-                  <tr key={customer.id} className="hover:bg-cream/30 transition-colors">
-                    <td className="px-3 py-4">
-                      <div className="flex items-center justify-center gap-3">
-                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-olive/10 text-sm font-medium text-olive">
+                  <tr key={customer.id} className="group hover:bg-cream/40 transition-colors duration-200">
+                    <td className="px-3 py-4 pl-6">
+                      <div className="flex items-center justify-start gap-3">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-olive/10 text-sm font-bold text-olive">
                           {customer.name.charAt(0)}
                         </div>
-                        <div className="truncate text-sm font-medium text-ink">{customer.name}</div>
+                        <div className="truncate text-sm font-semibold text-ink group-hover:text-olive transition-colors">{customer.name}</div>
                       </div>
                     </td>
                     <td className="px-3 py-4 text-center text-sm text-ink-soft">{customer.email}</td>
-                    <td className="px-3 py-4 text-center text-sm text-ink">{customer.phone ?? "—"}</td>
-                    <td className="px-3 py-4 text-center text-sm text-ink-soft">{customer.joined}</td>
-                    <td className="px-3 py-4 text-center text-sm font-medium text-ink">{customer.orders}</td>
-                    <td className="px-3 py-4 text-center text-sm font-medium text-olive">{customer.spent}</td>
-                    <td className="px-3 py-4 text-center text-sm font-medium">
-                      <button onClick={() => handleEdit(customer)} className={iconButtonNeutral} title="Düzenle">
-                        <Edit2 size={18} />
-                      </button>
+                    <td className="px-3 py-4 text-center text-sm text-ink font-medium">{customer.phone ?? "—"}</td>
+                    <td className="px-3 py-4 text-center text-xs font-medium text-ink-soft/80">{customer.joined}</td>
+                    <td className="px-3 py-4 text-center text-sm font-bold text-ink">{customer.orders}</td>
+                    <td className="px-3 py-4 text-center text-sm font-bold text-olive">{customer.spent}</td>
+                    <td className="px-3 py-4 text-center text-sm font-medium pr-6">
+                      <div className="flex justify-end">
+                        <button onClick={() => handleEdit(customer)} className={`${iconButtonNeutral} rounded-xl`} title="Düzenle">
+                          <Edit2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-sm text-ink-soft">
+                  <td colSpan={7} className="py-12 text-center text-sm text-ink-soft">
                     Müşteri bulunamadı.
                   </td>
                 </tr>
@@ -151,45 +153,45 @@ export function CustomersTable({ customers: initialCustomers }: { customers: Adm
           </table>
         </div>
 
-        <div className="divide-y divide-border md:hidden">
+        <div className="divide-y divide-border/40 md:hidden">
           {filteredCustomers.length > 0 ? (
             filteredCustomers.map((customer) => (
-              <div key={customer.id} className="space-y-3 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-olive/10 text-sm font-medium text-olive">
+              <div key={customer.id} className="space-y-4 p-5 hover:bg-cream/30 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-olive/10 text-base font-bold text-olive">
                     {customer.name.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-medium text-ink">{customer.name}</div>
-                    <div className="truncate text-xs text-ink-soft">{customer.email}</div>
-                    <div className="truncate text-xs text-ink-soft">{customer.phone ?? "—"}</div>
+                    <div className="truncate text-sm font-bold text-ink">{customer.name}</div>
+                    <div className="truncate text-xs text-ink-soft/80 mt-0.5">{customer.email}</div>
+                    <div className="truncate text-xs font-medium text-ink mt-0.5">{customer.phone ?? "—"}</div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 text-sm">
-                  <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Kayıt</div>
-                    <span className="text-ink-soft">{customer.joined}</span>
+                <div className="grid grid-cols-3 gap-4 rounded-2xl bg-cream/50 p-4 text-sm border border-border/40">
+                  <div className="text-center">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Kayıt</div>
+                    <span className="text-xs font-medium text-ink">{customer.joined}</span>
                   </div>
-                  <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Sipariş</div>
-                    <span className="font-medium text-ink">{customer.orders}</span>
+                  <div className="text-center border-l border-border/40">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Sipariş</div>
+                    <span className="text-sm font-bold text-ink">{customer.orders}</span>
                   </div>
-                  <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Harcama</div>
-                    <span className="font-medium text-olive">{customer.spent}</span>
+                  <div className="text-center border-l border-border/40">
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Harcama</div>
+                    <span className="text-sm font-bold text-olive">{customer.spent}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end border-t border-border pt-3">
-                  <button onClick={() => handleEdit(customer)} className={iconButtonNeutral} title="Düzenle">
-                    <Edit2 size={18} />
+                <div className="flex items-center justify-end">
+                  <button onClick={() => handleEdit(customer)} className={`${iconButtonNeutral} rounded-xl`} title="Düzenle">
+                    <Edit2 size={16} /> <span className="ml-2 text-xs font-semibold">Düzenle</span>
                   </button>
                 </div>
               </div>
             ))
           ) : (
-            <p className="py-8 text-center text-sm text-ink-soft">Müşteri bulunamadı.</p>
+            <p className="py-12 text-center text-sm text-ink-soft">Müşteri bulunamadı.</p>
           )}
         </div>
       </div>

@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/Button";
 import { toast } from "@/lib/toast";
-import { getProductReviews, type Review, type ReviewsMeta } from "@/lib/reviews";
+import { getProductReviews, getEligibleOrdersForReview, type Review, type ReviewsMeta, type EligibleOrder } from "@/lib/reviews";
 
 const dateFormatter = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", year: "numeric" });
 
@@ -28,6 +28,10 @@ export function ProductReviews({ productSlug, initialReviews, initialMeta }: Pro
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  
+  const [eligibleOrders, setEligibleOrders] = useState<EligibleOrder[] | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | "">("");
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   async function loadMore() {
     setLoadingMore(true);
@@ -41,13 +45,38 @@ export function ProductReviews({ productSlug, initialReviews, initialMeta }: Pro
     }
   }
 
+  async function handleOpenForm() {
+    if (formOpen) {
+      setFormOpen(false);
+      return;
+    }
+    
+    setLoadingOrders(true);
+    try {
+      const orders = await getEligibleOrdersForReview(productSlug);
+      setEligibleOrders(orders);
+      if (orders.length === 0) {
+        toast.error("Değerlendirme yapılamıyor", {
+          description: "Bu ürünü değerlendirmek için önce sipariş vermelisiniz veya mevcut siparişlerinize zaten yorum yaptınız."
+        });
+        return;
+      }
+      setSelectedOrderId(orders[0].id);
+      setFormOpen(true);
+    } finally {
+      setLoadingOrders(false);
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!selectedOrderId) return;
+    
     setSubmitting(true);
     try {
       await apiMutate(`/products/${productSlug}/reviews`, {
         method: "POST",
-        body: JSON.stringify({ rating, title: title || undefined, body: body || undefined }),
+        body: JSON.stringify({ order_id: selectedOrderId, rating, title: title || undefined, body: body || undefined }),
       });
       setSubmitted(true);
       setFormOpen(false);
@@ -68,7 +97,7 @@ export function ProductReviews({ productSlug, initialReviews, initialMeta }: Pro
           Değerlendirmeler {meta.total > 0 && <span className="text-ink-soft">({meta.total})</span>}
         </h2>
         {user && !submitted && (
-          <Button variant="outline" onClick={() => setFormOpen((v) => !v)}>
+          <Button variant="outline" onClick={handleOpenForm} loading={loadingOrders}>
             {formOpen ? "Vazgeç" : "Değerlendirme Yaz"}
           </Button>
         )}
@@ -76,6 +105,23 @@ export function ProductReviews({ productSlug, initialReviews, initialMeta }: Pro
 
       {formOpen && (
         <form onSubmit={handleSubmit} className="mt-6 space-y-4 border border-border p-6">
+          {eligibleOrders && eligibleOrders.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-medium text-ink">Hangi Siparişiniz İçin?</p>
+              <select
+                value={selectedOrderId}
+                onChange={(e) => setSelectedOrderId(Number(e.target.value))}
+                className="w-full border border-border px-4 py-2.5 text-sm text-ink transition-colors duration-200 focus:border-olive focus-visible:outline-none"
+                required
+              >
+                {eligibleOrders.map(order => (
+                  <option key={order.id} value={order.id}>
+                    {order.order_number} - {dateFormatter.format(new Date(order.created_at))}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <p className="mb-2 text-sm font-medium text-ink">Puanınız</p>
             <div className="flex gap-1" role="radiogroup" aria-label="Puan">

@@ -883,13 +883,17 @@ function AccountDashboard() {
   );
 }
 
+import { MotifBackground } from "@/components/ui/MotifBackground";
+
 export default function AccountPage() {
   const { user, isLoading } = useAuth();
   const [mode, setMode] = useState<"auth" | "forgot">("auth");
 
   return (
-    <div className="container-site pb-8 pt-4 sm:pb-12 sm:pt-6">
-      <Breadcrumbs items={[{ label: "Hesabım" }]} />
+    <div className="relative overflow-hidden bg-cream pb-12 pt-[calc(2rem+6rem)] -mt-[6rem] min-h-[70vh]">
+      <MotifBackground mask="linear-gradient(to bottom, black 0%, transparent 100%)" />
+      <div className="container-site relative z-10">
+        <Breadcrumbs items={[{ label: "Hesabım" }]} />
       {isLoading ? (
         <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
           {Array.from({ length: 2 }, (_, i) => (
@@ -911,11 +915,12 @@ export default function AccountPage() {
           <ForgotPasswordForm onBack={() => setMode("auth")} />
         </div>
       ) : (
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2 md:gap-10">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-10">
           <LoginForm onForgotPassword={() => setMode("forgot")} />
           <RegisterForm />
         </div>
       )}
+      </div>
     </div>
   );
 }

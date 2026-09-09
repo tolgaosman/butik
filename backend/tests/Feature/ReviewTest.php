@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -27,9 +29,11 @@ class ReviewTest extends TestCase
     {
         $product = Product::factory()->create();
         $user = User::factory()->create();
+        $order = Order::factory()->create(['user_id' => $user->id, 'status' => 'delivered']);
+        OrderItem::create(['order_id' => $order->id, 'product_id' => $product->id, 'product_name' => $product->name, 'product_slug' => $product->slug, 'product_image' => 'test.jpg', 'quantity' => 1, 'unit_price_minor' => 1000, 'line_total_minor' => 1000]);
 
         $this->actingAs($user)
-            ->postJson("/api/products/{$product->slug}/reviews", ['rating' => 4, 'title' => 'Güzel', 'body' => 'Beğendim'])
+            ->postJson("/api/products/{$product->slug}/reviews", ['order_id' => $order->id, 'rating' => 4, 'title' => 'Güzel', 'body' => 'Beğendim'])
             ->assertCreated();
 
         $this->assertDatabaseHas('reviews', [
@@ -39,14 +43,17 @@ class ReviewTest extends TestCase
         ]);
     }
 
-    public function test_a_user_cannot_review_the_same_product_twice(): void
+    public function test_a_user_cannot_review_the_same_product_twice_for_the_same_order(): void
     {
         $product = Product::factory()->create();
         $user = User::factory()->create();
-        Review::create(['product_id' => $product->id, 'user_id' => $user->id, 'author_name' => $user->name, 'rating' => 5]);
+        $order = Order::factory()->create(['user_id' => $user->id, 'status' => 'delivered']);
+        OrderItem::create(['order_id' => $order->id, 'product_id' => $product->id, 'product_name' => $product->name, 'product_slug' => $product->slug, 'product_image' => 'test.jpg', 'quantity' => 1, 'unit_price_minor' => 1000, 'line_total_minor' => 1000]);
+        
+        Review::create(['product_id' => $product->id, 'user_id' => $user->id, 'order_id' => $order->id, 'author_name' => $user->name, 'rating' => 5]);
 
         $this->actingAs($user)
-            ->postJson("/api/products/{$product->slug}/reviews", ['rating' => 3])
+            ->postJson("/api/products/{$product->slug}/reviews", ['order_id' => $order->id, 'rating' => 3])
             ->assertStatus(409);
     }
 

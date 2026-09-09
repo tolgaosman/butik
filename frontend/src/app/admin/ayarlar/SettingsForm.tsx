@@ -52,8 +52,8 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="border border-border bg-surface p-6 shadow-sm sm:p-8">
-        <h2 className="font-serif text-lg font-medium text-ink mb-6">Genel Bilgiler</h2>
+      <div className="rounded-3xl border border-border/70 bg-surface p-6 shadow-sm sm:p-8">
+        <h2 className="font-serif text-xl font-medium text-ink mb-6">Genel Bilgiler</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <Input
             id="store_name"
@@ -91,8 +91,8 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
         </div>
       </div>
 
-      <div className="border border-border bg-surface p-6 shadow-sm sm:p-8">
-        <h2 className="font-serif text-lg font-medium text-ink mb-6">İletişim & Sosyal Medya</h2>
+      <div className="rounded-3xl border border-border/70 bg-surface p-6 shadow-sm sm:p-8">
+        <h2 className="font-serif text-xl font-medium text-ink mb-6">İletişim & Sosyal Medya</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <Input
             id="store_phone"
@@ -132,8 +132,8 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
         </div>
       </div>
 
-      <div className="border border-border bg-surface p-6 shadow-sm sm:p-8">
-        <h2 className="font-serif text-lg font-medium text-ink mb-1">Havale / EFT Bilgileri</h2>
+      <div className="rounded-3xl border border-border/70 bg-surface p-6 shadow-sm sm:p-8">
+        <h2 className="font-serif text-xl font-medium text-ink mb-1">Havale / EFT Bilgileri</h2>
         <p className="mb-6 text-sm text-ink-soft">
           Ödemede havale/EFT seçen müşterilere sipariş onayında ve e-postada gösterilir.
         </p>
@@ -164,11 +164,11 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex justify-end pt-4">
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 rounded bg-olive px-6 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-olive-dark transition-colors disabled:opacity-70"
+          className="inline-flex items-center gap-2 rounded-xl bg-olive px-6 py-3 text-sm font-bold tracking-wider text-white shadow-md shadow-olive/20 transition-all hover:bg-olive-dark hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed uppercase"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -177,8 +177,8 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
             </span>
           ) : (
             <>
+              Değişiklikleri Kaydet
               <Save size={18} />
-              Ayarları Kaydet
             </>
           )}
         </button>

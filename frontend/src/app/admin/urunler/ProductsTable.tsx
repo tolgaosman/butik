@@ -282,53 +282,53 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 border border-border bg-surface p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="relative max-w-sm flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Ürün adı, kod, kategori veya beden ara..."
             aria-label="Ürün ara"
-            className="w-full border border-border bg-cream py-2 pl-9 pr-4 text-sm text-ink transition-colors duration-200 placeholder:text-ink-soft focus:border-olive focus:outline-none"
+            className="w-full rounded-2xl border border-border/80 bg-cream/50 py-2.5 pl-11 pr-4 text-sm text-ink transition-all duration-200 placeholder:text-ink-soft focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30"
           />
         </div>
         <div className="flex items-center gap-4">
-          <p className="text-xs text-ink-soft">
+          <p className="text-xs font-medium text-ink-soft/80">
             {filtered.length} / {localProducts.length} ürün
           </p>
-          <Button variant="solid" onClick={openCreate}>
+          <Button variant="solid" onClick={openCreate} className="shadow-md shadow-olive/20 rounded-2xl">
             <Plus size={16} /> Yeni Ürün
           </Button>
         </div>
       </div>
 
-      <div className="overflow-hidden border border-border bg-surface shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-sm">
         <div className="hidden overflow-x-auto md:block">
-          <table className="w-full table-fixed divide-y divide-border">
+          <table className="w-full table-fixed">
             <thead>
-              <tr className="bg-cream/50">
-                <th scope="col" className="w-[20%] py-3.5 px-3 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Ürün</th>
-                <th scope="col" className="w-[13%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Kategoriler</th>
-                <th scope="col" className="w-[20%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Bedenler / Stok</th>
-                <th scope="col" className="w-[11%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Toplam Stok</th>
-                <th scope="col" className="w-[12%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Fiyat</th>
-                <th scope="col" className="w-[10%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Durum</th>
-                <th scope="col" className="w-[10%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Eklendi</th>
-                <th scope="col" className="w-[9%] py-3.5 px-3 text-center"><span className="sr-only">İşlemler</span></th>
+              <tr className="bg-cream/50 border-b border-border/60">
+                <th scope="col" className="w-[20%] py-4 px-4 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft pl-6">Ürün</th>
+                <th scope="col" className="w-[13%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Kategoriler</th>
+                <th scope="col" className="w-[20%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Bedenler / Stok</th>
+                <th scope="col" className="w-[11%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Toplam Stok</th>
+                <th scope="col" className="w-[12%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Fiyat</th>
+                <th scope="col" className="w-[10%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Durum</th>
+                <th scope="col" className="w-[10%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Eklendi</th>
+                <th scope="col" className="w-[9%] py-4 px-3 text-center pr-6"><span className="sr-only">İşlemler</span></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-surface">
+            <tbody className="divide-y divide-border/40 bg-surface">
               {filtered.map((product) => {
                 const { variants, productCategories, compareAt, discount, totalStock, isActive, createdAt } =
                   deriveProductRow(product);
 
                 return (
-                <tr key={product.id} className="transition-colors duration-200 hover:bg-cream/30">
+                <tr key={product.id} className="group transition-colors duration-200 hover:bg-cream/40">
                   <td className="py-4 pl-6 pr-3">
                     <div className="flex items-center gap-4">
-                      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden border border-border bg-cream">
+                      <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-border/60 bg-cream">
                         <Image src={product.image || FALLBACK_IMAGE} alt="" fill sizes="48px" className="object-cover" />
                         {product.images.length > 0 && (
                           <span className="absolute bottom-0 right-0 bg-ink/70 px-1 text-[10px] leading-4 text-cream">
@@ -338,14 +338,14 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="truncate text-sm font-medium text-ink">{product.name}</span>
+                          <span className="truncate text-sm font-semibold text-ink group-hover:text-olive transition-colors">{product.name}</span>
                           {product.is_new && (
-                            <span className="whitespace-nowrap bg-sand px-1.5 py-0.5 text-[10px] font-medium tracking-[0.05em] text-ink">
+                            <span className="whitespace-nowrap rounded bg-sand px-1.5 py-0.5 text-[10px] font-bold tracking-[0.05em] text-ink">
                               YENİ
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-ink-soft">
+                        <div className="text-xs text-ink-soft/80 mt-0.5">
                           #{product.id} · {product.slug ?? "—"}
                         </div>
                       </div>
@@ -353,60 +353,60 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
                   </td>
                   <td className="px-3 py-4 text-center text-sm">
                     {productCategories.length ? (
-                      <div className="flex flex-wrap justify-center gap-1">
+                      <div className="flex flex-wrap justify-center gap-1.5">
                         {productCategories.slice(0, 2).map((c) => (
-                          <span key={c.id} className="whitespace-nowrap border border-border bg-cream px-2 py-0.5 text-xs text-ink-soft">
+                          <span key={c.id} className="whitespace-nowrap rounded-lg border border-border/60 bg-cream/50 px-2 py-0.5 text-xs text-ink-soft font-medium">
                             {c.name}
                           </span>
                         ))}
                         {productCategories.length > 2 && (
                           <span
                             title={productCategories.slice(2).map((c) => c.name).join(", ")}
-                            className="px-1 py-0.5 text-xs text-ink-soft"
+                            className="px-1 py-0.5 text-xs font-medium text-ink-soft"
                           >
                             +{productCategories.length - 2}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs italic text-ink-soft">Kategorisiz</span>
+                      <span className="text-xs italic text-ink-soft/70">Kategorisiz</span>
                     )}
                   </td>
                   <td className="px-3 py-4 text-center text-sm">
                     {variants.length ? (
-                      <div className="flex flex-wrap justify-center gap-1">
+                      <div className="flex flex-wrap justify-center gap-1.5">
                         {variants.slice(0, 4).map((v: AdminProductVariant) => (
                           <span
                             key={v.id ?? v.size}
                             title={`${v.size ?? "Tek beden"} — ${v.stock} adet${v.sku ? ` · ${v.sku}` : ""}`}
-                            className={`whitespace-nowrap border px-2 py-0.5 text-xs transition-colors duration-200 ${
+                            className={`whitespace-nowrap rounded-lg border px-2 py-0.5 text-xs font-medium transition-colors duration-200 ${
                               v.stock === 0
-                                ? "border-border bg-surface text-ink-soft/60 line-through"
-                                : "border-border bg-cream text-ink-soft"
+                                ? "border-border/40 bg-surface text-ink-soft/50 line-through"
+                                : "border-border/60 bg-cream/50 text-ink-soft"
                             }`}
                           >
                             {v.size ?? "Tek"} <span className="text-ink/70">{v.stock}</span>
                           </span>
                         ))}
                         {variants.length > 4 && (
-                          <span className="px-1 py-0.5 text-xs text-ink-soft">+{variants.length - 4}</span>
+                          <span className="px-1 py-0.5 text-xs font-medium text-ink-soft">+{variants.length - 4}</span>
                         )}
                       </div>
                     ) : (
-                      <span className="text-xs italic text-ink-soft">Beden yok</span>
+                      <span className="text-xs italic text-ink-soft/70">Beden yok</span>
                     )}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-center text-sm">
                     {totalStock === null ? (
-                      <span className="text-ink-soft">—</span>
+                      <span className="text-ink-soft/70">—</span>
                     ) : (
                       <span
                         className={
                           totalStock === 0
-                            ? "font-medium text-olive-dark"
+                            ? "font-bold text-olive-dark"
                             : totalStock <= 5
-                              ? "font-medium text-gold"
-                              : "text-ink"
+                              ? "font-bold text-gold"
+                              : "font-medium text-ink"
                         }
                       >
                         {totalStock === 0 ? "Tükendi" : `${totalStock} adet`}
@@ -414,36 +414,36 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
                     )}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-center text-sm">
-                    <div className="font-medium text-ink">{formatPrice(priceOf(product))}</div>
+                    <div className="font-semibold text-ink">{formatPrice(priceOf(product))}</div>
                     {discount > 0 && compareAt && (
-                      <div className="mt-0.5 flex items-center justify-center gap-1.5">
-                        <span className="text-xs text-ink-soft line-through">{formatPrice(compareAt)}</span>
-                        <span className="bg-sand px-1.5 py-0.5 text-[10px] font-medium text-ink">-%{discount}</span>
+                      <div className="mt-1 flex items-center justify-center gap-1.5">
+                        <span className="text-[11px] font-medium text-ink-soft line-through">{formatPrice(compareAt)}</span>
+                        <span className="rounded bg-sand px-1.5 py-0.5 text-[10px] font-bold text-ink">-%{discount}</span>
                       </div>
                     )}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-center text-sm">
-                    <span className="inline-flex items-center gap-2 text-xs text-ink-soft">
-                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-olive" : "bg-ink-soft/40"}`} />
+                    <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-ink-soft">
+                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-olive shadow-sm shadow-olive/50" : "bg-ink-soft/40"}`} />
                       {isActive ? "Yayında" : "Pasif"}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center text-xs text-ink-soft">
+                  <td className="whitespace-nowrap px-3 py-4 text-center text-xs font-medium text-ink-soft/80">
                     {createdAt ? dateFormatter.format(createdAt) : "—"}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-center">
-                    <div className="flex items-center justify-center gap-3">
+                  <td className="whitespace-nowrap px-3 py-4 text-center pr-6">
+                    <div className="flex items-center justify-end gap-2">
                       <Link
                         href={`/urun/${product.slug ?? product.id}`}
-                        className={iconButtonNeutral}
+                        className={`${iconButtonNeutral} rounded-xl`}
                         title="Mağazada aç"
                       >
                         <ArrowUpRight size={16} />
                       </Link>
-                      <button onClick={() => openEdit(product)} className={iconButtonNeutral} title="Düzenle">
+                      <button onClick={() => openEdit(product)} className={`${iconButtonNeutral} rounded-xl`} title="Düzenle">
                         <Edit2 size={16} />
                       </button>
-                      <button onClick={() => requestDelete(product)} className={iconButtonDanger} title="Sil">
+                      <button onClick={() => requestDelete(product)} className={`${iconButtonDanger} rounded-xl`} title="Sil">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -463,90 +463,92 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
           </table>
         </div>
 
-        <div className="divide-y divide-border md:hidden">
+        <div className="divide-y divide-border/40 md:hidden">
           {filtered.map((product) => {
             const { variants, productCategories, compareAt, discount, totalStock, isActive, createdAt } =
               deriveProductRow(product);
 
             return (
-              <div key={product.id} className="space-y-3 p-4">
+              <div key={product.id} className="space-y-4 p-5 hover:bg-cream/30 transition-colors">
                 <div className="flex items-center gap-4">
-                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden border border-border bg-cream">
-                    <Image src={product.image || FALLBACK_IMAGE} alt="" fill sizes="48px" className="object-cover" />
+                  <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/60 bg-cream shadow-sm">
+                    <Image src={product.image || FALLBACK_IMAGE} alt="" fill sizes="56px" className="object-cover" />
                     {product.images.length > 0 && (
-                      <span className="absolute bottom-0 right-0 bg-ink/70 px-1 text-[10px] leading-4 text-cream">
+                      <span className="absolute bottom-0 right-0 bg-ink/70 px-1 text-[10px] font-bold leading-4 text-cream">
                         {product.images.length + 1}
                       </span>
                     )}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="truncate text-sm font-medium text-ink">{product.name}</span>
+                      <span className="truncate text-base font-bold text-ink">{product.name}</span>
                       {product.is_new && (
-                        <span className="whitespace-nowrap bg-sand px-1.5 py-0.5 text-[10px] font-medium tracking-[0.05em] text-ink">
+                        <span className="whitespace-nowrap rounded bg-sand px-1.5 py-0.5 text-[10px] font-bold tracking-[0.05em] text-ink">
                           YENİ
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-ink-soft">
+                    <div className="text-xs font-medium text-ink-soft/80 mt-1">
                       #{product.id} · {product.slug ?? "—"}
                     </div>
                   </div>
                 </div>
 
-                <div>
-                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Kategoriler</div>
-                  {productCategories.length ? (
-                    <div className="flex flex-wrap gap-1">
-                      {productCategories.slice(0, 4).map((c) => (
-                        <span key={c.id} className="whitespace-nowrap border border-border bg-cream px-2 py-0.5 text-xs text-ink-soft">
-                          {c.name}
-                        </span>
-                      ))}
-                      {productCategories.length > 4 && (
-                        <span className="px-1 py-0.5 text-xs text-ink-soft">+{productCategories.length - 4}</span>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-xs italic text-ink-soft">Kategorisiz</span>
-                  )}
-                </div>
-
-                <div>
-                  <div className="mb-1 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Bedenler</div>
-                  {variants.length ? (
-                    <div className="flex flex-wrap gap-1">
-                      {variants.map((v) => (
-                        <span
-                          key={v.id ?? v.size}
-                          className={`whitespace-nowrap border px-2 py-0.5 text-xs transition-colors duration-200 ${
-                            v.stock === 0
-                              ? "border-border bg-surface text-ink-soft/60 line-through"
-                              : "border-border bg-cream text-ink-soft"
-                          }`}
-                        >
-                          {v.size ?? "Tek"} <span className="text-ink/70">{v.stock}</span>
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <span className="text-xs italic text-ink-soft">Beden yok</span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-4 rounded-2xl bg-cream/50 p-4 border border-border/40">
                   <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Toplam Stok</div>
+                    <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Kategoriler</div>
+                    {productCategories.length ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {productCategories.slice(0, 4).map((c) => (
+                          <span key={c.id} className="whitespace-nowrap rounded-lg border border-border/60 bg-surface px-2 py-0.5 text-xs font-medium text-ink-soft">
+                            {c.name}
+                          </span>
+                        ))}
+                        {productCategories.length > 4 && (
+                          <span className="px-1 py-0.5 text-xs font-medium text-ink-soft">+{productCategories.length - 4}</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs italic text-ink-soft/70">Kategorisiz</span>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Bedenler</div>
+                    {variants.length ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {variants.map((v) => (
+                          <span
+                            key={v.id ?? v.size}
+                            className={`whitespace-nowrap rounded-lg border px-2 py-0.5 text-xs font-medium transition-colors duration-200 ${
+                              v.stock === 0
+                                ? "border-border/40 bg-surface text-ink-soft/50 line-through"
+                                : "border-border/60 bg-surface text-ink-soft"
+                            }`}
+                          >
+                            {v.size ?? "Tek"} <span className="text-ink/70">{v.stock}</span>
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-xs italic text-ink-soft/70">Beden yok</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-sm px-1">
+                  <div>
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Toplam Stok</div>
                     {totalStock === null ? (
-                      <span className="text-ink-soft">—</span>
+                      <span className="text-ink-soft/70">—</span>
                     ) : (
                       <span
                         className={
                           totalStock === 0
-                            ? "font-medium text-olive-dark"
+                            ? "font-bold text-olive-dark"
                             : totalStock <= 5
-                              ? "font-medium text-gold"
-                              : "text-ink"
+                              ? "font-bold text-gold"
+                              : "font-semibold text-ink"
                         }
                       >
                         {totalStock === 0 ? "Tükendi" : `${totalStock} adet`}
@@ -554,36 +556,36 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
                     )}
                   </div>
                   <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Fiyat</div>
-                    <div className="font-medium text-ink">{formatPrice(priceOf(product))}</div>
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Fiyat</div>
+                    <div className="font-semibold text-ink">{formatPrice(priceOf(product))}</div>
                     {discount > 0 && compareAt && (
-                      <div className="mt-0.5 flex items-center gap-1.5">
-                        <span className="text-xs text-ink-soft line-through">{formatPrice(compareAt)}</span>
-                        <span className="bg-sand px-1.5 py-0.5 text-[10px] font-medium text-ink">-%{discount}</span>
+                      <div className="mt-1 flex items-center gap-1.5">
+                        <span className="text-[11px] font-medium text-ink-soft line-through">{formatPrice(compareAt)}</span>
+                        <span className="rounded bg-sand px-1.5 py-0.5 text-[10px] font-bold text-ink">-%{discount}</span>
                       </div>
                     )}
                   </div>
                   <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Durum</div>
-                    <span className="inline-flex items-center gap-2 text-xs text-ink-soft">
-                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-olive" : "bg-ink-soft/40"}`} />
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Durum</div>
+                    <span className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-ink-soft">
+                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-olive shadow-sm shadow-olive/50" : "bg-ink-soft/40"}`} />
                       {isActive ? "Yayında" : "Pasif"}
                     </span>
                   </div>
                   <div>
-                    <div className="mb-0.5 text-[11px] font-medium uppercase tracking-wider text-ink-soft">Eklendi</div>
-                    <span className="text-xs text-ink-soft">{createdAt ? dateFormatter.format(createdAt) : "—"}</span>
+                    <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft/70">Eklendi</div>
+                    <span className="text-xs font-medium text-ink-soft/80">{createdAt ? dateFormatter.format(createdAt) : "—"}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-1 border-t border-border pt-3">
-                  <Link href={`/urun/${product.slug ?? product.id}`} className={iconButtonNeutral} title="Mağazada aç">
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Link href={`/urun/${product.slug ?? product.id}`} className={`${iconButtonNeutral} rounded-xl`} title="Mağazada aç">
                     <ArrowUpRight size={16} />
                   </Link>
-                  <button onClick={() => openEdit(product)} className={iconButtonNeutral} title="Düzenle">
+                  <button onClick={() => openEdit(product)} className={`${iconButtonNeutral} rounded-xl`} title="Düzenle">
                     <Edit2 size={16} />
                   </button>
-                  <button onClick={() => requestDelete(product)} className={iconButtonDanger} title="Sil">
+                  <button onClick={() => requestDelete(product)} className={`${iconButtonDanger} rounded-xl`} title="Sil">
                     <Trash2 size={16} />
                   </button>
                 </div>

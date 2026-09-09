@@ -70,78 +70,82 @@ export function ReviewsTable({ initialReviews }: { initialReviews: AdminReview[]
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-serif text-2xl font-medium text-ink">Değerlendirmeler</h1>
-        <p className="mt-1 text-sm text-ink-soft">Müşteri ürün değerlendirmelerini onaylayın veya kaldırın.</p>
+      <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-serif text-2xl font-medium text-ink">Değerlendirmeler</h1>
+          <p className="mt-1 text-sm text-ink-soft">Müşteri ürün değerlendirmelerini onaylayın veya kaldırın.</p>
+        </div>
+
+        <div className="flex gap-2">
+          {(["pending", "approved"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => loadStatus(s)}
+              className={`rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+                status === s ? "bg-olive text-white shadow-md shadow-olive/20" : "bg-cream text-ink-soft hover:bg-cream/70 hover:text-ink"
+              }`}
+            >
+              {s === "pending" ? "Onay Bekleyen" : "Onaylı"}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="flex gap-2 border border-border bg-surface p-4 shadow-sm">
-        {(["pending", "approved"] as const).map((s) => (
-          <button
-            key={s}
-            onClick={() => loadStatus(s)}
-            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors duration-200 ${
-              status === s ? "bg-olive text-white" : "bg-cream text-ink-soft hover:text-ink"
-            }`}
-          >
-            {s === "pending" ? "Onay Bekleyen" : "Onaylı"}
-          </button>
-        ))}
-      </div>
-
-      <div className="divide-y divide-border border border-border bg-surface shadow-sm">
-        {loading ? (
-          <p className="py-12 text-center text-sm text-ink-soft">Yükleniyor...</p>
-        ) : reviews.length === 0 ? (
-          <p className="py-12 text-center text-sm text-ink-soft">
-            {status === "pending" ? "Onay bekleyen değerlendirme yok." : "Onaylı değerlendirme yok."}
-          </p>
-        ) : (
-          reviews.map((review) => (
-            <div key={review.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="min-w-0 space-y-1.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Stars rating={review.rating} />
-                  <span className="text-sm font-medium text-ink">{review.authorName}</span>
-                  <span className="text-xs text-ink-soft">· {dateFormatter.format(new Date(review.createdAt))}</span>
+      <div className="rounded-3xl border border-border/70 bg-surface shadow-sm overflow-hidden">
+        <div className="divide-y divide-border/40">
+          {loading ? (
+            <p className="py-12 text-center text-sm font-medium text-ink-soft">Yükleniyor...</p>
+          ) : reviews.length === 0 ? (
+            <p className="py-12 text-center text-sm font-medium text-ink-soft">
+              {status === "pending" ? "Onay bekleyen değerlendirme yok." : "Onaylı değerlendirme yok."}
+            </p>
+          ) : (
+            reviews.map((review) => (
+              <div key={review.id} className="flex flex-col gap-4 p-5 hover:bg-cream/30 transition-colors sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Stars rating={review.rating} />
+                    <span className="text-sm font-bold text-ink">{review.authorName}</span>
+                    <span className="text-xs font-medium text-ink-soft/80">· {dateFormatter.format(new Date(review.createdAt))}</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-cream/50 px-2.5 py-1 text-xs border border-border/40">
+                    <span className="text-ink-soft/70 font-medium">Ürün:</span>
+                    {review.productSlug ? (
+                      <a href={`/urun/${review.productSlug}`} target="_blank" rel="noopener noreferrer" className="text-olive font-medium hover:underline transition-all">
+                        {review.productName}
+                      </a>
+                    ) : (
+                      <span className="text-ink-soft">{review.productName ?? "—"}</span>
+                    )}
+                  </div>
+                  {review.title && <p className="text-sm font-bold text-ink mt-2">{review.title}</p>}
+                  {review.body && <p className="text-sm leading-relaxed text-ink-soft mt-1">{review.body}</p>}
                 </div>
-                <p className="text-xs text-ink-soft">
-                  Ürün:{" "}
-                  {review.productSlug ? (
-                    <a href={`/urun/${review.productSlug}`} target="_blank" rel="noopener noreferrer" className="text-olive hover:underline">
-                      {review.productName}
-                    </a>
-                  ) : (
-                    review.productName ?? "—"
-                  )}
-                </p>
-                {review.title && <p className="text-sm font-medium text-ink">{review.title}</p>}
-                {review.body && <p className="text-sm leading-relaxed text-ink-soft">{review.body}</p>}
-              </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                {status === "pending" && (
+                <div className="flex shrink-0 items-center justify-end gap-2 sm:mt-0 mt-2">
+                  {status === "pending" && (
+                    <button
+                      onClick={() => handleApprove(review)}
+                      disabled={busyId === review.id}
+                      className={`${iconButtonNeutral} rounded-xl bg-olive/10 text-olive hover:bg-olive hover:text-white border-none`}
+                      title="Onayla"
+                    >
+                      <Check size={18} />
+                    </button>
+                  )}
                   <button
-                    onClick={() => handleApprove(review)}
+                    onClick={() => handleDelete(review)}
                     disabled={busyId === review.id}
-                    className={iconButtonNeutral}
-                    title="Onayla"
+                    className={`${iconButtonDanger} rounded-xl`}
+                    title="Sil"
                   >
-                    <Check size={18} />
+                    <Trash2 size={18} />
                   </button>
-                )}
-                <button
-                  onClick={() => handleDelete(review)}
-                  disabled={busyId === review.id}
-                  className={iconButtonDanger}
-                  title="Sil"
-                >
-                  <Trash2 size={18} />
-                </button>
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

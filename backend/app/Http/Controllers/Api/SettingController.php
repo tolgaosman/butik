@@ -96,7 +96,7 @@ class SettingController extends Controller
     public function updateHomepageSettings(Request $request)
     {
         $validated = $request->validate([
-            'hero_product_ids' => 'array',
+            'hero_product_ids' => 'array|max:5',
             'hero_product_ids.*' => 'string|exists:products,slug',
             'new_arrival_product_ids' => 'array',
             'new_arrival_product_ids.*' => 'string|exists:products,slug',
@@ -132,7 +132,7 @@ class SettingController extends Controller
                 ? $withStock(Product::with(['images', 'categories'])->whereIn('slug', $heroIds))
                     ->orderByRaw('FIELD(slug, ' . implode(',', array_fill(0, count($heroIds), '?')) . ')', $heroIds)
                     ->get()
-                : $withStock(Product::with(['images', 'categories'])->inRandomOrder())->limit(3)->get(); // Fallback
+                : $withStock(Product::with(['images', 'categories'])->inRandomOrder())->limit(5)->get(); // Fallback
 
             $newArrivals = count($newArrivalIds) > 0
                 ? $withStock(Product::with(['images', 'categories'])->whereIn('slug', $newArrivalIds))->get()

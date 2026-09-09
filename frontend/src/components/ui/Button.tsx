@@ -7,13 +7,13 @@ type Variant = "solid" | "outline" | "ghost" | "link";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-medium tracking-wide uppercase transition-colors duration-300 ease-[var(--ease-organic)] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-2 font-bold tracking-wide uppercase transition-all duration-300 ease-[var(--ease-organic)] focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-60 disabled:pointer-events-none rounded-full active:scale-95";
 
 const variants: Record<Variant, string> = {
-  solid: "bg-olive text-white hover:bg-olive-dark",
-  outline: "border border-ink text-ink hover:border-olive hover:text-olive",
-  ghost: "text-ink hover:text-olive",
-  link: "text-ink underline underline-offset-4 decoration-ink/30 hover:decoration-olive hover:text-olive normal-case tracking-normal",
+  solid: "bg-ink text-white hover:bg-olive hover:shadow-lg hover:shadow-olive/20 hover:-translate-y-0.5",
+  outline: "border-2 border-ink text-ink hover:border-olive hover:text-olive hover:-translate-y-0.5",
+  ghost: "text-ink hover:text-olive hover:bg-ink/5",
+  link: "text-ink underline underline-offset-4 decoration-ink/30 hover:decoration-olive hover:text-olive normal-case tracking-normal rounded-none active:scale-100",
 };
 
 const sizes: Record<Size, string> = {

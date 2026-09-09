@@ -39,3 +39,20 @@ export async function getProductReviews(slug: string, page = 1): Promise<Reviews
     return EMPTY_PAGE;
   }
 }
+
+export type EligibleOrder = {
+  id: number;
+  order_number: string;
+  created_at: string;
+};
+
+export async function getEligibleOrdersForReview(slug: string): Promise<EligibleOrder[]> {
+  try {
+    const data = await apiGet<EligibleOrder[]>(`/products/${slug}/eligible-orders`, {
+      cache: "no-store", // We need fresh auth data
+    });
+    return data || [];
+  } catch {
+    return [];
+  }
+}

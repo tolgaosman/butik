@@ -112,46 +112,46 @@ function CategoryCardRow({
 
   return (
     <div style={{ paddingLeft: `${level * 1}rem` }}>
-      <div className="flex items-center gap-3 p-4">
+      <div className="flex items-center gap-4 p-5 hover:bg-cream/30 transition-colors">
         <div className="w-5 flex-shrink-0">
           {hasChildren ? (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex h-5 w-5 items-center justify-center rounded-full bg-cream text-ink-soft transition-colors hover:bg-sand hover:text-ink"
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-cream shadow-sm text-ink-soft transition-colors hover:bg-olive hover:text-white"
             >
               {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
           ) : (
-            <div className="w-5" />
+            <div className="w-6" />
           )}
         </div>
 
-        <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden border border-border bg-cream">
-          {category.image && <Image src={category.image} alt="" fill sizes="40px" className="object-cover" />}
+        <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-border/60 bg-cream shadow-sm">
+          {category.image && <Image src={category.image} alt="" fill sizes="48px" className="object-cover" />}
         </div>
 
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-medium text-ink">{category.name}</div>
-          <div className="text-xs text-ink-soft">
-            {category.slug} · {category.itemCount} ürün
+          <div className="truncate text-base font-bold text-ink">{category.name}</div>
+          <div className="text-xs font-medium text-ink-soft/80 mt-0.5">
+            {category.slug} · <span className="text-olive">{category.itemCount} ürün</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
-          <Link href={category.href} className={iconButtonNeutral} title="Mağazada aç">
+        <div className="flex items-center justify-end gap-1.5">
+          <Link href={category.href} className={`${iconButtonNeutral} rounded-xl`} title="Mağazada aç">
             <ArrowUpRight size={16} />
           </Link>
-          <button onClick={() => onEdit(category)} className={iconButtonNeutral} title="Düzenle">
+          <button onClick={() => onEdit(category)} className={`${iconButtonNeutral} rounded-xl`} title="Düzenle">
             <Edit2 size={16} />
           </button>
-          <button onClick={() => onDelete(category)} className={iconButtonDanger} title="Sil">
+          <button onClick={() => onDelete(category)} className={`${iconButtonDanger} rounded-xl`} title="Sil">
             <Trash2 size={16} />
           </button>
         </div>
       </div>
 
       {isExpanded && hasChildren && (
-        <div className="divide-y divide-border border-t border-border">
+        <div className="divide-y divide-border/40 border-t border-border/40">
           {category.subcategories.map((sub) => (
             <CategoryCardRow key={sub.id} category={sub} level={level + 1} onEdit={onEdit} onDelete={onDelete} />
           ))}
@@ -260,15 +260,16 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 shadow-sm sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-serif text-2xl font-medium text-ink">Kategoriler</h1>
           <p className="mt-1 text-sm text-ink-soft">Mağazada yayında olan kategoriler ve ürün sayıları.</p>
         </div>
         <div className="flex items-center gap-4">
-          <p className="text-xs text-ink-soft">{rootCount} ana kategori</p>
+          <p className="text-xs font-medium text-ink-soft/80">{rootCount} ana kategori</p>
           <Button
             variant="solid"
+            className="shadow-md shadow-olive/20 rounded-2xl"
             onClick={() => {
               toast.info("Yakında", { description: "Yeni kategori ekleme özelliği backend entegrasyonu ile aktif edilecektir." });
             }}
@@ -278,18 +279,18 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
         </div>
       </div>
 
-      <div className="overflow-hidden border border-border bg-surface shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-sm">
         <div className="hidden overflow-x-auto md:block">
-          <table className="w-full table-fixed divide-y divide-border">
+          <table className="w-full table-fixed">
             <thead>
-              <tr className="bg-cream/50">
-                <th scope="col" className="w-[46%] py-3.5 px-3 text-left text-xs font-medium uppercase tracking-wider text-ink-soft">Kategori</th>
-                <th scope="col" className="w-[24%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Bağlantı</th>
-                <th scope="col" className="w-[18%] px-3 py-3.5 text-center text-xs font-medium uppercase tracking-wider text-ink-soft">Ürün Sayısı</th>
-                <th scope="col" className="w-[12%] py-3.5 px-3 text-center"><span className="sr-only">İşlemler</span></th>
+              <tr className="bg-cream/50 border-b border-border/60">
+                <th scope="col" className="w-[46%] py-4 px-4 pl-6 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Kategori</th>
+                <th scope="col" className="w-[24%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Bağlantı</th>
+                <th scope="col" className="w-[18%] px-3 py-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Ürün Sayısı</th>
+                <th scope="col" className="w-[12%] py-4 px-3 text-center pr-6"><span className="sr-only">İşlemler</span></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-surface">
+            <tbody className="divide-y divide-border/40 bg-surface">
               {tree.map((category) => (
                 <CategoryRow key={category.id} category={category} onEdit={handleEdit} onDelete={handleDelete} />
               ))}
@@ -297,7 +298,7 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
           </table>
         </div>
 
-        <div className="divide-y divide-border md:hidden">
+        <div className="divide-y divide-border/40 md:hidden">
           {tree.map((category) => (
             <CategoryCardRow key={category.id} category={category} onEdit={handleEdit} onDelete={handleDelete} />
           ))}

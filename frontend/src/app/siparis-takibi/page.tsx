@@ -8,6 +8,7 @@ import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { MotionReveal } from "@/components/ui/MotionReveal";
+import { MotifBackground } from "@/components/ui/MotifBackground";
 import { TrustBar } from "@/components/sections/TrustBar";
 import { apiMutate, ApiError } from "@/lib/api";
 
@@ -64,10 +65,10 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function OrderTrackingPage() {
+  const [order, setOrder] = useState<TrackingOrder | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
-  const [order, setOrder] = useState<TrackingOrder | null>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -102,8 +103,9 @@ export default function OrderTrackingPage() {
   }
 
   return (
-    <div className="bg-cream/40 py-8 sm:py-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div className="relative overflow-hidden bg-cream pb-12 pt-[calc(2rem+6rem)] -mt-[6rem] min-h-[70vh]">
+      <MotifBackground mask="linear-gradient(to bottom, black 0%, transparent 100%)" />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10">
         <Breadcrumbs items={[{ label: "Sipariş Takibi" }]} />
 
         <div className="mt-4 border-b border-border/70 pb-6">
