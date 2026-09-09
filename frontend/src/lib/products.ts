@@ -30,7 +30,8 @@ export async function getCategories(): Promise<Category[]> {
       next: { revalidate: 3600, tags: ["categories"] },
     });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch categories:", error);
     return [];
   }
 }
@@ -41,7 +42,8 @@ export async function getNewArrivals(limit = 10): Promise<Product[]> {
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch new arrivals:", error);
     return [];
   }
 }
@@ -59,7 +61,9 @@ export async function getHomepageData(): Promise<HomepageData> {
     });
     
     if (data) return data;
-  } catch {}
+  } catch (error) {
+    console.error("Failed to fetch homepage data:", error);
+  }
   
   return { hero_products: [], new_arrivals: [], promo_banner_url: "" };
 }
@@ -70,7 +74,8 @@ export async function getBestSellers(limit = 4): Promise<Product[]> {
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch best sellers:", error);
     return [];
   }
 }
@@ -102,7 +107,8 @@ export async function getProductDetail(id: string): Promise<ProductDetail | unde
     return await apiGet<ProductDetail>(`/products/${id}`, {
       next: { revalidate: 600, tags: ["products", `product:${id}`] },
     });
-  } catch {
+  } catch (error) {
+    console.error(`Failed to fetch product details for ${id}:`, error);
     return undefined;
   }
 }
@@ -119,7 +125,8 @@ export async function getProductsByCategory(
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch products by category:", error);
     return [];
   }
 }
@@ -130,7 +137,8 @@ export async function getRelatedProducts(productId: string, limit = 4): Promise<
       next: { revalidate: 600, tags: ["products"] },
     });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error(`Failed to fetch related products for ${productId}:`, error);
     return [];
   }
 }
@@ -139,7 +147,8 @@ export async function getAllProductIds(): Promise<string[]> {
   try {
     const data = await apiGet<string[]>("/products/slugs", { cache: "no-store" });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch all product IDs:", error);
     return [];
   }
 }
@@ -151,7 +160,8 @@ export async function searchProducts(query: string): Promise<Product[]> {
       cache: "no-store",
     });
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Failed to search products:", error);
     return [];
   }
 }

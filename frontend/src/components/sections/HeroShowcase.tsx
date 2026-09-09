@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
@@ -73,18 +71,9 @@ function BentoCard({
 
 export function HeroShowcase({ products = [] }: { products?: Product[] }) {
   const safeProducts = Array.isArray(products) ? products : [];
-  const [shown, setShown] = useState<Product[]>(safeProducts.slice(0, 5));
-  const [isMounted, setIsMounted] = useState(false);
+  const shown = safeProducts.slice(0, 5);
 
-  useEffect(() => {
-    setIsMounted(true);
-    if (safeProducts.length === 0) return;
-    // Shuffle the products array and pick the first 5
-    const shuffled = [...safeProducts].sort(() => 0.5 - Math.random());
-    setShown(shuffled.slice(0, 5));
-  }, [safeProducts]);
-
-  if (!isMounted || shown.length === 0) {
+  if (shown.length === 0) {
     // Return an empty state with the same height to avoid layout shift during SSR/hydration
     return <div className="h-[500px] sm:h-[600px] lg:h-[calc(100vh-12rem)] min-h-[400px] max-h-[850px] w-full" />;
   }
