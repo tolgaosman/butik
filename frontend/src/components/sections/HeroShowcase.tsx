@@ -94,7 +94,7 @@ export function HeroShowcase({ products = [] }: { products?: Product[] }) {
   return (
     <motion.div
       key={featured.id} // force re-animation when shuffled content is set
-      className="grid h-[500px] sm:h-[600px] lg:h-[calc(100vh-12rem)] min-h-[400px] max-h-[850px] w-full grid-cols-2 grid-rows-2 gap-4 lg:grid-cols-4 lg:grid-rows-2"
+      className="grid h-[560px] sm:h-[640px] w-full grid-cols-2 grid-rows-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)] gap-4 lg:h-[calc(100vh-12rem)] lg:min-h-[400px] lg:max-h-[850px] lg:grid-cols-4 lg:grid-rows-2"
       initial="hidden"
       animate="show"
       variants={container}
@@ -102,7 +102,7 @@ export function HeroShowcase({ products = [] }: { products?: Product[] }) {
       <BentoCard
         product={featured}
         captionSize="lg"
-        className="col-span-2 row-span-2"
+        className="col-span-2 row-span-1 lg:row-span-2"
         sizes="(min-width: 1024px) 50vw, 100vw"
       />
 
