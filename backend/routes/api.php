@@ -48,6 +48,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders', [OrderController::class, 'store']);
 });
 
+Route::get('/seed-now', function () {
+    \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+    \App\Models\User::updateOrCreate(
+        ['email' => 'karabasaksevgi4@gmail.com'],
+        [
+            'name' => 'Sevgi Karabaşak',
+            'phone' => '5000000000',
+            'password' => bcrypt('sevgisevgibutikbutik'),
+            'is_admin' => true
+        ]
+    );
+    app(\Database\Seeders\CategorySeeder::class)->run();
+    app(\Database\Seeders\ProductSeeder::class)->run();
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Veritabanı başarıyla tohumlandı (seeded)! Sitenize gidip ürünleri görebilirsiniz.'
+    ]);
+});
+
 Route::get('/cart', [CartController::class, 'show']);
 Route::post('/cart/items', [CartController::class, 'store']);
 Route::patch('/cart/items/{item}', [CartController::class, 'update']);
