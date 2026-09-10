@@ -1,5 +1,6 @@
 import { apiGetAuthed } from "@/lib/api";
 import type { AdminProduct, AdminCategory } from "@/lib/admin";
+import { getCategories, type Category } from "@/lib/products";
 import { ProductsTable } from "./ProductsTable";
 
 /**
@@ -23,8 +24,23 @@ async function loadCategories(): Promise<AdminCategory[]> {
   }
 }
 
+function collectSlugs(nodes: Category[], acc: Set<string>) {
+  for (const node of nodes) {
+    acc.add(node.id);
+    if (node.subcategories?.length) collectSlugs(node.subcategories, acc);
+  }
+}
+
 export default async function AdminProductsPage() {
-  const [products, categories] = await Promise.all([loadProducts(), loadCategories()]);
+  const [products, allCategories, storefrontTree] = await Promise.all([
+    loadProducts(),
+    loadCategories(),
+    getCategories(),
+  ]);
+
+  const visibleSlugs = new Set<string>();
+  collectSlugs(storefrontTree, visibleSlugs);
+  const categories = allCategories.filter((c) => visibleSlugs.has(c.slug));
 
   return (
     <div className="space-y-6">

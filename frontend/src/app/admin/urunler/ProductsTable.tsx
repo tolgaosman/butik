@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState, useRef } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Search, Edit2, Trash2, X, Plus } from "lucide-react";
+import { ArrowUpRight, Search, Edit2, Trash2, X, Plus, Filter, Check } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import type { AdminProduct, AdminCategory, AdminProductVariant, AdminProductImage } from "@/lib/admin";
 import { Modal } from "@/components/ui/Modal";
@@ -39,6 +41,150 @@ function discountOf(product: AdminProduct): number {
 function stockOf(product: AdminProduct): number | null {
   if (!product.variants.length) return null;
   return product.variants.reduce((total, variant) => total + variant.stock, 0);
+}
+
+type FilterOption = { value: string; label: string };
+
+function ColumnFilterButton({
+  label,
+  options,
+  selected,
+  onChange,
+}: {
+  label: string;
+  options: FilterOption[];
+  selected: string[];
+  onChange: (values: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [rect, setRect] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const active = selected.length > 0;
+
+  useEffect(() => setMounted(true), []);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    const updateRect = () => {
+      const el = triggerRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const width = 220;
+      setRect({ top: r.bottom + 8, left: Math.min(r.left, window.innerWidth - width - 12), width });
+    };
+
+    updateRect();
+    window.addEventListener("scroll", updateRect, true);
+    window.addEventListener("resize", updateRect);
+    return () => {
+      window.removeEventListener("scroll", updateRect, true);
+      window.removeEventListener("resize", updateRect);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (triggerRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  function toggle(value: string) {
+    onChange(selected.includes(value) ? selected.filter((v) => v !== value) : [...selected, value]);
+  }
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`${label} filtrele`}
+        className={`relative inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md transition-colors duration-200 ${
+          active ? "text-olive" : "text-ink-soft/50 hover:text-ink-soft"
+        }`}
+      >
+        <Filter size={12} strokeWidth={2.5} />
+        {active && <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-olive shadow-sm shadow-olive/50" />}
+      </button>
+
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {open && rect && (
+              <motion.div
+                ref={panelRef}
+                role="listbox"
+                aria-multiselectable="true"
+                initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                transition={{ duration: 0.18, ease: [0.32, 0.72, 0, 1] }}
+                style={{ position: "fixed", top: rect.top, left: rect.left, width: rect.width, zIndex: 200 }}
+                className="max-h-72 overflow-auto rounded-2xl border border-border/70 bg-surface py-1.5 shadow-xl shadow-ink/10"
+              >
+                <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">{label}</span>
+                  {active && (
+                    <button
+                      type="button"
+                      onClick={() => onChange([])}
+                      className="text-[11px] font-semibold text-olive transition-opacity duration-150 hover:opacity-70"
+                    >
+                      Temizle
+                    </button>
+                  )}
+                </div>
+                {options.map((option) => {
+                  const isSelected = selected.includes(option.value);
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => toggle(option.value)}
+                      className={`flex w-full items-center gap-2.5 px-4 py-2 text-left text-sm normal-case tracking-normal transition-colors duration-150 ${
+                        isSelected ? "bg-olive/10 font-semibold text-olive" : "font-normal text-ink hover:bg-cream/70"
+                      }`}
+                    >
+                      <span
+                        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors duration-150 ${
+                          isSelected ? "border-olive bg-olive" : "border-border"
+                        }`}
+                      >
+                        {isSelected && <Check size={10} strokeWidth={3} className="text-surface" />}
+                      </span>
+                      <span className="truncate">{option.label}</span>
+                    </button>
+                  );
+                })}
+                {options.length === 0 && <p className="px-4 py-3 text-xs italic text-ink-soft/70">Seçenek yok</p>}
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
+        )}
+    </>
+  );
 }
 
 function deriveProductRow(product: AdminProduct) {
@@ -94,6 +240,9 @@ function formFromProduct(product: AdminProduct): FormState {
 export function ProductsTable({ products, categories }: { products: AdminProduct[]; categories: AdminCategory[] }) {
   const [localProducts, setLocalProducts] = useState<AdminProduct[]>(products);
   const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [sizeFilter, setSizeFilter] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
   const [creating, setCreating] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState<AdminProduct | null>(null);
@@ -107,21 +256,48 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
 
   const isOpen = creating || editingProduct !== null;
 
+  const categoryFilterOptions = useMemo<FilterOption[]>(
+    () => categories.map((c) => ({ value: String(c.id), label: c.name })),
+    [categories],
+  );
+
+  const sizeFilterOptions = useMemo<FilterOption[]>(() => {
+    const sizes = new Set<string>();
+    localProducts.forEach((p) => p.variants.forEach((v) => v.size && sizes.add(v.size)));
+    const rest = [...sizes].filter((s) => !FIXED_SIZES.includes(s)).sort((a, b) => a.localeCompare(b, "tr"));
+    return [...FIXED_SIZES.filter((s) => sizes.has(s)), ...rest].map((s) => ({ value: s, label: s }));
+  }, [localProducts]);
+
+  const statusFilterOptions: FilterOption[] = [
+    { value: "active", label: "Yayında" },
+    { value: "inactive", label: "Pasif" },
+  ];
+
   const filtered = useMemo(() => {
     const term = query.trim().toLocaleLowerCase("tr");
-    if (!term) return localProducts;
-
     const matches = (value: string | null | undefined) => !!value && value.toLocaleLowerCase("tr").includes(term);
 
-    return localProducts.filter(
-      (p) =>
-        matches(p.name) ||
-        matches(p.slug) ||
-        matches(String(p.id)) ||
-        p.categories.some((c) => matches(c.name)) ||
-        p.variants.some((v) => matches(v.sku) || matches(v.size)),
-    );
-  }, [localProducts, query]);
+    return localProducts.filter((p) => {
+      if (term) {
+        const searchHit =
+          matches(p.name) ||
+          matches(p.slug) ||
+          matches(String(p.id)) ||
+          p.categories.some((c) => matches(c.name)) ||
+          p.variants.some((v) => matches(v.sku) || matches(v.size));
+        if (!searchHit) return false;
+      }
+
+      if (categoryFilter.length && !p.categories.some((c) => categoryFilter.includes(String(c.id)))) return false;
+      if (sizeFilter.length && !p.variants.some((v) => v.size && sizeFilter.includes(v.size))) return false;
+      if (statusFilter.length) {
+        const status = p.is_active ? "active" : "inactive";
+        if (!statusFilter.includes(status)) return false;
+      }
+
+      return true;
+    });
+  }, [localProducts, query, categoryFilter, sizeFilter, statusFilter]);
 
   // Image state
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -310,11 +486,26 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
             <thead>
               <tr className="bg-cream/50 border-b border-border/60">
                 <th scope="col" className="w-[20%] py-4 px-4 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft pl-6">Ürün</th>
-                <th scope="col" className="w-[13%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Kategoriler</th>
-                <th scope="col" className="w-[20%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Bedenler / Stok</th>
+                <th scope="col" className="w-[13%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                  <div className="flex items-center justify-center gap-1.5">
+                    Kategoriler
+                    <ColumnFilterButton label="Kategoriler" options={categoryFilterOptions} selected={categoryFilter} onChange={setCategoryFilter} />
+                  </div>
+                </th>
+                <th scope="col" className="w-[20%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                  <div className="flex items-center justify-center gap-1.5">
+                    Bedenler / Stok
+                    <ColumnFilterButton label="Bedenler" options={sizeFilterOptions} selected={sizeFilter} onChange={setSizeFilter} />
+                  </div>
+                </th>
                 <th scope="col" className="w-[11%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Toplam Stok</th>
                 <th scope="col" className="w-[12%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Fiyat</th>
-                <th scope="col" className="w-[10%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Durum</th>
+                <th scope="col" className="w-[10%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">
+                  <div className="flex items-center justify-center gap-1.5">
+                    Durum
+                    <ColumnFilterButton label="Durum" options={statusFilterOptions} selected={statusFilter} onChange={setStatusFilter} />
+                  </div>
+                </th>
                 <th scope="col" className="w-[10%] py-4 px-3 text-center text-xs font-semibold uppercase tracking-wider text-ink-soft">Eklendi</th>
                 <th scope="col" className="w-[9%] py-4 px-3 text-center pr-6"><span className="sr-only">İşlemler</span></th>
               </tr>
@@ -455,7 +646,9 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-sm text-ink-soft">
-                    {query ? `"${query}" için ürün bulunamadı.` : "Henüz ürün yok. Yeni Ürün ile ekleyin."}
+                    {query || categoryFilter.length || sizeFilter.length || statusFilter.length
+                      ? "Bu kriterlere uyan ürün bulunamadı."
+                      : "Henüz ürün yok. Yeni Ürün ile ekleyin."}
                   </td>
                 </tr>
               )}
@@ -595,7 +788,9 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
 
           {filtered.length === 0 && (
             <p className="py-12 text-center text-sm text-ink-soft">
-              {query ? `"${query}" için ürün bulunamadı.` : "Henüz ürün yok. Yeni Ürün ile ekleyin."}
+              {query || categoryFilter.length || sizeFilter.length || statusFilter.length
+                ? "Bu kriterlere uyan ürün bulunamadı."
+                : "Henüz ürün yok. Yeni Ürün ile ekleyin."}
             </p>
           )}
         </div>
