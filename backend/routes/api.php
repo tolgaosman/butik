@@ -92,6 +92,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'admin'])->group(function ()
     Route::put('/customers/{id}', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'update']);
     
     Route::get('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'index']);
+    Route::post('/categories', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'store']);
     Route::put('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'update']);
     Route::delete('/categories/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'destroy']);
     

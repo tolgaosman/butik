@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Landmark } from "lucide-react";
+import { Truck } from "lucide-react";
 import { formatPrice } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { apiMutate, ApiError } from "@/lib/api";
-import { getStoreSettings, type StoreSettings } from "@/lib/settings";
 import { trackInitiateCheckout } from "@/lib/analytics";
 import type { Order } from "@/lib/orders";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -21,11 +20,9 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cart, isLoading, refresh } = useCart();
   const { user, isLoading: isAuthLoading } = useAuth();
-  const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | "bank_transfer">("cash_on_delivery");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
-  const [settings, setSettings] = useState<StoreSettings | null>(null);
   const checkoutTracked = useRef(false);
 
   useEffect(() => {
@@ -33,10 +30,6 @@ export default function CheckoutPage() {
       router.push("/hesabim");
     }
   }, [isAuthLoading, user, router]);
-
-  useEffect(() => {
-    getStoreSettings().then(setSettings);
-  }, []);
 
   useEffect(() => {
     if (checkoutTracked.current || isLoading || cart.items.length === 0) return;
@@ -63,7 +56,7 @@ export default function CheckoutPage() {
       shipping_city: String(form.get("shipping_city")),
       shipping_postal: String(form.get("shipping_postal") || "") || undefined,
       customer_note: String(form.get("customer_note") || "") || undefined,
-      payment_method: paymentMethod,
+      payment_method: "cash_on_delivery" as const,
     };
 
     try {
@@ -222,63 +215,15 @@ export default function CheckoutPage() {
 
             <section className="rounded-3xl border border-border/70 bg-surface p-6 sm:p-8 shadow-sm">
               <h2 className="font-serif text-xl font-medium text-ink">Ödeme Yöntemi</h2>
-              <div className="mt-6 space-y-3">
-                {(
-                  [
-                    { value: "cash_on_delivery", label: "Kapıda Ödeme" },
-                    { value: "bank_transfer", label: "Havale / EFT" },
-                  ] as const
-                ).map((option) => (
-                  <label
-                    key={option.value}
-                    className={`flex cursor-pointer items-center gap-4 rounded-2xl border px-5 py-4 text-sm font-medium transition-all duration-300 ${
-                      paymentMethod === option.value ? "border-olive bg-olive/5 shadow-sm" : "border-border/80 hover:border-ink/20"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment_method_display"
-                      checked={paymentMethod === option.value}
-                      onChange={() => setPaymentMethod(option.value)}
-                      className="accent-olive size-4"
-                    />
-                    <span className="text-ink">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-
-              {paymentMethod === "bank_transfer" && settings?.bankIban && (
-                <div className="mt-5 flex items-start gap-4 rounded-2xl border border-olive/20 bg-olive/5 p-5 shadow-inner">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-olive shadow-sm">
-                    <Landmark className="size-4" strokeWidth={2.5} aria-hidden />
-                  </span>
-                  <div>
-                    <p className="font-serif text-base font-semibold text-ink">Havale / EFT Bilgileri</p>
-                    <p className="mt-1.5 text-xs leading-relaxed text-ink-soft">
-                      Siparişi tamamladıktan sonra ödemenizi aşağıdaki hesaba yapıp sipariş numaranızı açıklama
-                      olarak eklemeniz yeterli.
-                    </p>
-                    <dl className="mt-4 space-y-2 text-sm bg-white/50 p-4 rounded-xl">
-                      {settings.bankName && (
-                        <div className="flex gap-2">
-                          <dt className="text-ink-soft w-24">Banka:</dt>
-                          <dd className="font-semibold text-ink">{settings.bankName}</dd>
-                        </div>
-                      )}
-                      {settings.bankAccountHolder && (
-                        <div className="flex gap-2">
-                          <dt className="text-ink-soft w-24">Hesap Sahibi:</dt>
-                          <dd className="font-semibold text-ink">{settings.bankAccountHolder}</dd>
-                        </div>
-                      )}
-                      <div className="flex gap-2">
-                        <dt className="text-ink-soft w-24">IBAN:</dt>
-                        <dd className="font-semibold text-ink break-all">{settings.bankIban}</dd>
-                      </div>
-                    </dl>
-                  </div>
+              <div className="mt-6 flex items-center gap-4 rounded-2xl border border-olive bg-olive/5 px-5 py-4 shadow-sm">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-olive shadow-sm">
+                  <Truck className="size-4" strokeWidth={2.5} aria-hidden />
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-ink">Kapıda Ödeme</p>
+                  <p className="mt-0.5 text-xs text-ink-soft">Siparişinizi teslim alırken ödeme yaparsınız.</p>
                 </div>
-              )}
+              </div>
             </section>
           </div>
 

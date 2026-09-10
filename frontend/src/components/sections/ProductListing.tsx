@@ -134,7 +134,7 @@ export function ProductListing({ title, products, subcategories = [], category, 
         {products.length > 0 && (
           <div className="flex items-center gap-3">
             {hasFilters && (
-              <div className="relative" ref={filterRef}>
+              <div className="relative z-30" ref={filterRef}>
                 <button
                   type="button"
                   aria-expanded={filterOpen}

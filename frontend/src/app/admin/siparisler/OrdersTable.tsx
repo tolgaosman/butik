@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { apiMutate, ApiError } from "@/lib/api";
 import { revalidateStore } from "../actions";
 import { toast } from "@/lib/toast";
@@ -123,17 +124,13 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
             className="w-full rounded-2xl border border-border/80 bg-cream/50 py-2.5 pl-11 pr-4 text-sm transition-all focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30"
           />
         </div>
-        <select
+        <Dropdown
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as AdminOrderStatus | "all")}
+          onChange={(v) => setStatusFilter(v as AdminOrderStatus | "all")}
+          options={[{ value: "all", label: "Tüm Durumlar" }, ...STATUS_OPTIONS.map((s) => ({ value: s, label: ORDER_STATUS_LABELS[s] }))]}
           aria-label="Duruma göre filtrele"
-          className="rounded-2xl border border-border/80 bg-cream/50 px-4 py-2.5 text-sm text-ink transition-all focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30"
-        >
-          <option value="all">Tüm Durumlar</option>
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
-          ))}
-        </select>
+          className="rounded-2xl border border-border/80 bg-cream/50 px-4 py-2.5 text-sm font-medium text-ink transition-colors focus:border-olive focus:bg-white focus:outline-none focus:ring-1 focus:ring-olive/30 sm:w-56"
+        />
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-sm">
@@ -265,16 +262,13 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
                 <label htmlFor="payment_status" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">
                   Ödeme Durumu
                 </label>
-                <select
+                <Dropdown
                   id="payment_status"
                   value={paymentStatusInput}
-                  onChange={(e) => setPaymentStatusInput(e.target.value as AdminPaymentStatus)}
-                  className="w-full rounded-xl border border-border/60 bg-surface px-3 py-2 text-sm font-medium text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-all"
-                >
-                  {(Object.keys(PAYMENT_STATUS_LABELS) as AdminPaymentStatus[]).map((s) => (
-                    <option key={s} value={s}>{PAYMENT_STATUS_LABELS[s]}</option>
-                  ))}
-                </select>
+                  onChange={(v) => setPaymentStatusInput(v as AdminPaymentStatus)}
+                  options={(Object.keys(PAYMENT_STATUS_LABELS) as AdminPaymentStatus[]).map((s) => ({ value: s, label: PAYMENT_STATUS_LABELS[s] }))}
+                  className="w-full rounded-xl border border-border/60 bg-surface px-3 py-2 text-sm font-medium text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-colors"
+                />
               </div>
               <div className="col-span-2 space-y-1.5">
                 <label htmlFor="tracking_number" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70">
@@ -341,16 +335,13 @@ export function OrdersTable({ orders: initialOrders }: { orders: AdminOrder[] })
               <label htmlFor="status" className="block text-[11px] font-bold uppercase tracking-wider text-ink-soft/70 pl-1">
                 Sipariş Durumu
               </label>
-              <select
+              <Dropdown
                 id="status"
                 value={statusInput}
-                onChange={(e) => setStatusInput(e.target.value as AdminOrderStatus)}
-                className="w-full rounded-xl border border-border/60 bg-surface px-4 py-3 text-sm font-bold text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-all"
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>{ORDER_STATUS_LABELS[s]}</option>
-                ))}
-              </select>
+                onChange={(v) => setStatusInput(v as AdminOrderStatus)}
+                options={STATUS_OPTIONS.map((s) => ({ value: s, label: ORDER_STATUS_LABELS[s] }))}
+                className="w-full rounded-xl border border-border/60 bg-surface px-4 py-3 text-sm font-bold text-ink focus:border-olive focus:outline-none focus:ring-2 focus:ring-olive/20 shadow-sm transition-colors"
+              />
             </div>
 
             <div className="space-y-2">

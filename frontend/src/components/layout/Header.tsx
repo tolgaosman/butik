@@ -23,8 +23,25 @@ export function Header() {
   const favCount = slugs.size;
   const reduceMotion = useReducedMotion();
   const lastY = useRef(0);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const { scrollY } = useScroll();
+
+  function openMenu() {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setMenuOpen(true);
+  }
+
+  function scheduleCloseMenu() {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setMenuOpen(false), 180);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    };
+  }, []);
 
   useMotionValueEvent(scrollY, "change", (y) => {
     if (open || menuOpen || reduceMotion) {
@@ -62,7 +79,6 @@ export function Header() {
   return (
     <motion.header
       className="sticky top-0 z-40 w-full px-0 sm:px-4 lg:px-8 pt-0 sm:pt-4"
-      onMouseLeave={() => setMenuOpen(false)}
       animate={{ y: hidden ? "-100%" : "0%" }}
       transition={{ duration: 0.4, ease }}
     >
@@ -94,13 +110,16 @@ export function Header() {
         </div>
 
         {/* Center: Desktop Nav */}
-        <nav className="hidden flex-auto justify-center items-center gap-8 lg:flex">
+        <nav
+          className="hidden flex-auto justify-center items-center gap-8 lg:flex"
+          onMouseLeave={scheduleCloseMenu}
+        >
           {primaryNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              onMouseEnter={() => setMenuOpen(true)}
-              onFocus={() => setMenuOpen(true)}
+              onMouseEnter={openMenu}
+              onFocus={openMenu}
               onClick={() => setMenuOpen(false)}
               className="group relative py-2 text-[0.8rem] font-semibold tracking-wider text-ink-soft transition-colors duration-300 hover:text-ink"
             >
@@ -138,8 +157,12 @@ export function Header() {
       </div>
 
       {/* Desktop Mega Menu Dropdown */}
-      <div className="absolute inset-x-0 px-4 sm:px-8 top-full pt-3 hidden lg:block pointer-events-none">
-        <div className="mx-auto w-full max-w-[100rem] pointer-events-auto">
+      <div
+        className={`absolute inset-x-0 px-4 sm:px-8 top-full pt-3 hidden lg:block ${menuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        onMouseEnter={openMenu}
+        onMouseLeave={scheduleCloseMenu}
+      >
+        <div className="mx-auto w-full max-w-[100rem]">
           <div
             className={`overflow-hidden rounded-[2.5rem] border border-border/50 bg-surface/95 backdrop-blur-2xl shadow-2xl transition-[grid-template-rows,opacity] duration-500 ease-[var(--ease-organic)] grid ${
               menuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"

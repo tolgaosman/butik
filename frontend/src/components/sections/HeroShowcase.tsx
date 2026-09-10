@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
@@ -7,6 +8,15 @@ import type { Product } from "@/lib/products";
 import { formatPrice } from "@/lib/format";
 
 const ease = [0.32, 0.72, 0, 1] as const;
+
+function shuffled<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 const container: Variants = {
   hidden: {},
@@ -30,7 +40,7 @@ function BentoCard({
   className?: string;
 }) {
   return (
-    <motion.div variants={itemVariants} className={`relative w-full h-full min-h-[200px] lg:min-h-0 ${className}`}>
+    <motion.div variants={itemVariants} className={`relative w-full h-full min-h-0 ${className}`}>
       <Link
         href={`/urun/${product.id}`}
         className="group relative block h-full w-full overflow-hidden rounded-3xl bg-cream shadow-sm ring-1 ring-ink/5 transition-all duration-700 ease-[var(--ease-organic)] hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-olive/20"
@@ -71,7 +81,14 @@ function BentoCard({
 
 export function HeroShowcase({ products = [] }: { products?: Product[] }) {
   const safeProducts = Array.isArray(products) ? products : [];
-  const shown = safeProducts.slice(0, 5);
+  const [shown, setShown] = useState(() => safeProducts.slice(0, 5));
+
+  useLayoutEffect(() => {
+    if (safeProducts.length > 5) {
+      setShown(shuffled(safeProducts).slice(0, 5));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
 
   if (shown.length === 0) {
     // Return an empty state with the same height to avoid layout shift during SSR/hydration

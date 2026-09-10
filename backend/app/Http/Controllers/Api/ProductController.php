@@ -48,11 +48,11 @@ class ProductController extends Controller
 
             if (! empty($validated['category'])) {
                 $slug = $validated['category'];
-                if ($slug === 'giyim') {
-                    $query->whereHas('categories', fn ($q) => $q->whereIn('slug', ['elbise', 'ust-giyim', 'alt-giyim']));
-                } else {
-                    $query->whereHas('categories', fn ($q) => $q->where('slug', $slug));
-                }
+                $category = \App\Models\Category::where('slug', $slug)->first();
+                $matchSlugs = $category
+                    ? $category->subcategories()->pluck('slug')->push($slug)
+                    : collect([$slug]);
+                $query->whereHas('categories', fn ($q) => $q->whereIn('slug', $matchSlugs));
             }
 
             if (! empty($validated['subcategory'])) {

@@ -8,7 +8,6 @@ import { getProductReviews } from "@/lib/reviews";
 import { formatPrice } from "@/lib/format";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import { ProductCard } from "@/components/ui/ProductCard";
-import { StarRating } from "@/components/ui/StarRating";
 import { MotionStagger, MotionItem, MotionReveal } from "@/components/ui/MotionReveal";
 import { ProductOptions } from "@/components/product/ProductOptions";
 import { ProductGallery } from "@/components/product/ProductGallery";
@@ -93,12 +92,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
               <h1 className="font-serif text-3xl font-medium text-ink sm:text-4xl lg:text-5xl">{product.name}</h1>
               <ProductFavoriteButton product={product} />
             </div>
-
-            {product.reviewCount > 0 && (
-              <div className="mt-3">
-                <StarRating rating={product.rating} reviewCount={product.reviewCount} />
-              </div>
-            )}
 
             <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-2xl">
               <span className={product.originalPrice ? "font-medium text-olive" : "text-ink"}>

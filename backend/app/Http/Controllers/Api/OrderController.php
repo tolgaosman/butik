@@ -31,7 +31,7 @@ class OrderController extends Controller
             'shipping_city' => 'required|string|max:128',
             'shipping_postal' => 'nullable|string|max:16',
             'customer_note' => 'nullable|string|max:1000',
-            'payment_method' => 'required|in:cash_on_delivery,bank_transfer',
+            'payment_method' => 'required|in:cash_on_delivery',
             'phone' => 'required|string|regex:/^5\d{9}$/', // Ask for phone in checkout
         ], [
             'phone.regex' => 'Geçerli bir telefon numarası girin (Örn. 5XX XXX XX XX).',

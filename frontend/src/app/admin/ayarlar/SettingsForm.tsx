@@ -29,9 +29,6 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
       store_email: String(form.get("store_email") ?? ""),
       store_instagram: String(form.get("store_instagram") ?? ""),
       store_facebook: String(form.get("store_facebook") ?? ""),
-      bank_name: String(form.get("bank_name") ?? ""),
-      bank_account_holder: String(form.get("bank_account_holder") ?? ""),
-      bank_iban: String(form.get("bank_iban") ?? ""),
     };
 
     try {
@@ -127,38 +124,6 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
               label="Facebook URL"
               defaultValue={settings.facebook}
               error={errors.store_facebook?.[0]}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-3xl border border-border/70 bg-surface p-6 shadow-sm sm:p-8">
-        <h2 className="font-serif text-xl font-medium text-ink mb-1">Havale / EFT Bilgileri</h2>
-        <p className="mb-6 text-sm text-ink-soft">
-          Ödemede havale/EFT seçen müşterilere sipariş onayında ve e-postada gösterilir.
-        </p>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <Input
-            id="bank_name"
-            name="bank_name"
-            label="Banka Adı"
-            defaultValue={settings.bankName}
-            error={errors.bank_name?.[0]}
-          />
-          <Input
-            id="bank_account_holder"
-            name="bank_account_holder"
-            label="Hesap Sahibi"
-            defaultValue={settings.bankAccountHolder}
-            error={errors.bank_account_holder?.[0]}
-          />
-          <div className="sm:col-span-2">
-            <Input
-              id="bank_iban"
-              name="bank_iban"
-              label="IBAN"
-              defaultValue={settings.bankIban}
-              error={errors.bank_iban?.[0]}
             />
           </div>
         </div>

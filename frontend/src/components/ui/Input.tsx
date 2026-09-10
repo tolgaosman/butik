@@ -3,6 +3,7 @@
 import { useState, type ComponentPropsWithoutRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Dropdown, type DropdownOption } from "./Dropdown";
 
 const fieldClasses = (error?: string, className?: string) =>
   cn(
@@ -61,17 +62,33 @@ export function Textarea({ label, error, id, className, ...props }: TextareaProp
   );
 }
 
-type SelectProps = ComponentPropsWithoutRef<"select"> & { label: string; error?: string };
+type SelectProps = {
+  label: string;
+  error?: string;
+  id?: string;
+  className?: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: DropdownOption[];
+  placeholder?: string;
+  disabled?: boolean;
+};
 
-export function Select({ label, error, id, className, children, ...props }: SelectProps) {
+export function Select({ label, error, id, className, value, onChange, options, placeholder, disabled }: SelectProps) {
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block text-xs font-medium text-ink-soft">
         {label}
       </label>
-      <select id={id} className={fieldClasses(error, className)} aria-invalid={!!error} {...props}>
-        {children}
-      </select>
+      <Dropdown
+        id={id}
+        value={value}
+        onChange={onChange}
+        options={options}
+        placeholder={placeholder}
+        disabled={disabled}
+        className={fieldClasses(error, className)}
+      />
       {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
     </div>
   );

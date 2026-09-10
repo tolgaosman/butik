@@ -17,6 +17,7 @@ import {
 import { formatPrice } from "@/lib/format";
 import { useCart, ApiError } from "@/lib/cart";
 import { toast } from "@/lib/toast";
+import { MotifBackground } from "@/components/ui/MotifBackground";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -58,8 +59,9 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-[70vh] bg-cream/40 py-8 sm:py-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div className="relative overflow-hidden bg-cream/40 py-8 sm:py-12 min-h-[70vh]">
+      <MotifBackground mask="linear-gradient(to bottom, black 0%, transparent 100%)" />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 relative z-10">
         <Breadcrumbs items={[{ label: "Sepetim" }]} />
 
         <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4 border-b border-border/70 pb-6">

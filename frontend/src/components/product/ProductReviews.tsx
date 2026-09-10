@@ -6,6 +6,7 @@ import { apiMutate, ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/Button";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { toast } from "@/lib/toast";
 import { getProductReviews, getEligibleOrdersForReview, type Review, type ReviewsMeta, type EligibleOrder } from "@/lib/reviews";
 
@@ -108,18 +109,15 @@ export function ProductReviews({ productSlug, initialReviews, initialMeta }: Pro
           {eligibleOrders && eligibleOrders.length > 0 && (
             <div>
               <p className="mb-2 text-sm font-medium text-ink">Hangi Siparişiniz İçin?</p>
-              <select
-                value={selectedOrderId}
-                onChange={(e) => setSelectedOrderId(Number(e.target.value))}
-                className="w-full border border-border px-4 py-2.5 text-sm text-ink transition-colors duration-200 focus:border-olive focus-visible:outline-none"
-                required
-              >
-                {eligibleOrders.map(order => (
-                  <option key={order.id} value={order.id}>
-                    {order.order_number} - {dateFormatter.format(new Date(order.created_at))}
-                  </option>
-                ))}
-              </select>
+              <Dropdown
+                value={String(selectedOrderId)}
+                onChange={(v) => setSelectedOrderId(Number(v))}
+                options={eligibleOrders.map((order) => ({
+                  value: String(order.id),
+                  label: `${order.order_number} - ${dateFormatter.format(new Date(order.created_at))}`,
+                }))}
+                className="border border-border px-4 py-2.5 text-sm text-ink transition-colors duration-200 focus:border-olive focus-visible:outline-none"
+              />
             </div>
           )}
           <div>

@@ -165,14 +165,22 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
   const [localCategories, setLocalCategories] = useState<AdminCategory[]>(categories);
   const [editingCategory, setEditingCategory] = useState<CategoryNode | null>(null);
   const [saving, setSaving] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Form state
   const [nameInput, setNameInput] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Create-form state
+  const [newName, setNewName] = useState("");
+  const [newParentId, setNewParentId] = useState<string>("");
+  const [newImageFile, setNewImageFile] = useState<File | null>(null);
+  const [newImagePreview, setNewImagePreview] = useState<string | null>(null);
+
   const tree = useMemo(() => buildTree(localCategories), [localCategories]);
   const rootCount = useMemo(() => localCategories.filter((c) => c.parent_id === null).length, [localCategories]);
+  const rootCategories = useMemo(() => localCategories.filter((c) => c.parent_id === null), [localCategories]);
 
   const handleEdit = (category: CategoryNode) => {
     setEditingCategory(category);
@@ -186,6 +194,51 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
     if (!file) return;
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  const openCreateModal = () => {
+    setNewName("");
+    setNewParentId("");
+    setNewImageFile(null);
+    setNewImagePreview(null);
+    setIsCreating(true);
+  };
+
+  const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setNewImageFile(file);
+    setNewImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleCreate = async () => {
+    if (!newName.trim() || !newImageFile) return;
+    setSaving(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", newName.trim());
+      if (newParentId) formData.append("parent_id", newParentId);
+      formData.append("image", newImageFile);
+
+      const created = await apiMutate<AdminCategory>("/admin/categories", {
+        method: "POST",
+        body: formData,
+      });
+
+      await revalidateStore();
+
+      setLocalCategories((prev) => [...prev, created]);
+      setIsCreating(false);
+      toast.success("Kategori eklendi", { description: `"${created.name}" oluşturuldu.` });
+    } catch (error) {
+      console.error("Kategori eklenemedi:", error);
+      toast.error("Kategori eklenemedi", {
+        description: error instanceof ApiError ? error.message : "Lütfen tekrar deneyin.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSave = async () => {
@@ -270,9 +323,7 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
           <Button
             variant="solid"
             className="shadow-md shadow-olive/20 rounded-2xl"
-            onClick={() => {
-              toast.info("Yakında", { description: "Yeni kategori ekleme özelliği backend entegrasyonu ile aktif edilecektir." });
-            }}
+            onClick={openCreateModal}
           >
             Yeni Kategori
           </Button>
@@ -342,6 +393,60 @@ export function CategoriesTable({ categories }: { categories: AdminCategory[] })
             </div>
           </div>
         )}
+      </Modal>
+
+      <Modal isOpen={isCreating} onClose={() => setIsCreating(false)} title="Yeni Kategori">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="new-name" className="block text-sm font-medium text-ink">Kategori Adı</label>
+            <input
+              id="new-name"
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="new-parent" className="block text-sm font-medium text-ink">Üst Kategori</label>
+            <select
+              id="new-parent"
+              value={newParentId}
+              onChange={(e) => setNewParentId(e.target.value)}
+              className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
+            >
+              <option value="">Ana Kategori (yok)</option>
+              {rootCategories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-ink">Kategori Görseli</label>
+            <div className="flex items-center gap-4">
+              {newImagePreview && (
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded border border-border">
+                  <Image src={newImagePreview} alt="Önizleme" fill className="object-cover" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleNewImageChange}
+                className="text-sm text-ink-soft file:mr-4 file:rounded file:border-0 file:bg-olive file:px-4 file:py-2 file:text-sm file:font-medium file:text-surface hover:file:bg-olive/90"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="outline" onClick={() => setIsCreating(false)}>İptal</Button>
+            <Button variant="solid" onClick={handleCreate} loading={saving} disabled={!newName.trim() || !newImageFile}>
+              Oluştur
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

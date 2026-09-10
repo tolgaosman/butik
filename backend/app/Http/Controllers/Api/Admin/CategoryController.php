@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Support\CatalogCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -35,6 +36,48 @@ class CategoryController extends Controller
             ]);
 
         return response()->json($categories);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:128',
+            'parent_id' => 'nullable|exists:categories,id',
+            'image' => 'required|image|max:5120',
+        ]);
+
+        $parent = $validated['parent_id'] ?? null ? Category::find($validated['parent_id']) : null;
+
+        $slug = Str::slug($validated['name']);
+        $baseSlug = $slug;
+        $suffix = 2;
+        while (Category::where('slug', $slug)->exists()) {
+            $slug = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        $path = $request->file('image')->store('categories', 'public');
+
+        $category = Category::create([
+            'parent_id' => $parent?->id,
+            'slug' => $slug,
+            'name' => $validated['name'],
+            'href' => $parent ? "{$parent->href}/{$slug}" : "/{$slug}",
+            'image' => '/storage/'.$path,
+        ]);
+
+        CatalogCache::bump();
+
+        return response()->json([
+            'id' => $category->id,
+            'name' => $category->name,
+            'slug' => $category->slug,
+            'parent_id' => $category->parent_id,
+            'parent_name' => $parent?->name,
+            'href' => $category->href,
+            'image' => $category->image,
+            'itemCount' => $category->item_count,
+        ], 201);
     }
 
     public function update(Request $request, $id)
