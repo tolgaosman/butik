@@ -1,5 +1,3 @@
-version: '3.8'
-
 x-backend-env: &backend-env
   APP_ENV: production
   APP_DEBUG: "false"
@@ -24,8 +22,8 @@ x-backend-env: &backend-env
   MAIL_MAILER: ${MAIL_MAILER:-smtp}
   MAIL_HOST: ${MAIL_HOST:?MAIL_HOST zorunlu - siparis/kargo/sifre e-postalari icin bir SMTP saglayici gerekiyor}
   MAIL_PORT: ${MAIL_PORT:-587}
-  MAIL_USERNAME: ${MAIL_USERNAME}
-  MAIL_PASSWORD: ${MAIL_PASSWORD}
+  MAIL_USERNAME: ${MAIL_USERNAME:-}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-}
   MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
   MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-siparis@sevgibutik.com}
   MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Sevgi Butik}
