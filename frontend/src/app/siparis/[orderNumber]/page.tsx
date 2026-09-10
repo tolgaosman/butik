@@ -16,7 +16,6 @@ const STORAGE_KEY = "sevgi-butik:last-order";
 
 const PAYMENT_METHOD_LABELS: Record<Order["paymentMethod"], string> = {
   cash_on_delivery: "Kapıda Ödeme",
-  bank_transfer: "Havale / EFT",
 };
 
 export default function OrderConfirmationPage() {
@@ -128,7 +127,6 @@ export default function OrderConfirmationPage() {
     );
   }
 
-  const showBankDetails = order.paymentMethod === "bank_transfer" && settings?.bankIban;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -149,37 +147,7 @@ export default function OrderConfirmationPage() {
         </p>
       </div>
 
-      {showBankDetails && (
-        <div className="mt-8 flex items-start gap-3.5 rounded-2xl border border-olive/20 bg-olive/5 p-5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-olive">
-            <Landmark className="size-4" aria-hidden />
-          </span>
-          <div>
-            <p className="font-serif text-sm font-semibold text-ink">Havale / EFT Bilgileri</p>
-            <p className="mt-1 text-xs leading-relaxed text-ink-soft">
-              Ödemenizi aşağıdaki hesaba yapıp sipariş numaranızı açıklama olarak eklemeniz yeterli.
-            </p>
-            <dl className="mt-3 space-y-1 text-sm">
-              {settings?.bankName && (
-                <div className="flex gap-2">
-                  <dt className="text-ink-soft">Banka:</dt>
-                  <dd className="font-medium text-ink">{settings.bankName}</dd>
-                </div>
-              )}
-              {settings?.bankAccountHolder && (
-                <div className="flex gap-2">
-                  <dt className="text-ink-soft">Hesap Sahibi:</dt>
-                  <dd className="font-medium text-ink">{settings.bankAccountHolder}</dd>
-                </div>
-              )}
-              <div className="flex gap-2">
-                <dt className="text-ink-soft">IBAN:</dt>
-                <dd className="font-medium text-ink">{settings?.bankIban}</dd>
-              </div>
-            </dl>
-          </div>
-        </div>
-      )}
+
 
       <div className="mt-10 divide-y divide-border border border-border">
         {order.items.map((item, i) => (

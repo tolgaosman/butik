@@ -20,7 +20,7 @@ export type OrderStatus =
 export type Order = {
   orderNumber: string;
   status: OrderStatus;
-  paymentMethod: "cash_on_delivery" | "bank_transfer";
+  paymentMethod: "cash_on_delivery";
   paymentStatus: "unpaid" | "paid" | "refunded";
   subtotal: number;
   shipping: number;

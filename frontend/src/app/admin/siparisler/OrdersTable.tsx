@@ -19,7 +19,6 @@ const PAYMENT_STATUS_LABELS: Record<AdminPaymentStatus, string> = {
 };
 const PAYMENT_METHOD_LABELS: Record<AdminOrder["paymentMethod"], string> = {
   cash_on_delivery: "Kapıda Ödeme",
-  bank_transfer: "Havale / EFT",
 };
 
 function statusDotClass(status: AdminOrderStatus) {

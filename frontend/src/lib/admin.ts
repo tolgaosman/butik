@@ -79,7 +79,7 @@ export type AdminOrder = {
   date: string;
   createdAt: string | null;
   status: AdminOrderStatus;
-  paymentMethod: "cash_on_delivery" | "bank_transfer";
+  paymentMethod: "cash_on_delivery";
   paymentStatus: AdminPaymentStatus;
   trackingNumber: string | null;
   shippedAt: string | null;
