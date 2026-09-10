@@ -26,7 +26,7 @@ class OrderShipped extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.order-shipped',
+            view: 'emails.order-shipped',
             with: ['order' => $this->order],
         );
     }

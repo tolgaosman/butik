@@ -31,7 +31,7 @@ class ContactMessageReceived extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.contact-message-received',
+            view: 'emails.contact-message-received',
             with: ['contactMessage' => $this->contactMessage],
         );
     }
