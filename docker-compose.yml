@@ -25,6 +25,7 @@ x-backend-env: &backend-env
   MAIL_USERNAME: ${MAIL_USERNAME:-}
   MAIL_PASSWORD: ${MAIL_PASSWORD:-}
   MAIL_SCHEME: ${MAIL_SCHEME:-smtps}
+  RESEND_API_KEY: ${RESEND_API_KEY:-}
   MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-siparis@sevgibutik.com}
   MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Sevgi Butik}
 
