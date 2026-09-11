@@ -18,7 +18,7 @@ x-backend-env: &backend-env
   SESSION_DRIVER: database
   SESSION_SECURE_COOKIE: "true"
   CACHE_STORE: database
-  QUEUE_CONNECTION: database
+  QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
   MAIL_MAILER: ${MAIL_MAILER:-smtp}
   MAIL_HOST: ${MAIL_HOST:?MAIL_HOST zorunlu - siparis/kargo/sifre e-postalari icin bir SMTP saglayici gerekiyor}
   MAIL_PORT: ${MAIL_PORT:-587}
