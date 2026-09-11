@@ -11,6 +11,7 @@
         "laravel/framework": "^13.17",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
+        "symfony/http-client": "^8.1",
         "symfony/resend-mailer": "^8.1"
     },
     "require-dev": {
