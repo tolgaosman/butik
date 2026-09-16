@@ -4,15 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\ItemsRelationManager;
-use App\Mail\OrderShipped;
 use App\Models\Order;
+use App\Services\OrderService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Mail;
 
 class OrderResource extends Resource
 {
@@ -111,12 +110,12 @@ class OrderResource extends Resource
                     ->label('Onayla')
                     ->icon('heroicon-o-check-circle')
                     ->visible(fn (Order $record) => $record->status === 'pending')
-                    ->action(fn (Order $record) => $record->update(['status' => 'confirmed'])),
+                    ->action(fn (Order $record) => app(OrderService::class)->updateByAdmin($record, ['status' => 'confirmed'])),
                 Tables\Actions\Action::make('preparing')
                     ->label('Hazırlanıyor')
                     ->icon('heroicon-o-clock')
                     ->visible(fn (Order $record) => $record->status === 'confirmed')
-                    ->action(fn (Order $record) => $record->update(['status' => 'preparing'])),
+                    ->action(fn (Order $record) => app(OrderService::class)->updateByAdmin($record, ['status' => 'preparing'])),
                 Tables\Actions\Action::make('ship')
                     ->label('Kargola')
                     ->icon('heroicon-o-truck')
@@ -124,19 +123,15 @@ class OrderResource extends Resource
                     ->form([
                         Forms\Components\TextInput::make('tracking_number')->label('Kargo Takip No')->required(),
                     ])
-                    ->action(function (Order $record, array $data) {
-                        $record->update([
-                            'status' => 'shipped',
-                            'tracking_number' => $data['tracking_number'],
-                            'shipped_at' => now(),
-                        ]);
-                        Mail::to($record->email)->send(new OrderShipped($record));
-                    }),
+                    ->action(fn (Order $record, array $data) => app(OrderService::class)->updateByAdmin($record, [
+                        'status' => 'shipped',
+                        'tracking_number' => $data['tracking_number'],
+                    ])),
                 Tables\Actions\Action::make('deliver')
                     ->label('Teslim Edildi')
                     ->icon('heroicon-o-check-badge')
                     ->visible(fn (Order $record) => $record->status === 'shipped')
-                    ->action(fn (Order $record) => $record->update(['status' => 'delivered', 'delivered_at' => now()])),
+                    ->action(fn (Order $record) => app(OrderService::class)->updateByAdmin($record, ['status' => 'delivered'])),
                 Tables\Actions\Action::make('cancel')
                     ->label('İptal Et')
                     ->icon('heroicon-o-x-circle')
@@ -144,10 +139,7 @@ class OrderResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn (Order $record) => in_array($record->status, ['pending', 'confirmed', 'preparing'], true))
                     ->action(function (Order $record) {
-                        $record->update(['status' => 'cancelled']);
-                        foreach ($record->items as $item) {
-                            $item->variant?->increment('stock', $item->quantity);
-                        }
+                        app(OrderService::class)->updateByAdmin($record, ['status' => 'cancelled']);
                         Notification::make()->title('Sipariş iptal edildi, stok geri yüklendi.')->success()->send();
                     }),
                 Tables\Actions\EditAction::make(),

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\OrderConfirmed;
 use App\Mail\OrderPlaced;
 use App\Mail\OrderShipped;
 use App\Models\Cart;
@@ -9,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
@@ -104,9 +106,26 @@ class OrderService
             return $order;
         });
 
-        Mail::to($order->email)->send(new OrderPlaced($order->load('items')));
+        $this->sendMail($order->email, new OrderPlaced($order->load('items')));
 
         return $order;
+    }
+
+    /**
+     * Mail delivery is best-effort — a Resend/SMTP failure must never
+     * surface as a 500 on the order it's attached to. Mailables are queued
+     * (ShouldQueue) so this only ever throws on the dispatch itself.
+     */
+    private function sendMail(string $to, \Illuminate\Mail\Mailable $mailable): void
+    {
+        try {
+            Mail::to($to)->queue($mailable);
+        } catch (\Throwable $e) {
+            Log::error('Order mail dispatch failed: '.$e->getMessage(), [
+                'mailable' => get_class($mailable),
+                'to' => $to,
+            ]);
+        }
     }
 
     /**
@@ -138,16 +157,17 @@ class OrderService
      * since staff may need to cancel from states a customer no longer can.
      * Centralizes what used to be split between two admin surfaces
      * (Filament vs. the Next.js admin, which only ever touched `status`):
-     * shipped_at/delivered_at timestamps, the OrderShipped email, and stock
-     * reversal for cancelled/refunded orders, all in one transaction so a
-     * status flip can't land without its side effects.
+     * shipped_at/delivered_at timestamps, the OrderConfirmed/OrderShipped
+     * emails, and stock reversal for cancelled/refunded orders. Stock and
+     * timestamp updates land in one transaction; mail dispatch happens only
+     * after that commit so a queue failure can't roll back a status change.
      */
     public function updateByAdmin(Order $order, array $data): Order
     {
-        return DB::transaction(function () use ($order, $data) {
-            $previousStatus = $order->status;
-            $newStatus = $data['status'] ?? $previousStatus;
+        $previousStatus = $order->status;
+        $newStatus = $data['status'] ?? $previousStatus;
 
+        $updated = DB::transaction(function () use ($order, $data, $previousStatus, $newStatus) {
             $updates = array_filter([
                 'status' => $data['status'] ?? null,
                 'payment_status' => $data['payment_status'] ?? null,
@@ -179,11 +199,16 @@ class OrderService
                 }
             }
 
-            if ($newStatus === 'shipped' && $previousStatus !== 'shipped') {
-                Mail::to($order->email)->send(new OrderShipped($order));
-            }
-
             return $order->fresh('items');
         });
+
+        if ($newStatus === 'confirmed' && $previousStatus !== 'confirmed') {
+            $this->sendMail($updated->email, new OrderConfirmed($updated));
+        }
+        if ($newStatus === 'shipped' && $previousStatus !== 'shipped') {
+            $this->sendMail($updated->email, new OrderShipped($updated));
+        }
+
+        return $updated;
     }
 }

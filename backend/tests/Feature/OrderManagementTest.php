@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\OrderConfirmed;
 use App\Mail\OrderShipped;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -88,6 +89,29 @@ class OrderManagementTest extends TestCase
         // OrderShipped implements ShouldQueue — Mail::send() queues it rather
         // than dispatching synchronously, so the fake records it as queued.
         Mail::assertQueued(OrderShipped::class, fn ($mail) => $mail->order->id === $order->id);
+    }
+
+    public function test_admin_update_to_confirmed_sends_the_confirmation_email(): void
+    {
+        Mail::fake();
+
+        $order = $this->orderWithItem(status: 'pending');
+
+        $updated = app(OrderService::class)->updateByAdmin($order, ['status' => 'confirmed']);
+
+        $this->assertSame('confirmed', $updated->status);
+        Mail::assertQueued(OrderConfirmed::class, fn ($mail) => $mail->order->id === $order->id);
+    }
+
+    public function test_admin_update_does_not_resend_the_confirmation_email_on_a_later_edit(): void
+    {
+        Mail::fake();
+
+        $order = $this->orderWithItem(status: 'confirmed');
+
+        app(OrderService::class)->updateByAdmin($order, ['admin_note' => 'not eklendi']);
+
+        Mail::assertNotQueued(OrderConfirmed::class);
     }
 
     public function test_admin_update_does_not_resend_the_shipped_email_on_a_later_edit(): void
