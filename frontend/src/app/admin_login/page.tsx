@@ -73,6 +73,7 @@ export default function AdminLoginPage() {
               label="E-posta Adresi"
               type="email"
               autoComplete="email"
+              inputFilter="email"
               required
             />
             <Input

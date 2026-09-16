@@ -89,6 +89,7 @@ function LoginForm({ onForgotPassword }: { onForgotPassword: () => void }) {
           type="email"
           placeholder="ornek@posta.com"
           autoComplete="email"
+          inputFilter="email"
           required
           error={errors.email?.[0]}
         />
@@ -152,7 +153,7 @@ function RegisterForm() {
         Yeni koleksiyonlardan ve size özel fırsatlardan ilk siz haberdar olun.
       </p>
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-        <Input id="signup-name" name="name" label="Ad Soyad" autoComplete="name" required error={errors.name?.[0]} />
+        <Input id="signup-name" name="name" label="Ad Soyad" autoComplete="name" inputFilter="name" required error={errors.name?.[0]} />
         <Input
           id="signup-email"
           name="email"
@@ -160,6 +161,7 @@ function RegisterForm() {
           type="email"
           placeholder="ornek@posta.com"
           autoComplete="email"
+          inputFilter="email"
           required
           error={errors.email?.[0]}
         />
@@ -170,6 +172,7 @@ function RegisterForm() {
           type="tel"
           placeholder="5XX XXX XX XX"
           autoComplete="tel"
+          inputFilter="phone"
           required
           error={errors.phone?.[0]}
         />
@@ -286,6 +289,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
             type="email"
             placeholder="ornek@posta.com"
             autoComplete="email"
+            inputFilter="email"
             required
             error={errors.email?.[0]}
           />
@@ -302,6 +306,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
             label="Doğrulama Kodu"
             inputMode="numeric"
             maxLength={6}
+            inputFilter="numeric"
             required
             error={errors.code?.[0]}
           />
@@ -391,6 +396,7 @@ function PersonalInfoForm() {
           name="name"
           label="Ad Soyad"
           defaultValue={user.name}
+          inputFilter="name"
           required
           error={errors.name?.[0]}
         />
@@ -400,6 +406,7 @@ function PersonalInfoForm() {
           label="E-posta Adresi"
           type="email"
           defaultValue={user.email ?? ""}
+          inputFilter="email"
           required
           error={errors.email?.[0]}
         />
@@ -409,6 +416,7 @@ function PersonalInfoForm() {
           label="Telefon Numarası (İsteğe Bağlı)"
           type="tel"
           defaultValue={user.phone ?? ""}
+          inputFilter="phone"
           error={errors.phone?.[0]}
         />
         {message && (

@@ -7,17 +7,56 @@ import { Dropdown, type DropdownOption } from "./Dropdown";
 
 const fieldClasses = (error?: string, className?: string) =>
   cn(
-    "w-full border bg-surface px-4 py-2.5 text-sm text-ink transition-colors duration-200 focus-visible:outline-none",
+    "w-full border bg-surface px-4 py-2.5 text-sm text-ink transition-colors duration-200 focus-visible:outline-none normal-nums font-sans",
     error ? "border-red-400 focus:border-red-500" : "border-border focus:border-olive",
     className,
   );
 
-type InputProps = ComponentPropsWithoutRef<"input"> & { label: string; error?: string };
+export type InputFilter = "name" | "phone" | "numeric" | "email";
 
-export function Input({ label, error, id, className, type, ...props }: InputProps) {
+function applyFilter(value: string, filter?: InputFilter): string {
+  switch (filter) {
+    case "name":
+      return value.replace(/[^A-Za-zğüşıöçĞÜŞİÖÇ\s.-]/g, "");
+    case "phone":
+      return value.replace(/[^0-9+\s()-]/g, "");
+    case "numeric":
+      return value.replace(/[^0-9]/g, "");
+    case "email":
+      return value.replace(/\s/g, "");
+    default:
+      return value;
+  }
+}
+
+type InputProps = ComponentPropsWithoutRef<"input"> & { 
+  label: string; 
+  error?: string;
+  inputFilter?: InputFilter;
+};
+
+export function Input({ label, error, id, className, type, inputFilter, onInput, ...props }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const currentType = isPassword ? (showPassword ? "text" : "password") : type;
+
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    if (inputFilter) {
+      const start = e.currentTarget.selectionStart;
+      const end = e.currentTarget.selectionEnd;
+      const oldVal = e.currentTarget.value;
+      const newVal = applyFilter(oldVal, inputFilter);
+      
+      if (oldVal !== newVal) {
+        e.currentTarget.value = newVal;
+        if (start !== null && end !== null) {
+           const diff = oldVal.length - newVal.length;
+           e.currentTarget.setSelectionRange(start - diff, end - diff);
+        }
+      }
+    }
+    onInput?.(e);
+  };
 
   return (
     <div>
@@ -29,7 +68,10 @@ export function Input({ label, error, id, className, type, ...props }: InputProp
           id={id} 
           type={currentType}
           className={fieldClasses(error, cn(className, isPassword && "pr-10"))} 
-          aria-invalid={!!error} 
+          aria-invalid={!!error}
+          onInput={handleInput}
+          pattern={inputFilter === "email" ? "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$" : props.pattern}
+          title={inputFilter === "email" ? "Lütfen geçerli bir e-posta adresi girin (örn: ornek@posta.com)" : props.title}
           {...props} 
         />
         {isPassword && (

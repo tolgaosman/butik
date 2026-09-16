@@ -148,6 +148,7 @@ export default function CheckoutPage() {
                     type="email"
                     defaultValue={user?.email || ""}
                     autoComplete="email"
+                    inputFilter="email"
                     required
                     error={errors.email?.[0]}
                   />
@@ -161,6 +162,7 @@ export default function CheckoutPage() {
                     defaultValue={user?.phone || ""}
                     placeholder="5XX XXX XX XX"
                     autoComplete="tel"
+                    inputFilter="phone"
                     required
                     error={errors.phone?.[0]}
                   />

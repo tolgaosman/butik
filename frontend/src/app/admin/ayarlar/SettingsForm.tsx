@@ -96,6 +96,7 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
             name="store_phone"
             label="Telefon"
             defaultValue={settings.phone}
+            inputFilter="phone"
             required
             error={errors.store_phone?.[0]}
           />
@@ -105,6 +106,7 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
             label="E-posta"
             type="email"
             defaultValue={settings.email}
+            inputFilter="email"
             required
             error={errors.store_email?.[0]}
           />

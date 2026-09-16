@@ -232,6 +232,7 @@ export default function OrderTrackingPage() {
                     label="E-posta Adresi"
                     type="email"
                     placeholder="E-posta adresiniz"
+                    inputFilter="email"
                     required
                     error={fieldErrors.email?.[0]}
                   />

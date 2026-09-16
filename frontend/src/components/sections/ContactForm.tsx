@@ -31,13 +31,14 @@ export function ContactForm() {
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input id="contact-name" name="name" label="Ad Soyad" autoComplete="name" required />
+        <Input id="contact-name" name="name" label="Ad Soyad" autoComplete="name" inputFilter="name" required />
         <Input
           id="contact-email"
           name="email"
           label="E-posta (opsiyonel)"
           type="email"
           autoComplete="email"
+          inputFilter="email"
         />
         <Input id="contact-subject" name="subject" label="Konu" className="sm:col-span-2" required />
       </div>

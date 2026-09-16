@@ -202,8 +202,8 @@ function deriveProductRow(product: AdminProduct) {
 type FormState = {
   name: string;
   description: string;
-  price: number;
-  discount: number;
+  price: number | string;
+  discount: number | string;
   isNew: boolean;
   isActive: boolean;
   gender: Gender;
@@ -214,7 +214,7 @@ type FormState = {
 const EMPTY_FORM: FormState = {
   name: "",
   description: "",
-  price: 0,
+  price: "",
   discount: 0,
   isNew: false,
   isActive: true,
@@ -384,8 +384,8 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("description", form.description);
-      formData.append("price", String(form.price));
-      formData.append("discount", String(form.discount));
+      formData.append("price", String(Number(form.price) || 0));
+      formData.append("discount", String(Number(form.discount) || 0));
       formData.append("isNew", form.isNew ? "1" : "0");
       formData.append("isActive", form.isActive ? "1" : "0");
       formData.append("gender", form.gender);
@@ -423,7 +423,9 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
     }
   }
 
-  const calculatedNewPrice = form.discount > 0 ? form.price - form.price * (form.discount / 100) : form.price;
+  const parsedPrice = Number(form.price) || 0;
+  const parsedDiscount = Number(form.discount) || 0;
+  const calculatedNewPrice = parsedDiscount > 0 ? parsedPrice - parsedPrice * (parsedDiscount / 100) : parsedPrice;
 
   function handleAddSize(size?: string) {
     const val = (size ?? sizeInput).trim();
@@ -1037,8 +1039,9 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
                   id="price"
                   type="number"
                   min="0"
+                  step="0.01"
                   value={form.price}
-                  onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) }))}
+                  onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                   className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
                 />
               </div>
@@ -1051,8 +1054,9 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
                     type="number"
                     min="0"
                     max="100"
+                    step="1"
                     value={form.discount}
-                    onChange={(e) => setForm((f) => ({ ...f, discount: Number(e.target.value) }))}
+                    onChange={(e) => setForm((f) => ({ ...f, discount: e.target.value }))}
                     className="w-full rounded border border-border bg-surface px-3 py-2 text-sm text-ink focus:border-olive focus:outline-none"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-soft text-sm">%</span>
@@ -1063,7 +1067,7 @@ export function ProductsTable({ products, categories }: { products: AdminProduct
             <div className="mt-4 flex items-center justify-between rounded bg-surface p-3 border border-olive/20">
               <span className="text-sm font-medium text-ink">Müşterinin Göreceği Satış Fiyatı:</span>
               <div className="flex items-center gap-3">
-                {form.discount > 0 && <span className="text-sm text-ink-soft line-through">{form.price} TL</span>}
+                {parsedDiscount > 0 && <span className="text-sm text-ink-soft line-through">{parsedPrice} TL</span>}
                 <span className="text-lg font-bold text-olive">{calculatedNewPrice.toFixed(2)} TL</span>
               </div>
             </div>
