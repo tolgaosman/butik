@@ -55,7 +55,8 @@ export function Input({ label, error, id, className, type, inputFilter, onInput,
         }
       }
     }
-    onInput?.(e);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onInput?.(e as any);
   };
 
   return (
