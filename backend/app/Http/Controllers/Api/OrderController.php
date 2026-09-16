@@ -43,11 +43,15 @@ class OrderController extends Controller
 
         // Note: we take the phone directly from the order form now, not from $user->phone
         
-        $cart = $this->carts->resolve($user, $request);
-        $order = $this->orders->placeFromCart($cart, $user, $data);
-        $order->load('items');
+        try {
+            $cart = $this->carts->resolve($user, $request);
+            $order = $this->orders->placeFromCart($cart, $user, $data);
+            $order->load('items');
 
-        return new OrderResource($order);
+            return new OrderResource($order);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Server Error: ' . $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+        }
     }
 
     public function index(Request $request): AnonymousResourceCollection
