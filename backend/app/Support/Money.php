@@ -13,4 +13,15 @@ class Money
     {
         return (int) round($amount * 100);
     }
+
+    /**
+     * Minor units to the storefront's display format — matches what
+     * frontend/src/lib/format.ts produces via Intl for tr-TR (₺ leading,
+     * dot thousands, comma decimals), so an email and the order page never
+     * show the same total two different ways.
+     */
+    public static function tl(int $minor): string
+    {
+        return '₺'.number_format($minor / 100, 2, ',', '.');
+    }
 }

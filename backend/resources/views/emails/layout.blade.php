@@ -1,18 +1,30 @@
+@php($store = \App\Support\StoreSettings::all())
 <!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>@yield('title', 'Sevgi Butik')</title>
+<style>
+@media only screen and (max-width: 480px) {
+  .stack-col { display:block !important; width:100% !important; box-sizing:border-box; }
+}
+</style>
 </head>
 <body style="margin:0; padding:0; background-color:#fdf4f7; font-family:'Raleway', Helvetica, Arial, sans-serif; color:#2b2422;">
+@hasSection('preheader')
+<div style="display:none; max-height:0; max-width:0; overflow:hidden; opacity:0; mso-hide:all;">
+@yield('preheader')
+&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+</div>
+@endif
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#fdf4f7;">
 <tr>
 <td align="center" style="padding:40px 16px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
 <tr>
 <td align="center" style="padding-bottom:28px;">
-<img src="{{ rtrim(config('app.url'), '/') }}/sevgiLogo-ink.png" alt="Sevgi Butik" width="132" style="display:block; width:132px; height:auto;">
+<img src="{{ rtrim(config('app.url'), '/') }}/sevgiLogo-ink.png" alt="{{ $store['store_name'] }}" width="132" style="display:block; width:132px; height:auto;">
 </td>
 </tr>
 <tr>
@@ -21,11 +33,24 @@
 </td>
 </tr>
 <tr>
-<td align="center" style="padding-top:28px;">
-<p style="margin:0; font-size:12px; line-height:1.6; color:#7a6b68;">Sevgi Butik &middot; D&uuml;zova, Lefko&#351;a</p>
-<p style="margin:6px 0 0; font-size:12px;">
-<a href="https://sevgibutik.com" style="color:#c7175a; text-decoration:none;">sevgibutik.com</a>
+<td align="center" style="padding-top:32px;">
+<p style="margin:0; font-size:13px; font-weight:600; color:#2b2422;">{{ $store['store_name'] }}</p>
+<p style="margin:4px 0 0; font-size:12px; line-height:1.6; color:#7a6b68;">{{ $store['store_address'] }}</p>
+<p style="margin:10px 0 0; font-size:12px; line-height:1.8;">
+<a href="tel:{{ preg_replace('/\s+/', '', $store['store_phone']) }}" style="color:#c7175a; text-decoration:none;">{{ $store['store_phone'] }}</a>
+<span style="color:#ecdfe4;">&nbsp;&middot;&nbsp;</span>
+<a href="mailto:{{ $store['store_email'] }}" style="color:#c7175a; text-decoration:none;">{{ $store['store_email'] }}</a>
 </p>
+<p style="margin:10px 0 0; font-size:12px;">
+<a href="https://sevgibutik.com" style="color:#7a6b68; text-decoration:none;">sevgibutik.com</a>
+@if($store['store_instagram'])
+<span style="color:#ecdfe4;">&nbsp;&middot;&nbsp;</span>
+<a href="{{ $store['store_instagram'] }}" style="color:#7a6b68; text-decoration:none;">Instagram</a>
+@endif
+</p>
+@hasSection('recipient')
+<p style="margin:20px 0 0; font-size:11px; color:#a89792;">Bu e-posta @yield('recipient') adresine g&ouml;nderildi.</p>
+@endif
 </td>
 </tr>
 </table>

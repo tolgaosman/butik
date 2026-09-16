@@ -35,4 +35,21 @@ class OrderItem extends Model
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
+
+    /**
+     * product_image is stored two ways depending on how it got there: an
+     * absolute URL from a seeded/Unsplash product, or a relative
+     * "/storage/products/x.jpg" from an admin upload
+     * (Admin/ProductController::update). Emails need an absolute URL either
+     * way — there's no site origin to resolve a relative path against once
+     * it's sitting in an inbox.
+     */
+    public function imageUrl(): string
+    {
+        if (str_starts_with($this->product_image, 'http')) {
+            return $this->product_image;
+        }
+
+        return rtrim(config('app.url'), '/').$this->product_image;
+    }
 }

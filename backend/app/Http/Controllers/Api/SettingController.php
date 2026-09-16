@@ -8,29 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Resources\ProductResource;
 use App\Support\CatalogCache;
+use App\Support\StoreSettings;
 use Illuminate\Support\Facades\Cache;
 
 class SettingController extends Controller
 {
-    /**
-     * Seeds every storefront surface (Footer, LocationMap, contact page,
-     * WhatsApp link, checkout bank details) until an admin edits them once —
-     * mirrors the values that used to be hardcoded in frontend/src/lib/business.ts.
-     */
-    private const STORE_DEFAULTS = [
-        'store_name' => 'Sevgi Butik',
-        'store_category' => "Düzova'da bir giyim mağazası",
-        'store_address' => 'İskele Anayolu, Düzova, Lefkoşa',
-        'store_maps_query' => 'Sevgi Butik, İskele Anayolu, Düzova, Lefkoşa',
-        'store_phone' => '0542 873 91 96',
-        'store_email' => 'info@sevgibutik.com',
-        'store_instagram' => 'https://www.instagram.com/sevgi.butikk18?igsi=OTcxdXRmc2RibXph&utm_source=qr',
-        'store_facebook' => 'https://www.facebook.com/profile.php?id=61564957254292&mibextid=wwXIfr&rdid=2VjaMhKQa675mN0o&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F18mZBTVct9%2F%3Fmibextid%3DwwXIfr',
-        'bank_name' => '',
-        'bank_account_holder' => '',
-        'bank_iban' => '',
-    ];
-
     /**
      * Public — the bank details here are meant to be shown to customers who
      * pick "Havale / EFT" at checkout, so there's nothing to protect by
@@ -38,15 +20,7 @@ class SettingController extends Controller
      */
     public function getStoreSettings()
     {
-        $keys = array_keys(self::STORE_DEFAULTS);
-        $settings = Setting::whereIn('key', $keys)->get()->pluck('value', 'key');
-
-        $result = [];
-        foreach (self::STORE_DEFAULTS as $key => $default) {
-            $result[$key] = $settings[$key] ?? $default;
-        }
-
-        return response()->json($result);
+        return response()->json(StoreSettings::all());
     }
 
     public function updateStoreSettings(Request $request)
@@ -69,17 +43,7 @@ class SettingController extends Controller
             Setting::updateOrCreate(['key' => $key], ['value' => $value ?? '']);
         }
 
-        return response()->json(self::normalizeStoreSettings($validated));
-    }
-
-    private static function normalizeStoreSettings(array $validated): array
-    {
-        $result = [];
-        foreach (self::STORE_DEFAULTS as $key => $default) {
-            $result[$key] = $validated[$key] ?? $default;
-        }
-
-        return $result;
+        return response()->json(StoreSettings::all());
     }
 
     public function getHomepageSettings()

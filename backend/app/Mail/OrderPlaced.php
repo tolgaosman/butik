@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Order;
+use App\Support\StoreSettings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -20,11 +21,14 @@ class OrderPlaced extends Mailable implements ShouldQueue
     {
         return new Envelope(
             subject: "Siparişiniz Alındı — {$this->order->order_number}",
+            replyTo: [StoreSettings::all()['store_email']],
         );
     }
 
     public function content(): Content
     {
+        $this->order->loadMissing('items');
+
         return new Content(
             view: 'emails.order-placed',
             with: ['order' => $this->order],
